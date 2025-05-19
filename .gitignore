@@ -1,0 +1,58 @@
+# Arquivos de Log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+logs/
+
+# Diretórios de dependência
+node_modules/
+.pub/
+.pub-cache/
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+linux/flutter/generated_plugins.cmake
+windows/flutter/generated_plugins.cmake
+macos/Flutter/GeneratedShorthand.xcconfig
+ios/Flutter/Generated.xcconfig
+
+# IDEs e editores
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+.atom/
+.buildlog/
+.history
+.swiftpm/
+migrate_working_dir/
+
+# Firebase
+# lib/firebase_options.dart # Descomente esta linha se você NÃO quer versionar o firebase_options.dart
+
+# Backups e arquivos compactados (se estiverem na pasta do projeto)
+*.tar.gz
+*.zip
+*.rar
+# Se você tiver scripts locais de backup/teste que não quer versionar:
+# backup-project.sh
+# test-genkit-connection.sh
+
+# Outros arquivos específicos do seu projeto que você queira ignorar
+claude-task-master/ # Já tínhamos discutido este
+# service-account-key.json # Descomente se você tiver este arquivo e ele contiver segredos
+
+# Sistema Operacional
+Thumbs.db
+ehthumbs.db
+
+# IMPORTANTE: NÃO adicione pubspec.lock ou package-lock.json para serem ignorados.
+# Eles DEVEM ser versionados.
