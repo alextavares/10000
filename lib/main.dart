@@ -7,7 +7,7 @@ import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/screens/auth/login_screen.dart';
 import 'package:myapp/screens/main_navigation_screen.dart';
 import 'package:myapp/screens/habit/add_habit_screen.dart';
-import 'package:myapp/screens/onboarding/onboarding_benefits_screen.dart'; // Importar a nova tela
+import 'package:myapp/screens/onboarding/onboarding_screen.dart'; // Importar a tela de onboarding
 import 'package:myapp/screens/home/home_screen.dart'; // Importar a HomeScreen
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/theme/app_theme.dart';
@@ -102,7 +102,7 @@ class MyApp extends StatelessWidget {
         // Define a tela inicial baseada no status do onboarding
         home: onboardingCompleted
             ? const SplashScreen() // Se onboarding concluído, SplashScreen levará para AuthWrapper -> HomeScreen
-            : const OnboardingBenefitsScreen(), // Caso contrário, iniciar com Onboarding
+            : const OnboardingScreen(), // Caso contrário, iniciar com Onboarding
         routes: {
           '/login': (context) => const LoginScreen(),
           // A rota '/home' agora pode ser a HomeScreen diretamente se o onboarding for pulado
@@ -111,7 +111,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const HomeScreen(), // Rota para pular onboarding
           '/main': (context) => const MainNavigationScreen(), // Rota principal após login
           '/add-habit': (context) => const AddHabitScreen(),
-          '/onboarding': (context) => const OnboardingBenefitsScreen(),
+          '/onboarding': (context) => const OnboardingScreen(),
           '/categories': (context) => const Scaffold(body: Center(child: Text('Categories Screen'))), // Placeholder
           '/timer': (context) => const Scaffold(body: Center(child: Text('Timer Screen'))), // Placeholder
           '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen'))), // Placeholder

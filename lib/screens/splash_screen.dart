@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 /// Splash screen shown when the app starts.
@@ -56,16 +57,22 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.dispose();
   }
   
-  void _navigateToNextScreen() {
+  Future<void> _navigateToNextScreen() async {
+    // Check if onboarding is completed
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool onboardingCompleted = prefs.getBool('onboardingCompleted') ?? false;
+    
     // Check if user is already logged in
     final User? currentUser = FirebaseAuth.instance.currentUser;
     
-    if (currentUser != null) {
-      // User is logged in, navigate to home screen
-      Navigator.of(context).pushReplacementNamed('/home');
+    if (!onboardingCompleted) {
+      // If onboarding is not completed, navigate to onboarding screen
+      Navigator.of(context).pushReplacementNamed('/onboarding');
+    } else if (currentUser != null) {
+      // User is logged in and onboarding is completed, navigate to home screen
+      Navigator.of(context).pushReplacementNamed('/main');
     } else {
-      // User is not logged in, navigate to onboarding or login
-      // For now, we'll navigate to login since onboarding is not implemented yet
+      // User is not logged in but onboarding is completed, navigate to login
       Navigator.of(context).pushReplacementNamed('/login');
     }
   }
