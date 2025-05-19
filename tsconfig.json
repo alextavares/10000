@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileName": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "genkit": ["./node_modules/genkit"],
+      "@genkit-ai/googleai": ["./node_modules/@genkit-ai/googleai"]
+    }
+  },
+  "include": [
+    "genkit-flows/**/*.ts"
+  ]
+}

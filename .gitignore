@@ -56,3 +56,4 @@ ehthumbs.db
 
 # IMPORTANTE: NÃO adicione pubspec.lock ou package-lock.json para serem ignorados.
 # Eles DEVEM ser versionados.
+service-account-key.json

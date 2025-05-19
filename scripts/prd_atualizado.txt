@@ -1,0 +1,128 @@
+# Habit Tracking App with AI Features - PRD Atualizado
+
+## Objetivo Atualizado
+Criar a UI, navegação e funcionalidades assistidas por IA de um aplicativo de acompanhamento de hábitos e tarefas, focando na personalização, insights e automação inteligente.
+
+## Status Atual da Implementação
+Algumas funcionalidades básicas já foram implementadas, incluindo:
+- Navegação principal com barra inferior
+- Tela básica de Today/Home com estatísticas simples
+- Tela básica de Coach AI com interface de chat
+- Telas placeholder para Habits e Tasks
+- Sistema de autenticação básico
+
+## Ferramentas
+- Firebase Genkit (com Project IDX): Para desenvolvimento assistido por IA (geração de código, design) e para criar e gerenciar os fluxos de IA que alimentarão as funcionalidades inteligentes do app (usando modelos como Gemini via API).
+- Flutter: Framework multiplataforma com boa integração Firebase.
+- Modelos de IA (via Genkit): Ex: Gemini, para processamento de linguagem natural, sugestões, análise de dados e personalização.
+
+## Plano de Criação da UI, Navegação e Funcionalidades com IA - ATUALIZADO
+
+### Fase 1: Telas Iniciais e Onboarding Inteligente (AINDA NÃO IMPLEMENTADO)
+- Tela de Boas-vindas (Splash Screen)
+- Telas de Onboarding (Tutorial Inicial com IA)
+  - Tela 1: Benefícios do app
+  - Tela 2 (NOVO com IA): "Vamos personalizar sua jornada!" Perguntas interativas guiadas por IA
+  - Tela 3 (NOVO com IA): Sugestões de hábitos iniciais baseadas nas respostas
+
+### Fase 2: Autenticação (PARCIALMENTE IMPLEMENTADO)
+- ✅ Tela de Login (implementada)
+- ❌ Tela de Cadastro (pendente)
+- ❌ Tela de Recuperação de Senha (pendente)
+
+### Fase 3: Telas Principais e Navegação Interna com Assistência de IA (PARCIALMENTE IMPLEMENTADO)
+- Estrutura de Navegação Principal
+  - ✅ Barra de Navegação Inferior: "Hoje", "Hábitos", "Tarefas", "Coach AI", "Mais" (implementada)
+  - ❌ Menu Lateral (Drawer Navigation) (não implementado)
+- Tela "Hoje" (Home/Dashboard Inteligente)
+  - ✅ Layout básico com estatísticas (implementado)
+  - ❌ Card de Insight do Dia (NOVO com IA) (não implementado)
+  - ❌ Priorização Inteligente (Sutil - IA) (não implementado)
+- Tela "Hábitos"
+  - ✅ Layout básico (implementado)
+  - ❌ Conteúdo real de hábitos (não implementado)
+  - ❌ Botão "Sugerir Hábito" (NOVO com IA) (não implementado)
+- Tela "Tarefas"
+  - ✅ Layout básico (implementado)
+  - ❌ Conteúdo real de tarefas (não implementado)
+  - ❌ Reconhecimento Inteligente de Tarefas (NOVO com IA) (não implementado)
+- Tela "Coach AI" (NOVA)
+  - ✅ Interface de chat básica (implementada)
+  - ❌ Relatórios de Progresso Inteligentes (não implementado)
+  - ❌ Sugestões Proativas (não implementado)
+  - ❌ Definição de Metas Guiada por IA (não implementado)
+- Tela "Categorias"
+  - ❌ Interface básica (não implementado)
+  - ❌ Sugestão Inteligente de Categoria (NOVO com IA) (não implementado)
+- Tela "Timer"
+  - ❌ Interface básica (não implementado)
+  - ❌ Sugestão de Foco (NOVO com IA) (não implementado)
+
+### Fase 4: Telas de Criação, Configuração e Suporte com IA (NÃO IMPLEMENTADO)
+- ❌ Tela de Criação/Edição (Genérica para Hábito, Tarefa)
+  - ❌ Assistente de Criação (NOVO com IA)
+- ❌ Tela de Configurações
+  - ❌ Preferências de IA (NOVO)
+
+### Fase 5: Componentes Reutilizáveis, Estilo e Fluxos de IA com Genkit (NÃO IMPLEMENTADO)
+- ❌ Guia de Estilo para elementos de IA
+- ❌ Componentes Reutilizáveis
+  - AIChatBubble, AISuggestionCard, AIInsightChip
+- ❌ Firebase Genkit (Fluxos de IA)
+  - Definir Fluxos Claros para cada funcionalidade de IA
+  - Gerenciamento de Contexto
+  - Moderação e Segurança
+  - Monitoramento e Avaliação
+
+## Plano de Implementação Priorizado
+
+### Prioridade Imediata (Sprint 1)
+1. Implementar Menu Lateral (Drawer Navigation)
+2. Completar telas de autenticação (Cadastro e Recuperação de Senha)
+3. Implementar tela de Criação/Edição (Genérica para Hábitos e Tarefas)
+4. Adicionar conteúdo real às telas de Hábitos e Tarefas
+
+### Prioridade Alta (Sprint 2)
+1. Implementar telas de Onboarding com integração de IA
+2. Adicionar Card de Insight do Dia na tela "Hoje"
+3. Implementar botão "Sugerir Hábito" na tela de Hábitos
+4. Adicionar Reconhecimento Inteligente de Tarefas na tela Tarefas
+
+### Prioridade Média (Sprint 3)
+1. Expandir funcionalidades do Coach AI (relatórios, sugestões)
+2. Implementar telas de Categorias e Timer
+3. Desenvolver componentes reutilizáveis de IA
+4. Implementar tela de Configurações com Preferências de IA
+
+### Prioridade Baixa (Sprint 4)
+1. Refinar a integração de IA em todos os componentes
+2. Implementar funcionalidades avançadas de IA
+3. Otimizar fluxos de IA com Firebase Genkit
+4. Realizar testes e ajustes finais
+
+## Implementação e Navegabilidade com IA
+- Comece Simples, Itere
+- Entrada de IA Clara
+  - Linguagem Natural
+  - Sugestões Contextuais
+- Apresentação de Saída da IA
+  - Cards Dedicados
+  - Notificações Não Intrusivas
+  - Integração Sutil
+  - Interface de Chat
+- Navegação para Funcionalidades de IA
+  - Ponto Central - "Coach AI"
+  - Gatilhos Contextuais
+  - Descoberta Gradual
+- Feedback do Usuário sobre a IA
+- Design para Confiança e Controle
+  - Transparência
+  - Editabilidade
+  - Explicações (Opcional)
+  - Configurações de Privacidade
+
+## Integração com Firebase Genkit
+- Desenvolvimento Assistido (IDX)
+- Criação de Fluxos de IA (Genkit)
+- Integração com Firebase
+- Testabilidade e Monitoramento

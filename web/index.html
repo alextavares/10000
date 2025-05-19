@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="myapp">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>myapp</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics-compat.js"></script>
+  
+  <!-- Firebase Configuration -->
+  <script src="firebase-config.js"></script> 
+  <!-- O firebase-config.js agora expõe window.firebaseReady -->
+</head>
+<body>
+  <!-- Indicador de carregamento -->
+  <div id="loading" style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+    <div style="width: 50px; height: 50px; border: 8px solid #f3f3f3; border-top: 8px solid #6200EE; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p style="margin-top: 20px; font-family: sans-serif; color: #6200EE;">Carregando HabitAI...</p>
+  </div>
+  
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <script>
+    // Esperar que o Firebase esteja pronto antes de carregar o Flutter
+    window.firebaseReady.then(() => {
+      console.log("Firebase está pronto. Carregando Flutter...");
+      var script = document.createElement('script');
+      script.src = 'flutter_bootstrap.js';
+      script.async = true; // Carregar de forma assíncrona
+      document.body.appendChild(script);
+    }).catch(error => {
+      console.error("Falha ao inicializar Firebase, Flutter não será carregado:", error);
+      // Opcional: Mostrar uma mensagem de erro para o usuário no lugar do loading
+      const loadingDiv = document.getElementById('loading');
+      if (loadingDiv) {
+        loadingDiv.innerHTML = '<p style="font-family: sans-serif; color: red;">Erro ao carregar. Tente recarregar a página.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

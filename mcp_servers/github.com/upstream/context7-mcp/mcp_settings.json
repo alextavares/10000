@@ -1,0 +1,8 @@
+{
+  "mcpServer": {
+    "github.com/upstream/context7-mcp": {
+      "command": "npx",
+      "args": ["-y", "@upstream/context7-mcp@latest"]
+    }
+  }
+}

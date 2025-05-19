@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>258006613617-ios-habitai.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.258006613617-ios-habitai</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBXcH7G5KLwFjqjMfUxEiT9z8JdK3pQM2s</string>
+	<key>GCM_SENDER_ID</key>
+	<string>258006613617</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.myapp</string>
+	<key>PROJECT_ID</key>
+	<string>android-habitai</string>
+	<key>STORAGE_BUCKET</key>
+	<string>android-habitai.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:258006613617:ios:97dd7ccb386841785465d0</string>
+</dict>
+</plist>

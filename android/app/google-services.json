@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "258006613617",
+    "project_id": "android-habitai",
+    "storage_bucket": "android-habitai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258006613617:android:97dd7ccb386841785465d0",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAayN2swkuxNZRV_htDIKc9CUjgcxQJK4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
