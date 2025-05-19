@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
-import 'package:myapp/screens/tasks/tasks_screen.dart';
+// import 'package:myapp/screens/tasks/tasks_screen.dart'; // Temporarily removed
 import 'package:myapp/screens/coach_ai/coach_ai_screen.dart';
 import 'package:myapp/screens/more/more_screen.dart';
 import 'package:myapp/theme/app_theme.dart';
@@ -20,7 +20,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
     const HabitsScreen(),
-    const TasksScreen(),
+    const Placeholder(), // Was TasksScreen()
     const CoachAiScreen(),
     const MoreScreen(),
   ];
