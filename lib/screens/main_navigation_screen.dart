@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
 import 'package:myapp/screens/coach_ai/coach_ai_screen.dart';
+import 'package:myapp/widgets/app_drawer.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -51,11 +52,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ],
       ),
     );
-  }
+  } // Added missing closing brace
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('HabitNow'),
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      drawer: const AppDrawer(),
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

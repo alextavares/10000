@@ -17,12 +17,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize date formatting for Portuguese (Brazil)
+    // Initialize with current date and an empty week list first
+    _selectedDate = DateTime.now();
+    _weekDays = []; // Initialize with an empty list or a default week
+    _generateWeekDays(); // Generate initial week days
+
+    // Then, initialize date formatting and update if needed
     initializeDateFormatting('pt_BR', null).then((_) {
-      setState(() {
-        _selectedDate = DateTime.now();
-        _generateWeekDays();
-      });
+      // Potentially update _selectedDate or re-generate week days
+      // if the locale significantly changes date interpretation, though unlikely for DateTime.now()
+      if (mounted) { // Check if the widget is still in the tree
+        setState(() {
+          // Re-assign to trigger a rebuild if necessary, for example, if formatting affects display directly
+          _selectedDate = DateTime.now(); 
+          _generateWeekDays();
+        });
+      }
     });
   }
 
@@ -44,10 +54,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     
     if (_selectedDayIndex == -1) {
-      _selectedDayIndex = 0;
+      _selectedDayIndex = 0; // Default to the first day in the list if today is not found (should not happen with current logic)
     }
     
-    _selectedDate = _weekDays[_selectedDayIndex];
+    // Update _selectedDate to be the one from the generated list corresponding to _selectedDayIndex
+    // This ensures _selectedDate is always a value present in _weekDays
+    if (_weekDays.isNotEmpty) {
+        _selectedDate = _weekDays[_selectedDayIndex];
+    } else {
+        // Fallback if _weekDays is empty, though _generateWeekDays should prevent this
+        _selectedDate = DateTime.now(); 
+    }
   }
 
   void _selectDay(int index) {
@@ -72,8 +89,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Check if _weekDays is empty, show a loading indicator or a default view
+    if (_weekDays.isEmpty) {
+      return Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          elevation: 0,
+          title: const Text(
+            'Carregando...', // Loading text
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE91E63)))),
+      );
+    }
+
     // Format the date for the app bar title
-    final DateFormat formatter = DateFormat('d \'de\' MMM.', 'pt_BR');
+    final DateFormat formatter = DateFormat("d 'de' MMM.", 'pt_BR');
     final String formattedDate = formatter.format(_selectedDate);
     
     return Scaffold(
@@ -81,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
+        automaticallyImplyLeading: false, // Add this line to prevent default leading widget
         title: Text(
           formattedDate,
           style: const TextStyle(
@@ -89,12 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.white,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {
-            // Open drawer
-          },
-        ),
+        // Removed the leading IconButton with Icons.menu
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: Colors.white),

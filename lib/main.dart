@@ -11,9 +11,14 @@ import 'package:myapp/screens/onboarding/onboarding_screen.dart'; // Importar a 
 import 'package:myapp/screens/home/home_screen.dart'; // Importar a HomeScreen
 import 'package:myapp/services/service_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Importar shared_preferences
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize date formatting for Portuguese
+  await initializeDateFormatting('pt_BR', null);
   
   try {
     // Inicializar Firebase com configurações específicas para plataforma
@@ -94,19 +99,29 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'HabitAI',
         theme: ThemeData(
-          primaryColor: const Color(0xFF6200EE), // Purple color from screenshot
+          primaryColor: const Color(0xFFE91E63), // Pink color from screenshot
           scaffoldBackgroundColor: Colors.black,
           appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFF6200EE),
+            backgroundColor: Colors.black,
             foregroundColor: Colors.white,
           ),
           bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            backgroundColor: Colors.white,
-            selectedItemColor: Color(0xFF6200EE),
+            backgroundColor: Colors.black,
+            selectedItemColor: Color(0xFFE91E63),
             unselectedItemColor: Colors.grey,
           ),
           useMaterial3: true,
         ),
+        // Add localization delegates
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('pt', 'BR'), // Portuguese
+          Locale('en', 'US'), // English
+        ],
         // Define a tela inicial baseada no status do onboarding
         home: onboardingCompleted
             ? const SplashScreen() // Se onboarding concluído, SplashScreen levará para AuthWrapper -> HomeScreen

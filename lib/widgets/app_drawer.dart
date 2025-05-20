@@ -1,143 +1,112 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/theme/app_theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../screens/genkit_test_screen.dart';
 
 class AppDrawer extends StatelessWidget {
-  final int currentIndex;
-  final Function(int) onDestinationSelected;
-
-  const AppDrawer({
-    super.key,
-    required this.currentIndex,
-    required this.onDestinationSelected,
-  });
+  const AppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final User? user = FirebaseAuth.instance.currentUser;
-    final String userName = user?.displayName ?? 'Nome do Usuário';
-    final String userEmail = user?.email ?? 'usuario@email.com';
-
     return Drawer(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.black,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
+          const DrawerHeader(
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor,
+              color: Colors.black,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // User avatar or placeholder
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: AppTheme.secondaryColor,
-                  // TODO: Use actual user avatar if available
-                  child: Icon(
-                    Icons.person,
-                    size: 40,
-                    color: AppTheme.primaryColor,
+                Text(
+                  'HabitNow',
+                  style: TextStyle(
+                    color: Colors.pink,
+                    fontSize: 24,
                   ),
                 ),
-                SizedBox(height: 8),
-                // User name
                 Text(
-                  userName,
+                  'Domingo\n11 de maio de 2025',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                // User email
-                Text(
-                  userEmail,
-                  style: TextStyle(
-                    color: Colors.white70,
                     fontSize: 14,
                   ),
                 ),
               ],
             ),
           ),
-          // Main Navigation Links
           ListTile(
-            leading: Icon(Icons.today, color: currentIndex == 0 ? AppTheme.primaryColor : AppTheme.textColor),
-            title: Text('Hoje', style: TextStyle(color: currentIndex == 0 ? AppTheme.primaryColor : AppTheme.textColor, fontWeight: currentIndex == 0 ? FontWeight.bold : FontWeight.normal)),
-            selected: currentIndex == 0,
+            leading: const Icon(Icons.home, color: Colors.white),
+            title: const Text('Início', style: TextStyle(color: Colors.white)),
+            selected: true,
+            selectedColor: Colors.pink,
             onTap: () {
-              onDestinationSelected(0);
+              // Handle 'Início' tap
               Navigator.pop(context); // Close the drawer
             },
           ),
           ListTile(
-            leading: Icon(Icons.checklist, color: currentIndex == 1 ? AppTheme.primaryColor : AppTheme.textColor),
-            title: Text('Hábitos', style: TextStyle(color: currentIndex == 1 ? AppTheme.primaryColor : AppTheme.textColor, fontWeight: currentIndex == 1 ? FontWeight.bold : FontWeight.normal)),
-            selected: currentIndex == 1,
+            leading: const Icon(Icons.timer, color: Colors.white),
+            title: const Text('Timer', style: TextStyle(color: Colors.white)),
             onTap: () {
-              onDestinationSelected(1);
+              // Handle 'Timer' tap
               Navigator.pop(context); // Close the drawer
             },
           ),
           ListTile(
-            leading: Icon(Icons.task, color: currentIndex == 2 ? AppTheme.primaryColor : AppTheme.textColor),
-            title: Text('Tarefas', style: TextStyle(color: currentIndex == 2 ? AppTheme.primaryColor : AppTheme.textColor, fontWeight: currentIndex == 2 ? FontWeight.bold : FontWeight.normal)),
-            selected: currentIndex == 2,
+            leading: const Icon(Icons.category, color: Colors.white),
+            title: const Text('Categorias', style: TextStyle(color: Colors.white)),
             onTap: () {
-              onDestinationSelected(2);
+              // Handle 'Categorias' tap
               Navigator.pop(context); // Close the drawer
             },
           ),
           ListTile(
-            leading: Icon(Icons.psychology_alt, color: currentIndex == 3 ? AppTheme.primaryColor : AppTheme.textColor),
-            title: Text('Coach AI', style: TextStyle(color: currentIndex == 3 ? AppTheme.primaryColor : AppTheme.textColor, fontWeight: currentIndex == 3 ? FontWeight.bold : FontWeight.normal)),
-            selected: currentIndex == 3,
+            leading: const Icon(Icons.person, color: Colors.white),
+            title: const Text('Personalizar', style: TextStyle(color: Colors.white)),
             onTap: () {
-              onDestinationSelected(3);
+              // Handle 'Personalizar' tap
               Navigator.pop(context); // Close the drawer
             },
           ),
-          Divider(color: AppTheme.dividerColor), // Divider for secondary features
-          // Secondary Features Links
           ListTile(
-            leading: Icon(Icons.category, color: AppTheme.primaryColor),
-            title: Text('Categorias', style: TextStyle(color: AppTheme.textColor)),
+            leading: const Icon(Icons.settings, color: Colors.white),
+            title: const Text('Configurações', style: TextStyle(color: Colors.white)),
             onTap: () {
+              // Handle 'Configurações' tap
               Navigator.pop(context); // Close the drawer
-              Navigator.pushNamed(context, '/categories');
             },
           ),
           ListTile(
-            leading: Icon(Icons.timer, color: AppTheme.primaryColor),
-            title: Text('Timer', style: TextStyle(color: AppTheme.textColor)),
+            leading: const Icon(Icons.backup, color: Colors.white),
+            title: const Text('Backup', style: TextStyle(color: Colors.white)),
             onTap: () {
+              // Handle 'Backup' tap
               Navigator.pop(context); // Close the drawer
-              Navigator.pushNamed(context, '/timer');
             },
           ),
-          Divider(color: AppTheme.dividerColor), // Divider for settings
-          // Genkit Test Screen
           ListTile(
-            leading: Icon(Icons.science, color: AppTheme.primaryColor),
-            title: Text('Genkit Test', style: TextStyle(color: AppTheme.textColor)),
+            leading: const Icon(Icons.star, color: Colors.white),
+            title: const Text('Obtenha premium', style: TextStyle(color: Colors.white)),
             onTap: () {
+              // Handle 'Obtenha premium' tap
               Navigator.pop(context); // Close the drawer
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const GenkitTestScreen()),
-              );
             },
           ),
-          // Settings Link
           ListTile(
-            leading: Icon(Icons.settings, color: AppTheme.primaryColor),
-            title: Text('Configurações', style: TextStyle(color: AppTheme.textColor)),
+            leading: const Icon(Icons.star_border, color: Colors.white),
+            title: const Text('Avalie o aplicativo', style: TextStyle(color: Colors.white)),
             onTap: () {
+              // Handle 'Avalie o aplicativo' tap
               Navigator.pop(context); // Close the drawer
-              Navigator.pushNamed(context, '/settings');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.mail, color: Colors.white),
+            title: const Text('Contate-Nos', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              // Handle 'Contate-Nos' tap
+              Navigator.pop(context); // Close the drawer
             },
           ),
         ],
