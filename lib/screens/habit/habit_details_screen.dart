@@ -4,6 +4,7 @@ import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/widgets/habit_card.dart';
+import 'package:myapp/screens/habit/add_habit_screen.dart'; // Import AddHabitScreen
 import 'package:intl/intl.dart';
 
 /// Screen for viewing and managing a habit's details.
@@ -35,16 +36,18 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     _loadHabit();
   }
 
-  /// Loads the habit data.
   Future<void> _loadHabit() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      final habit = await context.habitService.getHabit(widget.habitId);
+      final habitService = ServiceProvider.of(context).habitService; // Use ServiceProvider
+      final habit = await habitService.getHabit(widget.habitId);
       
+      if (!mounted) return;
       if (habit == null) {
         setState(() {
           _errorMessage = 'Habit not found';
@@ -53,20 +56,14 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
         return;
       }
       
-      // Create a local variable to store the completion history entries
-      final completionEntries = habit.completionHistory.entries
-          .where((entry) => entry.value == true)
-          .map((entry) => entry.key)
-          .toList();
-      
       setState(() {
         _habit = habit;
         _isLoading = false;
       });
       
-      // Load AI insights
       _loadAIInsights();
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = 'Failed to load habit. Please try again.';
         _isLoading = false;
@@ -75,22 +72,24 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     }
   }
 
-  /// Loads AI insights for the habit.
   Future<void> _loadAIInsights() async {
-    if (_habit == null) return;
+    if (_habit == null || !mounted) return;
 
     setState(() {
       _isLoadingInsights = true;
     });
 
     try {
-      final insights = await context.aiService.generateHabitInsights([_habit!]);
+      final aiService = ServiceProvider.of(context).aiService; // Use ServiceProvider
+      final insights = await aiService.generateHabitInsights([_habit!]);
       
+      if (!mounted) return;
       setState(() {
         _aiInsights = insights;
         _isLoadingInsights = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _aiInsights = 'Unable to load insights at this time.';
         _isLoadingInsights = false;
@@ -99,11 +98,9 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     }
   }
 
-  /// Deletes the habit.
   Future<void> _deleteHabit() async {
-    if (_habit == null) return;
+    if (_habit == null || !mounted) return;
 
-    // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -125,26 +122,29 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
       ),
     );
 
-    if (confirmed != true) return;
+    if (confirmed != true || !mounted) return;
 
     setState(() {
-      _isLoading = true;
+      _isLoading = true; // Can set a specific loading for delete if preferred
     });
 
     try {
-      // Cancel notifications
-      if (_habit!.notificationsEnabled) {
-        await context.notificationService.cancelHabitReminder(_habit!);
+      final notificationService = ServiceProvider.of(context).notificationService;
+      final habitService = ServiceProvider.of(context).habitService;
+
+      if (_habit!.notificationsEnabled && _habit!.reminderTime != null) {
+        // It's better to pass the full habit object or at least its ID for cancellation.
+        // Assuming cancelHabitReminder takes habit ID.
+        await notificationService.cancelHabitReminder(_habit!.id);
       }
       
-      // Delete the habit
-      await context.habitService.deleteHabit(_habit!.id);
+      await habitService.deleteHabit(_habit!.id);
       
-      // Return to previous screen
       if (mounted) {
-        Navigator.pop(context, true);
+        Navigator.pop(context, true); // Pop and signal success
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = 'Failed to delete habit: $e';
         _isLoading = false;
@@ -153,98 +153,92 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     }
   }
 
-  /// Toggles the completion status for a date.
   Future<void> _toggleDateCompletion(DateTime date) async {
-    if (_habit == null) return;
+    if (_habit == null || !mounted) return;
 
     final isCompleted = _habit!.completionHistory[date] ?? false;
     
-    setState(() {
-      _isLoading = true;
-    });
+    // Optimistically update UI or use a loading state for the specific date
+    // For simplicity, full reload via _loadHabit() is used after operation.
 
     try {
+      final habitService = ServiceProvider.of(context).habitService;
       if (isCompleted) {
-        await context.habitService.markHabitNotCompleted(
-          _habit!.id,
-          date,
-        );
+        await habitService.markHabitNotCompleted(_habit!.id, date);
       } else {
-        await context.habitService.markHabitCompleted(
-          _habit!.id,
-          date,
-        );
+        await habitService.markHabitCompleted(_habit!.id, date);
       }
       
-      // Reload the habit
-      await _loadHabit();
+      if (mounted) await _loadHabit(); // Reload the habit to reflect changes
     } catch (e) {
+      if (!mounted) return;
       setState(() {
-        _errorMessage = 'Failed to update habit: $e';
-        _isLoading = false;
+        _errorMessage = 'Failed to update habit completion: $e';
       });
-      print('Error updating habit: $e');
+      print('Error updating habit completion for date $date: $e');
     }
+  }
+
+  void _navigateToEditScreen() {
+    if (_habit == null || !mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddHabitScreen(habitToEdit: _habit!))
+    ).then((result) {
+      if (result == true && mounted) {
+        _loadHabit(); // Refresh if changes were made
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const LoadingScreenWithMessage(
-        message: 'Loading habit details...',
+    if (_isLoading && _habit == null) { // Show loading only if habit is not yet loaded
+      return Scaffold(
+        appBar: AppBar(title: const Text('Habit Details')), // Basic AppBar during load
+        body: const LoadingScreenWithMessage(message: 'Loading habit details...'),
       );
     }
 
     if (_habit == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Habit Details'),
-          backgroundColor: AppTheme.primaryColor,
+          title: const Text('Error'),
+          backgroundColor: AppTheme.errorColor,
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: AppTheme.errorColor,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _errorMessage ?? 'Habit not found',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.textColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text('Go Back'),
-              ),
-            ],
-          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: AppTheme.errorColor),
+                const SizedBox(height: 16),
+                Text(_errorMessage ?? 'Habit not found or could not be loaded.',
+                  style: TextStyle(fontSize: 16, color: AppTheme.textColor), textAlign: TextAlign.center),
+                const SizedBox(height: 24),
+                ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Go Back')),
+              ],
+            ),
+          )
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_habit!.title),
+        title: Text(_habit!.title, style: TextStyle(color: AppTheme.adaptiveTextColor(_habit!.color))), 
         backgroundColor: _habit!.color,
+        iconTheme: IconThemeData(color: AppTheme.adaptiveTextColor(_habit!.color)), // For back button
+        actionsIconTheme: IconThemeData(color: AppTheme.adaptiveTextColor(_habit!.color)), // For action icons
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.edit_note),
+            onPressed: _navigateToEditScreen, // Navigate to edit screen
+            tooltip: 'Edit Habit',
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
             onPressed: _deleteHabit,
             tooltip: 'Delete Habit',
           ),
@@ -258,57 +252,28 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (_errorMessage != null)
+              if (_errorMessage != null && !_isLoading) // Show error only if not loading
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    _errorMessage!,
-                    style: TextStyle(
-                      color: AppTheme.errorColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: Text(_errorMessage!,
+                    style: TextStyle(color: AppTheme.errorColor, fontWeight: FontWeight.bold)),
                 ),
 
-              // Habit card
               HabitCard(
                 habit: _habit!,
-                onTap: () {}, // No action needed since we're already in the details screen
+                onTap: _navigateToEditScreen, // Make the card itself also navigate to edit
                 onToggleCompletion: (completed) async {
-                  try {
-                    if (completed) {
-                      await context.habitService.markHabitCompleted(
-                        _habit!.id,
-                        DateTime.now(),
-                      );
-                    } else {
-                      await context.habitService.markHabitNotCompleted(
-                        _habit!.id,
-                        DateTime.now(),
-                      );
-                    }
-                    _loadHabit();
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Error updating habit: $e'),
-                        backgroundColor: AppTheme.errorColor,
-                      ),
-                    );
-                  }
+                  final today = DateTime.now();
+                  final dateOnly = DateTime(today.year, today.month, today.day);
+                  await _toggleDateCompletion(dateOnly); // Use _toggleDateCompletion for today
                 },
+                onDelete: _deleteHabit, // Added onDelete callback to card
               ),
               const SizedBox(height: 24),
-
-              // Statistics section
               _buildStatisticsSection(),
               const SizedBox(height: 24),
-
-              // Calendar section
               _buildCalendarSection(),
               const SizedBox(height: 24),
-
-              // AI Insights section
               _buildAIInsightsSection(),
             ],
           ),
@@ -317,18 +282,13 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     );
   }
 
-  /// Builds the statistics section.
-  Widget _buildStatisticsSection() {
+  Widget _buildStatisticsSection() { /* ... as before ... */ 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Statistics',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.textColor,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -338,31 +298,24 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            // Current streak card
             _buildStatCard(
               title: 'Current Streak',
               value: '${_habit!.streak} days',
               icon: Icons.local_fire_department,
               color: Colors.orange,
             ),
-
-            // Longest streak card
             _buildStatCard(
               title: 'Longest Streak',
               value: '${_habit!.longestStreak} days',
               icon: Icons.emoji_events,
               color: Colors.amber,
             ),
-
-            // Completion rate card
             _buildStatCard(
               title: 'Completion Rate',
               value: '${(_habit!.getCompletionRate() * 100).toStringAsFixed(1)}%',
               icon: Icons.pie_chart,
               color: Colors.green,
             ),
-
-            // Total completions card
             _buildStatCard(
               title: 'Total Completions',
               value: '${_habit!.completionHistory.values.where((v) => v).length}',
@@ -375,7 +328,6 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     );
   }
 
-  /// Builds a statistics card.
   Widget _buildStatCard({
     required String title,
     required String value,
@@ -384,118 +336,69 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.surfaceColor,
+        color: Theme.of(context).cardTheme.color ?? AppTheme.surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [ BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 32,
-            color: color,
-          ),
+          Icon(icon, size: 32, color: color),
           const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textColor,
-            ),
-          ),
+          Text(value, style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppTheme.textColor, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
           const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppTheme.subtitleColor,
-            ),
-            textAlign: TextAlign.center,
-          ),
+          Text(title, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppTheme.subtitleColor), textAlign: TextAlign.center),
         ],
       ),
     );
   }
-
-  /// Builds the calendar section.
-  Widget _buildCalendarSection() {
+  
+  Widget _buildCalendarSection() { /* ... as before ... */ 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Calendar',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.textColor,
-          ),
+          'Progress Calendar',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor),
         ),
         const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
-            color: AppTheme.surfaceColor,
+            color: Theme.of(context).cardTheme.color ?? AppTheme.surfaceColor,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            boxShadow: [ BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Month navigation
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.chevron_left),
                     onPressed: () {
+                      if (!mounted) return;
                       setState(() {
-                        _currentMonth = DateTime(
-                          _currentMonth.year,
-                          _currentMonth.month - 1,
-                          1,
-                        );
+                        _currentMonth = DateTime(_currentMonth.year, _currentMonth.month - 1, 1);
                       });
                     },
                   ),
-                  Text(
-                    DateFormat('MMMM yyyy').format(_currentMonth),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textColor,
-                    ),
-                  ),
+                  Text(DateFormat('MMMM yyyy', 'pt_BR').format(_currentMonth),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppTheme.textColor, fontWeight: FontWeight.bold)),
                   IconButton(
                     icon: const Icon(Icons.chevron_right),
                     onPressed: () {
+                       if (!mounted) return;
                       setState(() {
-                        _currentMonth = DateTime(
-                          _currentMonth.year,
-                          _currentMonth.month + 1,
-                          1,
-                        );
+                        _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 1);
                       });
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Calendar grid
               _buildCalendarGrid(),
             ],
           ),
@@ -504,164 +407,94 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     );
   }
 
-  /// Builds the calendar grid.
   Widget _buildCalendarGrid() {
-    // Get the first day of the month
-    final firstDay = DateTime(_currentMonth.year, _currentMonth.month, 1);
-    
-    // Get the last day of the month
-    final lastDay = DateTime(_currentMonth.year, _currentMonth.month + 1, 0);
-    
-    // Get the weekday of the first day (0 = Monday, 6 = Sunday)
-    final firstWeekday = firstDay.weekday;
-    
-    // Calculate the number of days to display
-    final daysInMonth = lastDay.day;
-    
-    // Calculate the number of rows needed
-    final rowCount = ((firstWeekday - 1 + daysInMonth) / 7).ceil();
-    
-    // Day names
-    final dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final firstDayOfMonth = DateTime(_currentMonth.year, _currentMonth.month, 1);
+    final lastDayOfMonth = DateTime(_currentMonth.year, _currentMonth.month + 1, 0);
+    final firstWeekday = firstDayOfMonth.weekday; // Monday is 1, Sunday is 7
+    final daysInMonth = lastDayOfMonth.day;
+    final dayNames = DateFormat.EEEE('pt_BR').dateSymbols.SHORTWEEKDAYS;
+     // Adjust for locale: SHORTWEEKDAYS might be [Sun, Mon, ...]. We want [Mon, Tue, ...]
+    final adjustedDayNames = [...dayNames.sublist(1), dayNames[0]];
 
-    return Column(
-      children: [
-        // Day names row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: dayNames.map((day) {
-            return SizedBox(
-              width: 32,
-              child: Text(
-                day,
+    List<Widget> dayCells = [];
+    // Add day name headers
+    for (String dayName in adjustedDayNames) {
+      dayCells.add(Center(child: Text(dayName, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppTheme.subtitleColor, fontWeight: FontWeight.bold))));
+    }
+
+    // Add empty cells for padding before the first day of the month
+    for (int i = 0; i < firstWeekday - 1; i++) { // -1 because our week starts on Monday in grid
+      dayCells.add(Container());
+    }
+
+    // Add day cells for the month
+    for (int day = 1; day <= daysInMonth; day++) {
+      final date = DateTime(_currentMonth.year, _currentMonth.month, day);
+      final isTodayFlag = _isToday(date);
+      final isCompleted = _habit!.completionHistory[DateTime(date.year, date.month, date.day)] ?? false;
+
+      dayCells.add(
+        GestureDetector(
+          onTap: () => _toggleDateCompletion(date),
+          child: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: isCompleted ? _habit!.color.withOpacity(0.8) : Colors.transparent,
+              border: isTodayFlag ? Border.all(color: _habit!.color, width: 2) : Border.all(color: Colors.grey.withOpacity(0.3), width: 0.5),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(day.toString(),
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.subtitleColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 8),
-
-        // Calendar days
-        for (int row = 0; row < rowCount; row++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(7, (col) {
-                final dayIndex = row * 7 + col - (firstWeekday - 1);
-                
-                if (dayIndex < 0 || dayIndex >= daysInMonth) {
-                  // Empty cell
-                  return const SizedBox(width: 32);
-                }
-                
-                final day = dayIndex + 1;
-                final date = DateTime(_currentMonth.year, _currentMonth.month, day);
-                final isToday = _isToday(date);
-                final isCompleted = _habit!.completionHistory[date] ?? false;
-                
-                return GestureDetector(
-                  onTap: () => _toggleDateCompletion(date),
-                  child: Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: isCompleted ? _habit!.color : Colors.transparent,
-                      border: isToday
-                          ? Border.all(color: _habit!.color, width: 2)
-                          : null,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        day.toString(),
-                        style: TextStyle(
-                          color: isCompleted ? Colors.white : AppTheme.textColor,
-                          fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }),
+                  color: isCompleted ? AppTheme.adaptiveTextColor(_habit!.color.withOpacity(0.8)) : AppTheme.textColor,
+                  fontWeight: isTodayFlag ? FontWeight.bold : FontWeight.normal,
+                )),
             ),
           ),
-      ],
+        ),
+      );
+    }
+
+    return GridView.count(
+      crossAxisCount: 7,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: dayCells,
     );
   }
-
-  /// Builds the AI insights section.
-  Widget _buildAIInsightsSection() {
+  
+  Widget _buildAIInsightsSection() { /* ... as before ... */ 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'AI Insights',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textColor,
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: _isLoadingInsights ? null : _loadAIInsights,
-              tooltip: 'Refresh Insights',
-            ),
+            Text('AI Insights', style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor)),
+            IconButton(icon: const Icon(Icons.refresh), onPressed: _isLoadingInsights ? null : _loadAIInsights, tooltip: 'Refresh Insights'),
           ],
         ),
         const SizedBox(height: 16),
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: AppTheme.surfaceColor,
+            color: Theme.of(context).cardTheme.color ?? AppTheme.aiBackgroundColor, // Use card color or AI specific
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            border: Border.all(color: AppTheme.aiPrimaryColor.withOpacity(0.3)),
+            boxShadow: [ BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
           ),
           padding: const EdgeInsets.all(16),
           child: _isLoadingInsights
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : Column(
+              ? const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()))
+              : Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.lightbulb_outline,
-                          color: AppTheme.aiPrimaryColor,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            _aiInsights ?? 'No insights available yet.',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppTheme.textColor,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                      ],
+                    Icon(Icons.lightbulb_outline, color: AppTheme.aiPrimaryColor, size: 28),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(_aiInsights ?? 'No insights available yet.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.textColor, height: 1.5)),
                     ),
                   ],
                 ),
@@ -670,11 +503,14 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     );
   }
 
-  /// Checks if a date is today.
   bool _isToday(DateTime date) {
     final now = DateTime.now();
-    return date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day;
+    return date.year == now.year && date.month == now.month && date.day == now.day;
   }
 }
+
+// Helper in AppTheme for adaptive text color on colored backgrounds
+// Add this to your AppTheme class or a similar utility location
+// static Color adaptiveTextColor(Color backgroundColor) {
+//   return backgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+// }

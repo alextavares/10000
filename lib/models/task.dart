@@ -16,9 +16,11 @@ class Task {
   final DateTime updatedAt;
   final DateTime? dueDate; // Optional due date for tasks
   final TimeOfDay? reminderTime; // Optional reminder time
+  final bool notificationsEnabled; // Added notificationsEnabled field
 
   // For Yes/No tasks: Map of completion dates and their status (true for yes, false for no/skipped)
   final Map<DateTime, bool> completionHistory;
+  final bool isCompleted; // Added for consistency
 
   // Future extensibility:
   // final Map<String, dynamic>? options; // For multiple choice, numerical ranges, etc.
@@ -33,7 +35,9 @@ class Task {
     required this.updatedAt,
     this.dueDate,
     this.reminderTime,
+    required this.notificationsEnabled, // Added to constructor
     required this.completionHistory,
+    required this.isCompleted,
     // this.options,
   });
 
@@ -48,7 +52,9 @@ class Task {
     DateTime? updatedAt,
     DateTime? dueDate,
     TimeOfDay? reminderTime,
+    bool? notificationsEnabled, // Added to copyWith
     Map<DateTime, bool>? completionHistory,
+    bool? isCompleted,
   }) {
     return Task(
       id: id ?? this.id,
@@ -60,7 +66,9 @@ class Task {
       updatedAt: updatedAt ?? this.updatedAt,
       dueDate: dueDate ?? this.dueDate,
       reminderTime: reminderTime ?? this.reminderTime,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled, // Added to copyWith
       completionHistory: completionHistory ?? this.completionHistory,
+      isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
@@ -76,9 +84,11 @@ class Task {
       'updatedAt': Timestamp.fromDate(updatedAt), // Convert DateTime to Timestamp
       'dueDate': dueDate != null ? Timestamp.fromDate(dueDate!) : null,
       // MODIFIED: Force null for reminderTime for this test in toMap
-      'reminderTime': null, 
+      'reminderTime': reminderTime == null ? null : '${reminderTime!.hour}:${reminderTime!.minute}',
+      'notificationsEnabled': notificationsEnabled, // Added to toMap
       // MODIFIED: Force an empty map for completionHistory for this test in toMap
-      'completionHistory': {},
+      'completionHistory': completionHistory.map((key, value) => MapEntry(key.toIso8601String(), value)),
+      'isCompleted': isCompleted,
     };
   }
 
@@ -113,8 +123,10 @@ class Task {
               minute: int.parse(map['reminderTime'].split(':')[1]),
             )
           : null,
+      notificationsEnabled: map['notificationsEnabled'] ?? false, // Added to fromMap
       completionHistory: (map['completionHistory'] as Map<String, dynamic>? ?? {})
           .map((key, value) => MapEntry(DateTime.parse(key), value as bool)),
+      isCompleted: map['isCompleted'] ?? false,
     );
   }
 

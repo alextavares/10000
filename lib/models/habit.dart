@@ -182,7 +182,7 @@ class Habit {
     final dateOnly = DateTime(date.year, date.month, date.day);
     completionHistory[dateOnly] = true;
     totalCompletions++;
-    _updateStreak();
+    updateStreak(); // Directly call public method
   }
 
   /// Marks the habit as not completed for the given date.
@@ -192,13 +192,7 @@ class Habit {
     if (totalCompletions > 0) {
       totalCompletions--;
     }
-    _updateStreak();
-  }
-
-  /// Updates the streak count based on the completion history.
-  /// Private method for internal use.
-  void _updateStreak() {
-    updateStreak();
+    updateStreak(); // Directly call public method
   }
   
   /// Updates the streak count based on the completion history.

@@ -335,4 +335,15 @@ class AppTheme {
     color: Color(0xFF4A148C),
     fontWeight: FontWeight.w500,
   );
+
+  // Method to determine text color based on background color
+  static Color adaptiveTextColor(Color backgroundColor) {
+    // Calculate luminance
+    double luminance = (0.299 * backgroundColor.red +
+            0.587 * backgroundColor.green +
+            0.114 * backgroundColor.blue) /
+        255;
+    // Return black for light backgrounds, white for dark backgrounds
+    return luminance > 0.5 ? Colors.black : Colors.white;
+  }
 }

@@ -13,12 +13,16 @@ class HabitCard extends StatelessWidget {
   /// Callback when the completion status is toggled.
   final Function(bool completed) onToggleCompletion;
 
+  /// Callback when the delete action is triggered.
+  final VoidCallback onDelete; // Added onDelete callback
+
   /// Constructor for HabitCard.
   const HabitCard({
     super.key,
     required this.habit,
     required this.onTap,
     required this.onToggleCompletion,
+    required this.onDelete, // Added onDelete to constructor
   });
 
   @override
@@ -28,6 +32,7 @@ class HabitCard extends StatelessWidget {
 
     return Card(
       elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Added margin
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -72,9 +77,11 @@ class HabitCard extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: AppTheme.textColor,
                           ),
+                          maxLines: 1, // Ensure title doesn't wrap too much
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        if (habit.description != null)
+                        if (habit.description != null && habit.description!.isNotEmpty)
                           Text(
                             habit.description!,
                             style: TextStyle(
@@ -102,21 +109,21 @@ class HabitCard extends StatelessWidget {
               const Divider(),
               const SizedBox(height: 8),
 
-              // Bottom row with time and streak
+              // Bottom row with time, streak, and delete icon
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Time
+                  // Time or Frequency
                   Row(
                     children: [
-                      const Icon(
-                        Icons.access_time,
+                      Icon(
+                        habit.reminderTime != null ? Icons.access_time : Icons.event_repeat,
                         size: 16,
                         color: AppTheme.subtitleColor,
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        _getTimeText(),
+                        _getTimeOrFrequencyText(context),
                         style: TextStyle(
                           fontSize: 14,
                           color: AppTheme.subtitleColor,
@@ -129,22 +136,31 @@ class HabitCard extends StatelessWidget {
                   if (streak > 0)
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.local_fire_department,
                           size: 16,
-                          color: Colors.orange,
+                          color: Colors.orange[700], // Darker orange
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '$streak day${streak == 1 ? '' : 's'}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
-                            color: Colors.orange,
+                            color: Colors.orange[700], // Darker orange
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
+                  
+                  // Delete Button
+                  IconButton(
+                    icon: Icon(Icons.delete_outline, color: Colors.red[700]),
+                    onPressed: onDelete,
+                    tooltip: 'Delete Habit',
+                    padding: EdgeInsets.zero, // Reduce padding to make it more compact
+                    constraints: const BoxConstraints(), // Reduce constraints
+                  ),
                 ],
               ),
             ],
@@ -154,63 +170,79 @@ class HabitCard extends StatelessWidget {
     );
   }
 
-  /// Gets the time text based on the habit's reminder time.
-  String _getTimeText() {
+  String _getTimeOrFrequencyText(BuildContext context) {
     if (habit.reminderTime != null) {
-      final hour = habit.reminderTime!.hour;
-      final minute = habit.reminderTime!.minute;
-      final period = hour < 12 ? 'AM' : 'PM';
-      final displayHour = hour % 12 == 0 ? 12 : hour % 12;
-      final displayMinute = minute.toString().padLeft(2, '0');
-      return '$displayHour:$displayMinute $period';
+      final localizations = MaterialLocalizations.of(context);
+      return localizations.formatTimeOfDay(habit.reminderTime!, alwaysUse24HourFormat: MediaQuery.of(context).alwaysUse24HourFormat);
     } else {
-      return 'No reminder';
+      switch(habit.frequency) {
+        case HabitFrequency.daily:
+          return 'Daily';
+        case HabitFrequency.weekly:
+          // Show selected days for weekly
+          if (habit.daysOfWeek != null && habit.daysOfWeek!.isNotEmpty) {
+            List<String> dayAbbreviations = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            String selectedDays = habit.daysOfWeek!.map((d) => dayAbbreviations[d-1]).join(', ');
+            return 'Weekly ($selectedDays)';
+          }
+          return 'Weekly';
+        case HabitFrequency.monthly:
+           return 'Monthly (Day ${habit.createdAt.day})'; // Example: Monthly (Day 15)
+        case HabitFrequency.custom:
+          // Similar to weekly, show selected days for custom
+          if (habit.daysOfWeek != null && habit.daysOfWeek!.isNotEmpty) {
+            List<String> dayAbbreviations = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            String selectedDays = habit.daysOfWeek!.map((d) => dayAbbreviations[d-1]).join(', ');
+            return 'Custom ($selectedDays)';
+          }
+          return 'Custom';
+        default:
+          return 'No reminder';
+      }
     }
   }
 
-  /// Gets the icon for a habit category.
   IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
       case 'health':
-        return Icons.favorite;
+        return Icons.favorite_border; 
       case 'fitness':
         return Icons.fitness_center;
       case 'productivity':
-        return Icons.work;
+        return Icons.work_outline; 
       case 'education':
-        return Icons.school;
+        return Icons.school_outlined;
       case 'finance':
         return Icons.attach_money;
       case 'social':
-        return Icons.people;
+        return Icons.people_outline; 
       case 'mindfulness':
-        return Icons.self_improvement;
+        return Icons.self_improvement_outlined; 
       case 'creativity':
-        return Icons.brush;
+        return Icons.brush_outlined;
       default:
-        return Icons.star;
+        return Icons.star_border; 
     }
   }
 
-  /// Gets the color for a habit category.
   Color _getCategoryColor(String category) {
     switch (category.toLowerCase()) {
       case 'health':
-        return Colors.red;
+        return Colors.redAccent;
       case 'fitness':
-        return Colors.blue;
+        return Colors.lightBlueAccent;
       case 'productivity':
-        return Colors.green;
+        return Colors.greenAccent;
       case 'education':
-        return Colors.purple;
+        return Colors.purpleAccent;
       case 'finance':
-        return Colors.amber;
+        return Colors.amberAccent;
       case 'social':
-        return Colors.pink;
+        return Colors.pinkAccent;
       case 'mindfulness':
-        return Colors.teal;
+        return Colors.tealAccent;
       case 'creativity':
-        return Colors.orange;
+        return Colors.orangeAccent;
       default:
         return AppTheme.primaryColor;
     }
