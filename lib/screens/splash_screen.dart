@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/theme/app_theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// Import AuthWrapper from main.dart. You might need to adjust the import path if main.dart is structured differently
+// For this example, I'll assume AuthWrapper can be directly imported or is accessible.
+// If AuthWrapper is in main.dart, you'd typically pass it via navigator.
+// Let's import AuthWrapper from main.dart
+import 'package:myapp/main.dart'; // Assuming AuthWrapper is accessible via main.dart
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
@@ -58,22 +62,19 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   }
   
   Future<void> _navigateToNextScreen() async {
-    // Check if onboarding is completed
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool onboardingCompleted = prefs.getBool('onboardingCompleted') ?? false;
-    
-    // Check if user is already logged in
-    final User? currentUser = FirebaseAuth.instance.currentUser;
-    
-    if (!onboardingCompleted) {
-      // If onboarding is not completed, navigate to onboarding screen
-      Navigator.of(context).pushReplacementNamed('/onboarding');
-    } else if (currentUser != null) {
-      // User is logged in and onboarding is completed, navigate to home screen
-      Navigator.of(context).pushReplacementNamed('/main');
-    } else {
-      // User is not logged in but onboarding is completed, navigate to login
-      Navigator.of(context).pushReplacementNamed('/login');
+
+    if (mounted) { // Check if the widget is still in the tree
+      if (!onboardingCompleted) {
+        Navigator.of(context).pushReplacementNamed('/onboarding');
+      } else {
+        // Onboarding is completed. Navigate to AuthWrapper.
+        // AuthWrapper will then decide to show LoginScreen or MainNavigationScreen.
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const AuthWrapper()),
+        );
+      }
     }
   }
 

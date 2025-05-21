@@ -76,13 +76,7 @@ class HomeScreenState extends State<HomeScreen> { // Made public
     if (kDebugMode) {
       print('[HomeScreen] Fetching tasks for selected date: $_selectedDate');
     }
-    final taskService = ServiceProvider.of(context)?.taskService;
-    if (taskService == null) {
-       if (kDebugMode) {
-        print('[HomeScreen] TaskService not available yet.');
-      }
-      return [];
-    }
+    final taskService = ServiceProvider.of(context).taskService;
 
     final allTasks = await taskService.getTasks(); 
     final selectedDateOnly = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
@@ -123,8 +117,7 @@ class HomeScreenState extends State<HomeScreen> { // Made public
     if (kDebugMode) {
       print('[HomeScreen] _handleDeleteTask: Deleting task ID: $taskId');
     }
-    final taskService = ServiceProvider.of(context)?.taskService;
-    if (taskService == null) return;
+    final taskService = ServiceProvider.of(context).taskService;
 
     final confirmDelete = await showDialog<bool>(
       context: context,
@@ -330,7 +323,7 @@ class HomeScreenState extends State<HomeScreen> { // Made public
                       return TaskCard(
                         task: task,
                         onToggleCompletion: (taskId, completed) {
-                          ServiceProvider.of(context)?.taskService.markTaskCompletion(taskId, _selectedDate, completed);
+                          ServiceProvider.of(context).taskService.markTaskCompletion(taskId, _selectedDate, completed);
                           refreshTasks();
                         },
                         onEdit: () => _handleEditTask(task), // Pass edit handler

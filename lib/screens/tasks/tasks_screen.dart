@@ -39,13 +39,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     if (kDebugMode) {
       print('[TasksScreen] _fetchTasks: Attempting to fetch tasks.');
     }
-    final taskService = ServiceProvider.of(context)?.taskService;
-    if (taskService == null) {
-      if (kDebugMode) {
-        print('[TasksScreen] _fetchTasks: TaskService not available yet.');
-      }
-      return []; 
-    }
+    final taskService = ServiceProvider.of(context).taskService;
     final tasks = await taskService.getTasks();
     if (kDebugMode) {
       print('[TasksScreen] _fetchTasks: Fetched ${tasks.length} tasks.');
@@ -82,8 +76,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     if (kDebugMode) {
       print('[TasksScreen] _handleDeleteTask: Deleting task ID: $taskId');
     }
-    final taskService = ServiceProvider.of(context)?.taskService;
-    if (taskService == null) return;
+    final taskService = ServiceProvider.of(context).taskService;
 
     // Optional: Show a confirmation dialog
     final confirmDelete = await showDialog<bool>(
@@ -188,7 +181,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                   if (kDebugMode) {
                     print('[TasksScreen] TaskCard: Toggling completion for task ID: $taskId to $completed');
                   }
-                  ServiceProvider.of(context)?.taskService.markTaskCompletion(taskId, DateTime.now(), completed);
+                  ServiceProvider.of(context).taskService.markTaskCompletion(taskId, DateTime.now(), completed);
                   refreshTasks(); 
                 },
                 onEdit: () => _handleEditTask(task), // Pass edit handler

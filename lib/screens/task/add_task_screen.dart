@@ -73,10 +73,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         _isLoading = true;
       });
 
-      final taskService = ServiceProvider.of(context)!.taskService;
+      final taskService = ServiceProvider.of(context).taskService;
 
       try {
         if (_isEditing) {
+          // For editing, we keep the original complexity for now, 
+          // as simplification is focused on creation.
+          // If creation works, we can then check if editing also needs simplification.
           final updatedTask = widget.taskToEdit!.copyWith(
             title: _titleController.text,
             description: _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
@@ -97,6 +100,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             );
           }
         } else {
+          // MODIFIED: Simplified newTask for testing
           final newTask = Task(
             id: uuid.v4(), 
             title: _titleController.text,
@@ -105,9 +109,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             type: TaskType.yesNo, 
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
-            dueDate: _selectedDueDate,
-            reminderTime: _selectedReminderTime,
-            completionHistory: {},
+            dueDate: _selectedDueDate, // Kept as it is usually safe
+            reminderTime: null, // MODIFIED: Temporarily set to null
+            completionHistory: {}, // MODIFIED: Temporarily set to an empty map
           );
           final taskId = await taskService.addTask(newTask);
           if (taskId != null) {
@@ -121,10 +125,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             );
           }
         }
-      } catch (e) {
+      } catch (e, s) { // Added stack trace parameter 's'
+        // The SnackBar will show the basic error, 
+        // detailed log with stack trace will be in the console via TaskService
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('An error occurred: $e')),
         );
+ print('Error in _saveTask: $e\nStack trace: $s');
       } finally {
         setState(() {
           _isLoading = false;

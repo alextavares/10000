@@ -38,9 +38,10 @@ class TaskService {
         }
       }
       return tasks;
-    } catch (e) {
+    } catch (e, s) { // Added stack trace parameter 's'
       if (kDebugMode) {
         print('[TaskService] Error fetching tasks: $e');
+        print('[TaskService] Stack trace for fetching tasks: $s'); // Added stack trace
       }
       return [];
     }
@@ -60,9 +61,10 @@ class TaskService {
 
       final data = doc.data() as Map<String, dynamic>;
       return Task.fromMap({...data, 'id': doc.id});
-    } catch (e) {
+    } catch (e, s) { // Added stack trace parameter 's'
       if (kDebugMode) {
         print('[TaskService] Error fetching task: $e');
+        print('[TaskService] Stack trace for fetching task: $s'); // Added stack trace
       }
       return null;
     }
@@ -85,9 +87,10 @@ class TaskService {
         print('[TaskService] addTask: Task added with ID: ${docRef.id}');
       }
       return docRef.id;
-    } catch (e) {
+    } catch (e, s) { // MODIFIED: Added stack trace parameter 's'
       if (kDebugMode) {
         print('[TaskService] Error adding task: $e');
+        print('[TaskService] Stack trace for adding task: $s'); // MODIFIED: Added stack trace logging
       }
       return null;
     }
@@ -102,9 +105,10 @@ class TaskService {
 
       await _tasksCollection.doc(task.id).update(task.toMap());
       return true;
-    } catch (e) {
+    } catch (e, s) { // Added stack trace parameter 's'
       if (kDebugMode) {
         print('[TaskService] Error updating task: $e');
+        print('[TaskService] Stack trace for updating task: $s'); // Added stack trace
       }
       return false;
     }
@@ -119,9 +123,10 @@ class TaskService {
 
       await _tasksCollection.doc(taskId).delete();
       return true;
-    } catch (e) {
+    } catch (e, s) { // Added stack trace parameter 's'
       if (kDebugMode) {
         print('[TaskService] Error deleting task: $e');
+        print('[TaskService] Stack trace for deleting task: $s'); // Added stack trace
       }
       return false;
     }
@@ -149,9 +154,10 @@ class TaskService {
       );
 
       return await updateTask(updatedTask);
-    } catch (e) {
+    } catch (e, s) { // Added stack trace parameter 's'
       if (kDebugMode) {
         print('[TaskService] Error marking task completion: $e');
+        print('[TaskService] Stack trace for marking task completion: $s'); // Added stack trace
       }
       return false;
     }
@@ -180,9 +186,10 @@ class TaskService {
         print('[TaskService] getTasksDueToday: Tasks due today count: ${tasksDueToday.length}');
       }
       return tasksDueToday;
-    } catch (e) {
+    } catch (e, s) { // Added stack trace parameter 's'
       if (kDebugMode) {
         print('[TaskService] Error fetching tasks due today: $e');
+        print('[TaskService] Stack trace for fetching tasks due today: $s'); // Added stack trace
       }
       return [];
     }
