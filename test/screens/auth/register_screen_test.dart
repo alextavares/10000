@@ -7,8 +7,10 @@ import 'package:myapp/services/auth_service.dart';
 import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/services/ai_service.dart';
 import 'package:myapp/services/notification_service.dart';
+import 'package:myapp/services/task_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:myapp/models/habit.dart';
+import 'package:myapp/models/task.dart';
 
 // Mock Services
 class MockAuthService implements AuthService {
@@ -192,6 +194,23 @@ class MockHabitService implements HabitService {
   Future<Map<String, dynamic>> getHabitStatistics() async => {};
 }
 
+class MockTaskService implements TaskService {
+  @override
+  Future<String?> addTask(Task task) async => 'mock_task_id';
+  @override
+  Future<bool> deleteTask(String taskId) async => true;
+  @override
+  Future<Task?> getTask(String taskId) async => null;
+  @override
+  Future<List<Task>> getTasks() async => [];
+  @override
+  Future<List<Task>> getTasksDueToday() async => [];
+  @override
+  Future<bool> markTaskCompletion(String taskId, DateTime date, bool completed) async => true;
+  @override
+  Future<bool> updateTask(Task task) async => true;
+}
+
 class MockAIService extends AIService {
   MockAIService() : super(apiKey: 'fake_key');
 }
@@ -204,12 +223,13 @@ void main() {
     return ServiceProvider(
       authService: MockAuthService(),
       habitService: MockHabitService(),
+      taskService: MockTaskService(),
       aiService: MockAIService(),
       notificationService: MockNotificationService(),
       child: MaterialApp(
         home: child,
         routes: {
-          '/login': (context) => const LoginScreen(), 
+          '/login': (context) => const LoginScreen(),
         },
       ),
     );

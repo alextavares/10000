@@ -5,7 +5,8 @@
         android:label="Habit Tracker"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true"> <!-- Added this line to allow HTTP connections -->
+        android:usesCleartextTraffic="true" 
+        android:enableOnBackInvokedCallback="true"> <!-- Added this line -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

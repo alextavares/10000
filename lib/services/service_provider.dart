@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/services/auth_service.dart';
 import 'package:myapp/services/habit_service.dart';
+import 'package:myapp/services/task_service.dart';
 import 'package:myapp/services/ai_service.dart';
 import 'package:myapp/services/notification_service.dart';
 
@@ -12,6 +13,9 @@ class ServiceProvider extends InheritedWidget {
 
   /// Habit service.
   final HabitService habitService;
+
+  /// Task service.
+  final TaskService taskService;
 
   /// AI service.
   final AIService aiService;
@@ -25,6 +29,7 @@ class ServiceProvider extends InheritedWidget {
     required super.child,
     required this.authService,
     required this.habitService,
+    required this.taskService,
     required this.aiService,
     required this.notificationService,
   });
@@ -50,6 +55,9 @@ class ServiceProvider extends InheritedWidget {
         Provider<HabitService>(
           create: (_) => HabitService(),
         ),
+        Provider<TaskService>(
+          create: (_) => TaskService(),
+        ),
         Provider<AIService>(
           create: (_) => AIService(apiKey: aiApiKey),
         ),
@@ -57,11 +65,12 @@ class ServiceProvider extends InheritedWidget {
           create: (_) => NotificationService(),
         ),
       ],
-      child: Consumer4<AuthService, HabitService, AIService, NotificationService>(
-        builder: (context, authService, habitService, aiService, notificationService, _) {
+      child: Consumer5<AuthService, HabitService, TaskService, AIService, NotificationService>(
+        builder: (context, authService, habitService, taskService, aiService, notificationService, _) {
           return ServiceProvider(
             authService: authService,
             habitService: habitService,
+            taskService: taskService,
             aiService: aiService,
             notificationService: notificationService,
             child: child,
@@ -75,6 +84,7 @@ class ServiceProvider extends InheritedWidget {
   bool updateShouldNotify(ServiceProvider oldWidget) {
     return authService != oldWidget.authService ||
         habitService != oldWidget.habitService ||
+        taskService != oldWidget.taskService ||
         aiService != oldWidget.aiService ||
         notificationService != oldWidget.notificationService;
   }
@@ -87,6 +97,9 @@ extension ServiceProviderExtension on BuildContext {
 
   /// Gets the HabitService.
   HabitService get habitService => ServiceProvider.of(this).habitService;
+
+  /// Gets the TaskService.
+  TaskService get taskService => ServiceProvider.of(this).taskService;
 
   /// Gets the AIService.
   AIService get aiService => ServiceProvider.of(this).aiService;

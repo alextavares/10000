@@ -89,68 +89,70 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               opacity: _fadeInAnimation,
               child: ScaleTransition(
                 scale: _scaleAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // App logo
-                    Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor,
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
+                child: SingleChildScrollView( // Added SingleChildScrollView
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // App logo
+                      Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryColor,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.psychology_alt,
+                            size: 80,
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.psychology_alt,
-                          size: 80,
-                          color: Colors.white,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 40),
-                    
-                    // App name
-                    Text(
-                      'HabitAI',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textColor,
-                        letterSpacing: 1.5,
+                      const SizedBox(height: 40),
+                      
+                      // App name
+                      Text(
+                        'HabitAI',
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textColor,
+                          letterSpacing: 1.5,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    // Tagline
-                    Text(
-                      'Transforme seus hábitos com IA',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: AppTheme.subtitleColor,
-                        letterSpacing: 0.5,
+                      const SizedBox(height: 12),
+                      
+                      // Tagline
+                      Text(
+                        'Transforme seus hábitos com IA',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppTheme.subtitleColor,
+                          letterSpacing: 0.5,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 60),
-                    
-                    // Loading indicator
-                    SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-                        strokeWidth: 4,
+                      const SizedBox(height: 60),
+                      
+                      // Loading indicator
+                      SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                          strokeWidth: 4,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ), // Added closing parenthesis for SingleChildScrollView
               ),
             );
           },
