@@ -96,21 +96,25 @@ class _HabitsScreenState extends State<HabitsScreen> {
     setState(() {
       _activelySelectedDayIndexInWeek = index;
       _selectedDate = _weekDays[index];
+      // Here you might want to re-fetch or filter habits based on the new _selectedDate
+      // For now, it just updates the selected date UI
     });
   }
   
   Future<void> _toggleHabitCompletion(Habit habit, bool completed) async {
     if (!mounted) return;
     try {
-      final today = DateTime.now();
+      // Use the _selectedDate for marking completion, not DateTime.now()
+      // This ensures completion is marked for the date visible in the calendar strip
+      final dateToMark = _selectedDate; 
       bool success;
       if (completed) {
-        success = await _habitService.markHabitCompleted(habit.id, today);
+        success = await _habitService.markHabitCompleted(habit.id, dateToMark);
       } else {
-        success = await _habitService.markHabitNotCompleted(habit.id, today);
+        success = await _habitService.markHabitNotCompleted(habit.id, dateToMark);
       }
       if (success) {
-        _fetchHabits(); 
+        _fetchHabits(); // Refresh the habits list to show the updated state
       } else {
         if(mounted){
            ScaffoldMessenger.of(context).showSnackBar(
@@ -186,7 +190,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
     bool isToday = day.year == DateTime.now().year && day.month == DateTime.now().month && day.day == DateTime.now().day;
     bool isActivelySelected = index == _activelySelectedDayIndexInWeek; 
 
-    Color backgroundColor = Theme.of(context).cardColor; // Changed to Theme.of(context).cardColor
+    Color backgroundColor = Theme.of(context).cardColor; 
     Color textColor = AppTheme.subtitleColor;
     FontWeight fontWeight = FontWeight.normal;
     BoxBorder? border;
@@ -240,16 +244,16 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppTheme.backgroundColor, 
-      child: Column(
+    return Scaffold( // Changed Container to Scaffold
+      backgroundColor: AppTheme.backgroundColor,
+      body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical:8.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor, // Changed to Theme.of(context).cardColor
+                color: Theme.of(context).cardColor, 
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [BoxShadow(color:Colors.black.withOpacity(0.1), blurRadius: 5)]
               ),
@@ -267,7 +271,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                       ),
                     )
                   else 
-                    const Center(child: Text("Carregando dias...", style: TextStyle(color: Colors.white))),
+                    const Center(child: Text("Carregando dias...", style: TextStyle(color: AppTheme.textColor))),
                 ],
               ),
             ),
@@ -307,6 +311,24 @@ class _HabitsScreenState extends State<HabitsScreen> {
                             itemCount: _habits.length,
                             itemBuilder: (context, index) {
                               final habit = _habits[index];
+                              // Filter habits to show only those relevant for the _selectedDate
+                              bool showHabit = false;
+                              if (habit.frequency == HabitFrequency.daily) {
+                                showHabit = true;
+                              } else if (habit.frequency == HabitFrequency.weekly || habit.frequency == HabitFrequency.custom) {
+                                if (habit.daysOfWeek != null && habit.daysOfWeek!.contains(_selectedDate.weekday)) {
+                                  showHabit = true;
+                                }
+                              } else if (habit.frequency == HabitFrequency.monthly) {
+                                if (habit.createdAt.day == _selectedDate.day) { // Simple monthly check by day of month
+                                  showHabit = true;
+                                }
+                              }
+                              // Add more complex logic if needed, e.g. for specific dates, etc.
+
+                              if (!showHabit) {
+                                return const SizedBox.shrink(); // Don't show the habit if it's not for today
+                              }
                               return HabitCard(
                                 habit: habit,
                                 onTap: () async {
@@ -331,6 +353,19 @@ class _HabitsScreenState extends State<HabitsScreen> {
                           ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddHabitScreen()),
+          );
+          if (result == true && mounted) { // Check if a habit was added/updated
+            _fetchHabits(); // Refresh the list
+          }
+        },
+        backgroundColor: AppTheme.primaryColor,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
