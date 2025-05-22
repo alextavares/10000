@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart'; 
-import 'package:myapp/models/habit.dart';
+import 'package:myapp/models/habit.dart' as habit_model;
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/services/habit_service.dart'; 
 import 'package:myapp/widgets/habit_card.dart';
@@ -21,7 +21,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
   late int _currentDayIndexInWeek;
   late int _activelySelectedDayIndexInWeek;
 
-  List<Habit> _habits = [];
+  List<habit_model.Habit> _habits = [];
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -96,32 +96,18 @@ class _HabitsScreenState extends State<HabitsScreen> {
     setState(() {
       _activelySelectedDayIndexInWeek = index;
       _selectedDate = _weekDays[index];
-      // Here you might want to re-fetch or filter habits based on the new _selectedDate
-      // For now, it just updates the selected date UI
+      // Re-fetch or filter habits based on the new _selectedDate
+      _fetchHabits(); // Or a more optimized filter if habits are already loaded
     });
   }
   
-  Future<void> _toggleHabitCompletion(Habit habit, bool completed) async {
+  Future<void> _toggleHabitCompletion(habit_model.Habit habit, bool completed) async {
     if (!mounted) return;
     try {
-      // Use the _selectedDate for marking completion, not DateTime.now()
-      // This ensures completion is marked for the date visible in the calendar strip
       final dateToMark = _selectedDate; 
-      bool success;
-      if (completed) {
-        success = await _habitService.markHabitCompleted(habit.id, dateToMark);
-      } else {
-        success = await _habitService.markHabitNotCompleted(habit.id, dateToMark);
-      }
-      if (success) {
-        _fetchHabits(); // Refresh the habits list to show the updated state
-      } else {
-        if(mounted){
-           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to update habit completion.')),
-          );
-        }
-      }
+      await _habitService.markHabitCompletion(habit.id, dateToMark, completed);
+      // No 'success' variable to check, assume success if no exception
+      _fetchHabits(); // Refresh the habits list
     } catch (e) {
       print("Error toggling habit completion: $e");
       if(mounted){
@@ -156,20 +142,13 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
     if (confirm == true) {
         try {
-            final success = await _habitService.deleteHabit(habitId);
-            if (success) {
-                _fetchHabits(); 
-                 if(mounted){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Habit deleted successfully.')),
-                    );
-                }
-            } else {
-                 if(mounted){
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to delete habit.')),
-                    );
-                }
+            await _habitService.deleteHabit(habitId);
+            // No 'success' variable to check, assume success if no exception
+            _fetchHabits(); 
+            if(mounted){
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Habit deleted successfully.')),
+                );
             }
         } catch (e) {
             print("Error deleting habit: $e");
@@ -244,7 +223,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( // Changed Container to Scaffold
+    return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Column(
         children: [
@@ -311,36 +290,38 @@ class _HabitsScreenState extends State<HabitsScreen> {
                             itemCount: _habits.length,
                             itemBuilder: (context, index) {
                               final habit = _habits[index];
-                              // Filter habits to show only those relevant for the _selectedDate
                               bool showHabit = false;
-                              if (habit.frequency == HabitFrequency.daily) {
+                              if (habit.frequency == habit_model.HabitFrequency.daily) {
                                 showHabit = true;
-                              } else if (habit.frequency == HabitFrequency.weekly || habit.frequency == HabitFrequency.custom) {
+                              } else if (habit.frequency == habit_model.HabitFrequency.weekly || habit.frequency == habit_model.HabitFrequency.custom) {
                                 if (habit.daysOfWeek != null && habit.daysOfWeek!.contains(_selectedDate.weekday)) {
                                   showHabit = true;
                                 }
-                              } else if (habit.frequency == HabitFrequency.monthly) {
-                                if (habit.createdAt.day == _selectedDate.day) { // Simple monthly check by day of month
+                              } else if (habit.frequency == habit_model.HabitFrequency.monthly) {
+                                if (habit.createdAt.day == _selectedDate.day) {
                                   showHabit = true;
                                 }
                               }
-                              // Add more complex logic if needed, e.g. for specific dates, etc.
 
                               if (!showHabit) {
-                                return const SizedBox.shrink(); // Don't show the habit if it's not for today
+                                return const SizedBox.shrink();
                               }
                               return HabitCard(
                                 habit: habit,
                                 onTap: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddHabitScreen(habitToEdit: habit),
-                                    ),
-                                  );
-                                  if (result == true && mounted) {
-                                    _fetchHabits(); 
-                                  }
+                                  // Edit functionality needs to be properly designed.
+                                  // For now, navigating to AddHabitScreen without habitToEdit or 
+                                  // creating a dedicated EditHabitScreen.
+                                  // final result = await Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => const AddHabitScreen(/* habitToEdit: habit */),
+                                  //   ),
+                                  // );
+                                  // if (result == true && mounted) {
+                                  //   _fetchHabits(); 
+                                  // }
+                                  print("Edit habit tapped: ${habit.title}"); // Placeholder for edit
                                 },
                                 onToggleCompletion: (completed) {
                                   _toggleHabitCompletion(habit, completed);
@@ -360,8 +341,10 @@ class _HabitsScreenState extends State<HabitsScreen> {
             context,
             MaterialPageRoute(builder: (context) => const AddHabitScreen()),
           );
-          if (result == true && mounted) { // Check if a habit was added/updated
-            _fetchHabits(); // Refresh the list
+          // Assuming AddHabitScreen or its flow might return true if a habit was successfully added.
+          // This can be made more robust by returning the actual habit object or a specific success status.
+          if (result == true || result == null) { // Refresh if true (explicit success) or null (navigated back)
+            _fetchHabits(); 
           }
         },
         backgroundColor: AppTheme.primaryColor,

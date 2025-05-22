@@ -4,6 +4,7 @@ import 'package:myapp/models/task.dart';
 import 'package:myapp/screens/task/add_task_screen.dart'; // Import AddTaskScreen
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/widgets/task_card.dart'; // Import the new TaskCard
+import 'package:myapp/screens/habit/add_habit_screen.dart'; // Added import
 
 class TasksScreen extends StatefulWidget {
   final TabController tabController; // Accept TabController
@@ -39,6 +40,8 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     if (kDebugMode) {
       print('[TasksScreen] _fetchTasks: Attempting to fetch tasks.');
     }
+    // Ensure context is valid and mounted before accessing ServiceProvider
+    if (!mounted) return [];
     final taskService = ServiceProvider.of(context).taskService;
     final tasks = await taskService.getTasks();
     if (kDebugMode) {
@@ -56,29 +59,28 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     });
   }
 
-  // Handler for editing a task
   void _handleEditTask(Task task) async {
     if (kDebugMode) {
       print('[TasksScreen] _handleEditTask: Editing task ID: ${task.id}');
     }
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AddTaskScreen(taskToEdit: task), // Pass the task to edit
+        builder: (context) => AddTaskScreen(taskToEdit: task),
       ),
     );
     if (result == true) {
-      refreshTasks(); // Refresh if the task was updated
+      refreshTasks();
     }
   }
 
-  // Handler for deleting a task
   void _handleDeleteTask(String taskId) async {
     if (kDebugMode) {
       print('[TasksScreen] _handleDeleteTask: Deleting task ID: $taskId');
     }
+    // Ensure context is valid and mounted
+    if (!mounted) return;
     final taskService = ServiceProvider.of(context).taskService;
 
-    // Optional: Show a confirmation dialog
     final confirmDelete = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -101,6 +103,8 @@ class TasksScreenState extends State<TasksScreen> { // Made public
 
     if (confirmDelete == true) {
       final success = await taskService.deleteTask(taskId);
+      // Ensure context is valid and mounted for ScaffoldMessenger
+      if (!mounted) return;
       if (success) {
         refreshTasks();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -112,6 +116,68 @@ class TasksScreenState extends State<TasksScreen> { // Made public
         );
       }
     }
+  }
+
+  void _showAddTaskOptions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey[900], // Dark background for the modal
+      shape: const RoundedRectangleBorder( // Optional: to get rounded top corners
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.fitness_center, color: Colors.pinkAccent[100]), // Adjusted icon color
+                title: const Text('Hábito', style: TextStyle(color: Colors.white)),
+                subtitle: Text('Atividade que se repete ao longo do tempo. Possui rastreamento detalhado e estatísticas.', style: TextStyle(color: Colors.grey[400])),
+                onTap: () {
+                  Navigator.of(context).pop(); // Close the modal
+                  if (kDebugMode) {
+                    print('[TasksScreen] _showAddTaskOptions: Navigating to AddHabitScreen.');
+                  }
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddHabitScreen())); // Navigate to AddHabitScreen
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.repeat, color: Colors.blueAccent[100]), // Adjusted icon color
+                title: const Text('Tarefa recorrente', style: TextStyle(color: Colors.white)),
+                subtitle: Text('Atividade que se repete ao longo do tempo, sem rastreamento ou estatísticas.', style: TextStyle(color: Colors.grey[400])),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  if (kDebugMode) {
+                    print('[TasksScreen] _showAddTaskOptions: Navigating to Add Recurring Task (Not Implemented).');
+                  }
+                  // TODO: Navigate to the screen for adding a recurring task
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Navegação para Adicionar Tarefa Recorrente pendente.')),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.check_circle_outline, color: Colors.greenAccent[100]), // Adjusted icon color
+                title: const Text('Tarefa', style: TextStyle(color: Colors.white)),
+                subtitle: Text('Atividade de instância única sem rastreamento ao longo do tempo.', style: TextStyle(color: Colors.grey[400])),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  if (kDebugMode) {
+                    print('[TasksScreen] _showAddTaskOptions: Navigating to AddTaskScreen.');
+                  }
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const AddTaskScreen()),
+                  );
+                  if (result == true) {
+                    refreshTasks();
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -127,13 +193,26 @@ class TasksScreenState extends State<TasksScreen> { // Made public
             controller: widget.tabController, 
             children: [
               _buildSimpleTasksView(),
-              _buildEmptyTasksView(), 
+              _buildRecurringTasksView(), // Changed to a dedicated view for recurring tasks
             ],
           ),
           Positioned(
             left: 16,
             bottom: 76, 
             child: _buildPremiumButton(),
+          ),
+          Positioned(
+            right: 24, // Adjusted for better visual balance with bottom nav
+            bottom: 90, // Adjusted to be above the navigation bar if present
+            child: FloatingActionButton(
+              onPressed: () {
+                _showAddTaskOptions(context);
+              },
+              backgroundColor: const Color(0xFFE91E63), // Pink color from the image
+              foregroundColor: Colors.white,
+              heroTag: 'tasksFab', // Icon color
+              child: const Icon(Icons.add), // Added a unique heroTag
+            ),
           ),
         ],
       ),
@@ -162,16 +241,19 @@ class TasksScreenState extends State<TasksScreen> { // Made public
           return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           if (kDebugMode) {
-            print('[TasksScreen] FutureBuilder: No tasks found or data is empty.');
+            print('[TasksScreen] FutureBuilder: No tasks found or data is empty for simple tasks.');
           }
-          return _buildEmptyTasksView();
+          return _buildEmptyState(
+            message: 'Sem tarefas simples pendentes',
+            subMessage: 'Adicione algumas tarefas para começar!',
+          );
         } else {
           final tasks = snapshot.data!;
           if (kDebugMode) {
             print('[TasksScreen] FutureBuilder: Displaying ${tasks.length} tasks.');
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 80.0), // Added bottom padding
             itemCount: tasks.length,
             itemBuilder: (context, index) {
               final task = tasks[index];
@@ -184,8 +266,8 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                   ServiceProvider.of(context).taskService.markTaskCompletion(taskId, DateTime.now(), completed);
                   refreshTasks(); 
                 },
-                onEdit: () => _handleEditTask(task), // Pass edit handler
-                onDelete: () => _handleDeleteTask(task.id), // Pass delete handler
+                onEdit: () => _handleEditTask(task),
+                onDelete: () => _handleDeleteTask(task.id),
               );
             },
           );
@@ -193,50 +275,68 @@ class TasksScreenState extends State<TasksScreen> { // Made public
       },
     );
   }
-
-  Widget _buildEmptyTasksView() {
+  
+  // Dedicated view for recurring tasks, can be expanded later
+  Widget _buildRecurringTasksView() {
     if (kDebugMode) {
-      print('[TasksScreen] _buildEmptyTasksView: Building empty tasks view.');
+      print('[TasksScreen] _buildRecurringTasksView: Building recurring tasks view (currently empty).');
     }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Image.asset(
-          'assets/images/calendar_icon.png',
-          height: 100,
-          width: 100,
-          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-            if (kDebugMode) {
-              print('[TasksScreen] _buildEmptyTasksView: Error loading calendar icon: $error');
-            }
-            return const Icon(Icons.error_outline, color: Colors.red, size: 50);
-          },
-        ),
-        const SizedBox(height: 20),
-        const Text(
-          'Sem tarefas pendentes',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-        const SizedBox(height: 10),
-        const Text(
-          'Você pode adicionar quantos quiser',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
-      ],
+    // For now, shows the same empty state, but can be customized
+    return _buildEmptyState(
+      message: 'Sem tarefas recorrentes pendentes',
+      subMessage: 'Adicione suas tarefas recorrentes aqui.',
     );
   }
+
+  Widget _buildEmptyState({required String message, required String subMessage}) {
+    if (kDebugMode) {
+      print('[TasksScreen] _buildEmptyState: Building empty state: $message');
+    }
+    return Center( // Ensures the content is centered
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Image.asset(
+            'assets/images/calendar_icon.png', // Make sure this asset exists
+            height: 100,
+            width: 100,
+            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+              if (kDebugMode) {
+                print('[TasksScreen] _buildEmptyState: Error loading calendar icon: $error');
+              }
+              return const Icon(Icons.error_outline, color: Colors.red, size: 50);
+            },
+          ),
+          const SizedBox(height: 20),
+          Text(
+            message,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            subMessage,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildPremiumButton() {
     return ElevatedButton.icon(
       onPressed: () {
+        if (kDebugMode) {
+          print('[TasksScreen] Premium button pressed.');
+        }
         // TODO: Implement premium functionality or navigation
       },
-      icon: const Icon(Icons.check_circle, color: Colors.white),
+      icon: const Icon(Icons.check_circle, color: Colors.white), // Pink icon from image
       label: const Text('Premium', style: TextStyle(color: Colors.white)),
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFE91E63).withOpacity(0.8),
+        backgroundColor: const Color(0xFFE91E63).withOpacity(0.8), // Pink color
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),

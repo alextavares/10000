@@ -1,270 +1,113 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:myapp/models/habit.dart';
+import 'package:flutter/material.dart';
+import 'package:myapp/models/habit.dart' as habit_model; // Use alias for the entire model file
+import 'package:myapp/screens/habit/add_habit_frequency_screen.dart' show AddHabitCycle;
+import 'package:uuid/uuid.dart';
 
-/// Service for handling habit data storage and retrieval.
 class HabitService {
-  /// Firestore instance.
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final List<habit_model.Habit> _habits = [];
+  final _uuid = const Uuid();
 
-  /// Firebase Auth instance.
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  /// Gets the current user ID.
-  String? get _userId => _auth.currentUser?.uid;
-
-  /// Gets the collection reference for habits.
-  CollectionReference get _habitsCollection => 
-      _firestore.collection('users').doc(_userId).collection('habits');
-
-  /// Fetches all habits for the current user.
-  Future<List<Habit>> getHabits() async {
-    try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final snapshot = await _habitsCollection.get();
-      return snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return Habit.fromMap({...data, 'id': doc.id});
-      }).toList();
-    } catch (e) {
-      print('Error fetching habits: $e');
-      return [];
-    }
+  Future<List<habit_model.Habit>> getHabits() async {
+    return List<habit_model.Habit>.from(_habits);
   }
 
-  /// Fetches a single habit by ID.
-  Future<Habit?> getHabit(String habitId) async {
+  Future<void> addHabit({
+    required String title,
+    required String categoryName,
+    required IconData categoryIcon,
+    required Color categoryColor,
+    required AddHabitCycle frequencyEnumFromScreen, 
+    required DateTime startDate,
+    List<int>? daysOfWeek, 
+    DateTime? targetDate,
+    TimeOfDay? reminderTime,
+    bool notificationsEnabled = false,
+    String priority = 'Normal',
+    String? description,
+  }) async {
+    habit_model.HabitFrequency modelFrequency;
+    List<int>? effectiveDaysOfWeek = daysOfWeek;
+
+    switch (frequencyEnumFromScreen) {
+      case AddHabitCycle.daily:
+        modelFrequency = habit_model.HabitFrequency.daily;
+        break;
+      case AddHabitCycle.specificWeekDays:
+        modelFrequency = habit_model.HabitFrequency.weekly;
+        break;
+      case AddHabitCycle.specificMonthDays:
+        modelFrequency = habit_model.HabitFrequency.monthly;
+        break;
+      case AddHabitCycle.specificYearDays:
+      case AddHabitCycle.sometimesPerPeriod:
+      case AddHabitCycle.repeat:
+      default:
+        modelFrequency = habit_model.HabitFrequency.custom;
+        break;
+    }
+
+    final newHabit = habit_model.Habit(
+      id: _uuid.v4(),
+      title: title,
+      description: description,
+      category: categoryName,
+      icon: categoryIcon,
+      color: categoryColor,
+      frequency: modelFrequency,
+      daysOfWeek: effectiveDaysOfWeek,
+      reminderTime: reminderTime,
+      notificationsEnabled: notificationsEnabled,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      streak: 0,
+      longestStreak: 0,
+      totalCompletions: 0,
+      completionHistory: {},
+    );
+
+    _habits.add(newHabit);
+    debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}');
+    debugPrint('Total habits: ${_habits.length}');
+  }
+
+  Future<habit_model.Habit?> getHabitById(String id) async {
     try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final doc = await _habitsCollection.doc(habitId).get();
-      if (!doc.exists) {
-        return null;
-      }
-
-      final data = doc.data() as Map<String, dynamic>;
-      return Habit.fromMap({...data, 'id': doc.id});
+      return _habits.firstWhere((habit) => habit.id == id);
     } catch (e) {
-      print('Error fetching habit: $e');
       return null;
     }
   }
 
-  /// Adds a new habit.
-  Future<String?> addHabit(Habit habit) async {
-    try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final docRef = await _habitsCollection.add(habit.toMap());
-      return docRef.id;
-    } catch (e) {
-      print('Error adding habit: $e');
-      return null;
+  Future<void> updateHabit(habit_model.Habit habitToUpdate) async {
+    final index = _habits.indexWhere((h) => h.id == habitToUpdate.id);
+    if (index != -1) {
+      _habits[index] = habitToUpdate.copyWith(updatedAt: DateTime.now());
+      debugPrint('Habit updated: ${habitToUpdate.title}');
+    } else {
+      debugPrint('Habit with id ${habitToUpdate.id} not found for update.');
     }
   }
 
-  /// Updates an existing habit.
-  Future<bool> updateHabit(Habit habit) async {
-    try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
-      }
-
-      await _habitsCollection.doc(habit.id).update(habit.toMap());
-      return true;
-    } catch (e) {
-      print('Error updating habit: $e');
-      return false;
+  Future<void> deleteHabit(String id) async {
+    final initialLength = _habits.length;
+    _habits.removeWhere((habit) => habit.id == id);
+    if (_habits.length < initialLength) {
+      debugPrint('Habit deleted: $id');
+    } else {
+      debugPrint('Habit with id $id not found for deletion.');
     }
   }
 
-  /// Deletes a habit.
-  Future<bool> deleteHabit(String habitId) async {
-    try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
+  Future<void> markHabitCompletion(String habitId, DateTime date, bool completed) async {
+    final habit = await getHabitById(habitId);
+    if (habit != null) {
+      if (completed) {
+        habit.markCompleted(date);
+      } else {
+        habit.markNotCompleted(date);
       }
-
-      await _habitsCollection.doc(habitId).delete();
-      return true;
-    } catch (e) {
-      print('Error deleting habit: $e');
-      return false;
-    }
-  }
-
-  /// Marks a habit as completed for the given date.
-  Future<bool> markHabitCompleted(String habitId, DateTime date) async {
-    try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final habit = await getHabit(habitId);
-      if (habit == null) {
-        return false;
-      }
-
-      // Create a copy of the habit with updated completion history
-      final dateOnly = DateTime(date.year, date.month, date.day);
-      final updatedCompletionHistory = Map<DateTime, bool>.from(habit.completionHistory);
-      updatedCompletionHistory[dateOnly] = true;
-
-      final updatedHabit = habit.copyWith(
-        completionHistory: updatedCompletionHistory,
-        totalCompletions: habit.totalCompletions + 1,
-        updatedAt: DateTime.now(),
-      );
-
-      // Update streak
-      updatedHabit.updateStreak();
-
-      return await updateHabit(updatedHabit);
-    } catch (e) {
-      print('Error marking habit as completed: $e');
-      return false;
-    }
-  }
-
-  /// Marks a habit as not completed for the given date.
-  Future<bool> markHabitNotCompleted(String habitId, DateTime date) async {
-    try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final habit = await getHabit(habitId);
-      if (habit == null) {
-        return false;
-      }
-
-      // Create a copy of the habit with updated completion history
-      final dateOnly = DateTime(date.year, date.month, date.day);
-      final updatedCompletionHistory = Map<DateTime, bool>.from(habit.completionHistory);
-      updatedCompletionHistory[dateOnly] = false;
-
-      final updatedHabit = habit.copyWith(
-        completionHistory: updatedCompletionHistory,
-        totalCompletions: habit.totalCompletions > 0 ? habit.totalCompletions - 1 : 0,
-        updatedAt: DateTime.now(),
-      );
-
-      // Update streak
-      updatedHabit.updateStreak();
-
-      return await updateHabit(updatedHabit);
-    } catch (e) {
-      print('Error marking habit as not completed: $e');
-      return false;
-    }
-  }
-
-  /// Gets habits due today.
-  Future<List<Habit>> getHabitsDueToday() async {
-    try {
-      final habits = await getHabits();
-      return habits.where((habit) => habit.isDueToday()).toList();
-    } catch (e) {
-      print('Error fetching habits due today: $e');
-      return [];
-    }
-  }
-
-  /// Gets habits by category.
-  Future<List<Habit>> getHabitsByCategory(String category) async {
-    try {
-      if (_userId == null) {
-        throw Exception('User not authenticated');
-      }
-
-      final snapshot = await _habitsCollection
-          .where('category', isEqualTo: category)
-          .get();
-
-      return snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return Habit.fromMap({...data, 'id': doc.id});
-      }).toList();
-    } catch (e) {
-      print('Error fetching habits by category: $e');
-      return [];
-    }
-  }
-
-  /// Gets all unique categories from the user's habits.
-  Future<List<String>> getCategories() async {
-    try {
-      final habits = await getHabits();
-      final categories = habits.map((habit) => habit.category).toSet().toList();
-      return categories;
-    } catch (e) {
-      print('Error fetching categories: $e');
-      return [];
-    }
-  }
-
-  /// Gets the user's habit statistics.
-  Future<Map<String, dynamic>> getHabitStatistics() async {
-    try {
-      final habits = await getHabits();
-      
-      if (habits.isEmpty) {
-        return {
-          'totalHabits': 0,
-          'completedToday': 0,
-          'averageCompletionRate': 0.0,
-          'longestStreak': 0,
-          'totalCompletions': 0,
-        };
-      }
-
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      
-      int completedToday = 0;
-      int totalCompletions = 0;
-      int longestStreak = 0;
-      double totalCompletionRate = 0.0;
-
-      for (final habit in habits) {
-        if (habit.isCompletedToday()) {
-          completedToday++;
-        }
-        
-        totalCompletions += habit.totalCompletions;
-        
-        if (habit.longestStreak > longestStreak) {
-          longestStreak = habit.longestStreak;
-        }
-        
-        totalCompletionRate += habit.getCompletionRate();
-      }
-
-      final averageCompletionRate = totalCompletionRate / habits.length;
-
-      return {
-        'totalHabits': habits.length,
-        'completedToday': completedToday,
-        'averageCompletionRate': averageCompletionRate,
-        'longestStreak': longestStreak,
-        'totalCompletions': totalCompletions,
-      };
-    } catch (e) {
-      print('Error calculating habit statistics: $e');
-      return {
-        'totalHabits': 0,
-        'completedToday': 0,
-        'averageCompletionRate': 0.0,
-        'longestStreak': 0,
-        'totalCompletions': 0,
-      };
+      await updateHabit(habit);
+      debugPrint('Habit $habitId completion for $date marked as $completed');
     }
   }
 }
