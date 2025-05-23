@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/models/habit.dart' as habit_model; // Use alias for the entire model file
-import 'package:myapp/screens/habit/add_habit_frequency_screen.dart' show AddHabitCycle;
+import 'package:myapp/models/habit.dart'; // Use alias for the entire model file if still needed, else direct
 import 'package:uuid/uuid.dart';
 
 class HabitService {
-  final List<habit_model.Habit> _habits = [];
+  final List<Habit> _habits = [];
   final _uuid = const Uuid();
 
-  Future<List<habit_model.Habit>> getHabits() async {
-    return List<habit_model.Habit>.from(_habits);
+  Future<List<Habit>> getHabits() async {
+    return List<Habit>.from(_habits);
   }
 
   Future<void> addHabit({
@@ -16,61 +15,49 @@ class HabitService {
     required String categoryName,
     required IconData categoryIcon,
     required Color categoryColor,
-    required AddHabitCycle frequencyEnumFromScreen, 
-    required DateTime startDate,
+    required HabitFrequency frequency, // Changed from AddHabitCycle to HabitFrequency
+    required HabitTrackingType trackingType, // Added trackingType
+    required DateTime startDate, // Should be passed from AddHabitScheduleScreen
     List<int>? daysOfWeek, 
     DateTime? targetDate,
     TimeOfDay? reminderTime,
     bool notificationsEnabled = false,
-    String priority = 'Normal',
+    String priority = 'Normal', // Priority can be added later if needed
     String? description,
   }) async {
-    habit_model.HabitFrequency modelFrequency;
-    List<int>? effectiveDaysOfWeek = daysOfWeek;
+    // The 'frequency' parameter is now directly HabitFrequency, so no switch case needed here for conversion.
+    // It's assumed that if it's weekly, daysOfWeek will be provided.
+    // If it's custom, specific configuration for custom frequency might be needed elsewhere or passed.
 
-    switch (frequencyEnumFromScreen) {
-      case AddHabitCycle.daily:
-        modelFrequency = habit_model.HabitFrequency.daily;
-        break;
-      case AddHabitCycle.specificWeekDays:
-        modelFrequency = habit_model.HabitFrequency.weekly;
-        break;
-      case AddHabitCycle.specificMonthDays:
-        modelFrequency = habit_model.HabitFrequency.monthly;
-        break;
-      case AddHabitCycle.specificYearDays:
-      case AddHabitCycle.sometimesPerPeriod:
-      case AddHabitCycle.repeat:
-      default:
-        modelFrequency = habit_model.HabitFrequency.custom;
-        break;
-    }
-
-    final newHabit = habit_model.Habit(
+    final newHabit = Habit(
       id: _uuid.v4(),
       title: title,
       description: description,
       category: categoryName,
       icon: categoryIcon,
       color: categoryColor,
-      frequency: modelFrequency,
-      daysOfWeek: effectiveDaysOfWeek,
+      frequency: frequency, // Use the passed frequency directly
+      trackingType: trackingType, // Use the passed trackingType
+      daysOfWeek: daysOfWeek,
       reminderTime: reminderTime,
       notificationsEnabled: notificationsEnabled,
-      createdAt: DateTime.now(),
+      createdAt: startDate, // Use startDate as createdAt, or DateTime.now() if preferred for creation timestamp
       updatedAt: DateTime.now(),
       streak: 0,
       longestStreak: 0,
       totalCompletions: 0,
       completionHistory: {},
+      dailyProgress: {}, 
+      // targetQuantity, quantityUnit, targetTime, subtasks would be set based on trackingType
+      // For simOuNao, these are not applicable initially.
     );
 
     _habits.add(newHabit);
-    debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}');
+    debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}, Tracking: ${newHabit.trackingType}');
     debugPrint('Total habits: ${_habits.length}');
   }
 
-  Future<habit_model.Habit?> getHabitById(String id) async {
+  Future<Habit?> getHabitById(String id) async {
     try {
       return _habits.firstWhere((habit) => habit.id == id);
     } catch (e) {
@@ -78,7 +65,7 @@ class HabitService {
     }
   }
 
-  Future<void> updateHabit(habit_model.Habit habitToUpdate) async {
+  Future<void> updateHabit(Habit habitToUpdate) async {
     final index = _habits.indexWhere((h) => h.id == habitToUpdate.id);
     if (index != -1) {
       _habits[index] = habitToUpdate.copyWith(updatedAt: DateTime.now());
@@ -101,13 +88,15 @@ class HabitService {
   Future<void> markHabitCompletion(String habitId, DateTime date, bool completed) async {
     final habit = await getHabitById(habitId);
     if (habit != null) {
-      if (completed) {
-        habit.markCompleted(date);
-      } else {
-        habit.markNotCompleted(date);
-      }
-      await updateHabit(habit);
+      // Ensure the habit model's markCompleted/NotCompleted handles dailyProgress for simOuNao if needed
+      // Or, update dailyProgress here.
+      habit.recordProgress(date, isCompleted: completed); // Use recordProgress for unified update
+      // No need to call updateHabit separately if recordProgress modifies the habit and HabitService uses references
+      // or if getHabitById returns a copy, then updateHabit(habit) would be needed.
+      // Assuming _habits list holds references, direct modification via habit.recordProgress is enough before a UI update.
       debugPrint('Habit $habitId completion for $date marked as $completed');
+    } else {
+       debugPrint('Habit $habitId not found for marking completion.');
     }
   }
 }

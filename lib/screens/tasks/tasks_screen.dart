@@ -201,19 +201,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
             bottom: 76, 
             child: _buildPremiumButton(),
           ),
-          Positioned(
-            right: 24, // Adjusted for better visual balance with bottom nav
-            bottom: 90, // Adjusted to be above the navigation bar if present
-            child: FloatingActionButton(
-              onPressed: () {
-                _showAddTaskOptions(context);
-              },
-              backgroundColor: const Color(0xFFE91E63), // Pink color from the image
-              foregroundColor: Colors.white,
-              heroTag: 'tasksFab', // Icon color
-              child: const Icon(Icons.add), // Added a unique heroTag
-            ),
-          ),
+          // FloatingActionButton REMOVED from here
         ],
       ),
     );
@@ -253,7 +241,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
             print('[TasksScreen] FutureBuilder: Displaying ${tasks.length} tasks.');
           }
           return ListView.builder(
-            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 80.0), // Added bottom padding
+            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 150.0), // Increased bottom padding to prevent overlap
             itemCount: tasks.length,
             itemBuilder: (context, index) {
               final task = tasks[index];
@@ -324,22 +312,36 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     );
   }
 
-
   Widget _buildPremiumButton() {
-    return ElevatedButton.icon(
-      onPressed: () {
-        if (kDebugMode) {
-          print('[TasksScreen] Premium button pressed.');
-        }
-        // TODO: Implement premium functionality or navigation
-      },
-      icon: const Icon(Icons.check_circle, color: Colors.white), // Pink icon from image
-      label: const Text('Premium', style: TextStyle(color: Colors.white)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFE91E63).withOpacity(0.8), // Pink color
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFE91E63).withOpacity(0.8), // Pink color
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            if (kDebugMode) {
+              print('[TasksScreen] Premium button pressed.');
+            }
+            // TODO: Implement premium functionality or navigation
+          },
           borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.check_circle, color: Colors.white, size: 18),
+                SizedBox(width: 8),
+                Text(
+                  'Premium',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

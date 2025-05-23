@@ -1,44 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/habit/add_habit_details_screen.dart';
+import 'package:myapp/models/habit.dart'; // For HabitFrequency and HabitTrackingType
+import 'add_habit_schedule_screen.dart'; // The next screen in the flow
 
 class AddHabitFrequencyScreen extends StatefulWidget {
   final String selectedCategoryName;
   final IconData selectedCategoryIcon;
   final Color selectedCategoryColor;
+  final String habitTitle;
+  final String? habitDescription;
+  final HabitTrackingType selectedTrackingType;
 
   const AddHabitFrequencyScreen({
     super.key,
     required this.selectedCategoryName,
     required this.selectedCategoryIcon,
     required this.selectedCategoryColor,
+    required this.habitTitle,
+    this.habitDescription,
+    required this.selectedTrackingType,
   });
 
   @override
   State<AddHabitFrequencyScreen> createState() => _AddHabitFrequencyScreenState();
 }
 
-// Renaming to avoid conflict with HabitFrequency in habit.dart model if it's different
-// Consider centralizing this enum if it's meant to be the same.
-enum AddHabitCycle {
-  daily,
-  specificWeekDays,
-  specificMonthDays,
-  specificYearDays,
-  sometimesPerPeriod,
-  repeat
-}
-
 class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
-  AddHabitCycle? _selectedCycle = AddHabitCycle.daily; // Default selection
+  HabitFrequency? _selectedFrequency = HabitFrequency.daily; // Default selection
 
-  final Map<AddHabitCycle, String> _cycleOptions = {
-    AddHabitCycle.daily: 'Todos os dias',
-    AddHabitCycle.specificWeekDays: 'Alguns dias da semana',
-    AddHabitCycle.specificMonthDays: 'Dias específicos do mês',
-    AddHabitCycle.specificYearDays: 'Dias específicos do ano',
-    AddHabitCycle.sometimesPerPeriod: 'Algumas vezes por período',
-    AddHabitCycle.repeat: 'Repetir',
+  // Options now use HabitFrequency directly
+  final Map<HabitFrequency, String> _frequencyOptions = {
+    HabitFrequency.daily: 'Todos os dias',
+    HabitFrequency.weekly: 'Alguns dias da semana', // Maps to weekly
+    HabitFrequency.monthly: 'Dias específicos do mês', // Maps to monthly
+    // For more specific custom cycles like 'specificYearDays', 'sometimesPerPeriod', 'repeat'
+    // they would map to HabitFrequency.custom and require further UI for configuration.
+    // For simplicity in this step, we will map them to custom or offer a subset.
+    // Let's assume 'custom' will cover these for now, and details handled in AddHabitScheduleScreen or a dedicated screen.
+    HabitFrequency.custom: 'Outra frequência (personalizada)', 
   };
+
+  // Placeholder for days of the week if weekly is selected. This would typically be handled by a multi-selector UI.
+  final List<int> _selectedWeekDays = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Print received data for verification
+    print("AddHabitFrequencyScreen received: category=${widget.selectedCategoryName}, title=${widget.habitTitle}, trackingType=${widget.selectedTrackingType}");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,26 +68,75 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: _cycleOptions.entries.map((entry) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: RadioListTile<AddHabitCycle>(
-                title: Text(entry.value, style: const TextStyle(color: Colors.white)),
-                value: entry.key,
-                groupValue: _selectedCycle,
-                onChanged: (AddHabitCycle? value) {
-                  setState(() {
-                    _selectedCycle = value;
-                  });
-                },
-                activeColor: Colors.pinkAccent,
-                controlAffinity: ListTileControlAffinity.trailing,
-                tileColor: Colors.grey[850],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: ListView( // Changed to ListView to accommodate potential week day selector
+          children: [
+            ..._frequencyOptions.entries.map((entry) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: RadioListTile<HabitFrequency>(
+                  title: Text(entry.value, style: const TextStyle(color: Colors.white)),
+                  value: entry.key,
+                  groupValue: _selectedFrequency,
+                  onChanged: (HabitFrequency? value) {
+                    setState(() {
+                      _selectedFrequency = value;
+                      if (_selectedFrequency != HabitFrequency.weekly) {
+                        _selectedWeekDays.clear(); // Clear weekdays if not weekly
+                      }
+                    });
+                  },
+                  activeColor: Colors.pinkAccent,
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  tileColor: Colors.grey[850],
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              );
+            }),
+
+            // Simple day selector for weekly frequency (can be improved)
+            if (_selectedFrequency == HabitFrequency.weekly)
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Selecione os dias da semana:', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: List.generate(7, (index) {
+                        final dayIndex = index + 1; // 1 for Monday, 7 for Sunday
+                        final dayName = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][index];
+                        final isSelected = _selectedWeekDays.contains(dayIndex);
+                        return ChoiceChip(
+                          label: Text(dayName),
+                          selected: isSelected,
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedWeekDays.add(dayIndex);
+                              } else {
+                                _selectedWeekDays.remove(dayIndex);
+                              }
+                              _selectedWeekDays.sort(); // Keep them in order
+                            });
+                          },
+                          backgroundColor: Colors.grey[700],
+                          selectedColor: Colors.pinkAccent,
+                          labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.white70),
+                        );
+                      }).toList(),
+                    ),
+                    if (_selectedWeekDays.isEmpty)
+                       Padding(
+                         padding: const EdgeInsets.only(top:8.0),
+                         child: Text('Por favor, selecione pelo menos um dia.', style: TextStyle(color: Colors.redAccent.shade100, fontSize: 12)),
+                       )
+                  ],
+                ),
               ),
-            );
-          }).toList(),
+          ],
         ),
       ),
       bottomNavigationBar: Padding(
@@ -96,14 +154,20 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
               ),
             ),
             ElevatedButton(
-              onPressed: _selectedCycle != null ? () {
-                if (_selectedCycle != null) {
+              onPressed: (_selectedFrequency != null && 
+                         (_selectedFrequency != HabitFrequency.weekly || _selectedWeekDays.isNotEmpty)) 
+              ? () {
+                if (_selectedFrequency != null) {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddHabitDetailsScreen(
+                    builder: (context) => AddHabitScheduleScreen(
                       selectedCategoryName: widget.selectedCategoryName,
-                      selectedCategoryIcon: widget.selectedCategoryIcon, // Pass icon
-                      selectedCategoryColor: widget.selectedCategoryColor, // Pass color
-                      selectedFrequencyEnumFromScreen: _selectedCycle!, // Pass the enum from this screen
+                      selectedCategoryIcon: widget.selectedCategoryIcon,
+                      selectedCategoryColor: widget.selectedCategoryColor,
+                      habitTitle: widget.habitTitle,
+                      habitDescription: widget.habitDescription,
+                      selectedTrackingType: widget.selectedTrackingType,
+                      selectedFrequency: _selectedFrequency!,
+                      selectedDaysOfWeek: _selectedFrequency == HabitFrequency.weekly ? _selectedWeekDays : null,
                     ),
                   ));
                 }
@@ -115,6 +179,7 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
+                 disabledBackgroundColor: Colors.grey[600],
               ),
               child: const Text('PRÓXIMA', style: TextStyle(color: Colors.white)),
             ),

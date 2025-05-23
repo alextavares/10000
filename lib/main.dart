@@ -7,6 +7,10 @@ import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/screens/auth/login_screen.dart';
 import 'package:myapp/screens/main_navigation_screen.dart';
 import 'package:myapp/screens/habit/add_habit_screen.dart';
+import 'package:myapp/screens/habit/habit_tracking_type_screen.dart';
+import 'package:myapp/screens/habit/habit_quantity_config_screen.dart';
+import 'package:myapp/screens/habit/habit_timer_config_screen.dart';
+import 'package:myapp/screens/habit/habit_subtasks_config_screen.dart';
 import 'package:myapp/screens/onboarding/onboarding_screen.dart'; // Importar a tela de onboarding
 import 'package:myapp/screens/home/home_screen.dart'; // Importar a HomeScreen
 import 'package:myapp/services/service_provider.dart';
@@ -101,14 +105,23 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: const Color(0xFFE91E63), // Pink color from screenshot
           scaffoldBackgroundColor: Colors.black,
+          cardColor: const Color(0xFF1E1E1E),
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.black,
             foregroundColor: Colors.white,
+            elevation: 0,
           ),
           bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             backgroundColor: Colors.black,
             selectedItemColor: Color(0xFFE91E63),
             unselectedItemColor: Colors.grey,
+            type: BottomNavigationBarType.fixed,
+          ),
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Colors.white),
+            bodyMedium: TextStyle(color: Colors.white),
+            titleLarge: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            titleMedium: TextStyle(color: Colors.white),
           ),
           useMaterial3: true,
         ),
@@ -138,6 +151,63 @@ class MyApp extends StatelessWidget {
           '/categories': (context) => const Scaffold(body: Center(child: Text('Categories Screen'))), // Placeholder
           '/timer': (context) => const Scaffold(body: Center(child: Text('Timer Screen'))), // Placeholder
           '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen'))), // Placeholder
+        },
+        onGenerateRoute: (settings) {
+          switch (settings.name) {
+            case '/habit-tracking-type':
+              final args = settings.arguments as Map<String, dynamic>;
+              return MaterialPageRoute(
+                builder: (context) => HabitTrackingTypeScreen(
+                  categoryName: args['categoryName'],
+                  categoryIcon: args['categoryIcon'],
+                  categoryColor: args['categoryColor'],
+                ),
+              );
+            case '/add-habit-quantity-config':
+              final args = settings.arguments as Map<String, dynamic>;
+              return MaterialPageRoute(
+                builder: (context) => HabitQuantityConfigScreen(
+                  habitTitle: args['title'],
+                  habitDescription: args['description'],
+                  category: args['category'],
+                  icon: args['icon'],
+                  color: args['color'],
+                  frequency: args['frequency'],
+                  daysOfWeek: args['daysOfWeek'],
+                  trackingType: args['trackingType'],
+                ),
+              );
+            case '/add-habit-timer-config':
+              final args = settings.arguments as Map<String, dynamic>;
+              return MaterialPageRoute(
+                builder: (context) => HabitTimerConfigScreen(
+                  habitTitle: args['title'],
+                  habitDescription: args['description'],
+                  category: args['category'],
+                  icon: args['icon'],
+                  color: args['color'],
+                  frequency: args['frequency'],
+                  daysOfWeek: args['daysOfWeek'],
+                  trackingType: args['trackingType'],
+                ),
+              );
+            case '/add-habit-subtasks-config':
+              final args = settings.arguments as Map<String, dynamic>;
+              return MaterialPageRoute(
+                builder: (context) => HabitSubtasksConfigScreen(
+                  habitTitle: args['title'],
+                  habitDescription: args['description'],
+                  category: args['category'],
+                  icon: args['icon'],
+                  color: args['color'],
+                  frequency: args['frequency'],
+                  daysOfWeek: args['daysOfWeek'],
+                  trackingType: args['trackingType'],
+                ),
+              );
+            default:
+              return null;
+          }
         },
       ),
     );

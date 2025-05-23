@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/screens/habit/add_habit_frequency_screen.dart' show AddHabitCycle;
 import 'package:myapp/services/service_provider.dart'; 
-import 'package:myapp/models/habit.dart' as habit_model show HabitFrequency;
 
 class AddHabitDetailsScreen extends StatefulWidget {
   final String selectedCategoryName;
@@ -105,8 +104,7 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
               onPrimary: Colors.black,
               surface: Colors.black,
               onSurface: Colors.white,
-            ), 
-            dialogBackgroundColor: Colors.grey[900],
+            ), dialogTheme: DialogThemeData(backgroundColor: Colors.grey[900]),
           ),
           child: child!,
         );
@@ -138,8 +136,7 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
                   onPrimary: Colors.black,
                   surface: Colors.black,
                   onSurface: Colors.white,
-                ), 
-                dialogBackgroundColor: Colors.grey[900]),
+                ), dialogTheme: DialogThemeData(backgroundColor: Colors.grey[900])),
             child: child!,
           );
         });

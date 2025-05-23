@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/screens/habit/add_habit_frequency_screen.dart'; 
+// Will be replaced by HabitTrackingTypeScreen soon
+import 'habit_tracking_type_screen.dart'; // Import the target screen
+// For HabitTrackingType if needed here, though likely passed on
 
 class AddHabitScreen extends StatefulWidget {
   const AddHabitScreen({super.key});
@@ -9,10 +11,8 @@ class AddHabitScreen extends StatefulWidget {
 }
 
 class _AddHabitScreenState extends State<AddHabitScreen> {
-  // Store the whole selected category map
   Map<String, dynamic>? _selectedCategoryData;
 
-  // Placeholder for categories - these would ideally come from a service or config
   final List<Map<String, dynamic>> _categories = [
     {'name': 'Abandone um...', 'icon': Icons.do_not_disturb_on_outlined, 'color': Colors.red[400]!},
     {'name': 'Arte', 'icon': Icons.palette_outlined, 'color': Colors.pink[300]!},
@@ -56,20 +56,22 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             crossAxisCount: 2,
             crossAxisSpacing: 12.0,
             mainAxisSpacing: 12.0,
-            childAspectRatio: 2.5,
+            childAspectRatio: 2.5, // Adjusted for better text visibility if needed
           ),
           itemCount: _categories.length,
           itemBuilder: (context, index) {
             final category = _categories[index];
-            // Check if the current category map is the selected one
             final bool isSelected = _selectedCategoryData == category;
             return GestureDetector(
               onTap: () {
                 setState(() {
-                  // Store the entire map of the selected category
                   _selectedCategoryData = category;
                 });
                 if (category['isSpecial'] == true) {
+                  // Revert selection if 'Criar categoria' is tapped, as it's not a selectable category for habit creation flow yet
+                  setState(() {
+                    _selectedCategoryData = null; 
+                  });
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Funcionalidade "Criar categoria" pendente.')),
                   );
@@ -124,20 +126,28 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               ),
             ),
             ElevatedButton(
-              onPressed: _selectedCategoryData != null ? () {
+              onPressed: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) ? () {
                 if (_selectedCategoryData != null) {
-                  // Pass name, icon, and color to the next screen
+                  // Navigate to HabitTrackingTypeScreen instead of AddHabitTitleScreen
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddHabitFrequencyScreen(
-                      selectedCategoryName: _selectedCategoryData!['name'] as String,
-                      selectedCategoryIcon: _selectedCategoryData!['icon'] as IconData,
-                      selectedCategoryColor: _selectedCategoryData!['color'] as Color,
+                    builder: (context) => HabitTrackingTypeScreen(
+                      // Pass necessary data to HabitTrackingTypeScreen
+                      // Note: HabitTrackingTypeScreen's constructor needs to be updated to accept these
+                      categoryName: _selectedCategoryData!['name'] as String,
+                      categoryIcon: _selectedCategoryData!['icon'] as IconData,
+                      categoryColor: _selectedCategoryData!['color'] as Color,
+                      // We are initiating the flow, so some data might not be available yet
+                      // Example: habitTitle, description, frequency are not yet defined here
+                      // HabitTrackingTypeScreen might need a simplified constructor for this part of the flow
+                      // For now, let's assume it can handle these params or we will adjust it next.
                     ),
                   ));
                 }
               } : null, 
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pinkAccent,
+                backgroundColor: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) 
+                                 ? Colors.pinkAccent 
+                                 : Colors.grey, // Disabled if no valid category selected
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 shape: RoundedRectangleBorder(

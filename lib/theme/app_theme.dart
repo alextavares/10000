@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Colors
-  static const Color primaryColor = Color(0xFF6200EE);
-  static const Color secondaryColor = Color(0xFF03DAC6);
-  static const Color backgroundColor = Color(0xFFF5F5F5);
-  static const Color surfaceColor = Colors.white;
+  // Colors - Updated to match dark theme from images
+  static const Color primaryColor = Color(0xFFE91E63); // Pink/red from images
+  static const Color secondaryColor = Color(0xFF00BFA5); // Teal from images
+  static const Color backgroundColor = Colors.black; // Dark background
+  static const Color surfaceColor = Color(0xFF1E1E1E); // Dark card color
+  static const Color cardColor = Color(0xFF1E1E1E); // Card background color
   static const Color errorColor = Color(0xFFB00020);
   static const Color successColor = Color(0xFF4CAF50);
-  static const Color textColor = Color(0xFF333333);
-  static const Color subtitleColor = Color(0xFF757575);
-  static const Color dividerColor = Color(0xFFE0E0E0);
+  static const Color textColor = Colors.white; // White text on dark
+  static const Color subtitleColor = Colors.grey; // Grey subtitle
+  static const Color dividerColor = Color(0xFF2C2C2C);
 
   // AI-related colors
   static const Color aiPrimaryColor = Color(0xFF9C27B0);

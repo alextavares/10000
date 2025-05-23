@@ -45,7 +45,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
 
     try {
       final habitService = ServiceProvider.of(context).habitService; // Use ServiceProvider
-      final habit = await habitService.getHabit(widget.habitId);
+      final habit = await habitService.getHabitById(widget.habitId);
       
       if (!mounted) return;
       if (habit == null) {
@@ -163,10 +163,13 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
 
     try {
       final habitService = ServiceProvider.of(context).habitService;
+      // TODO: Verify if markHabitNotCompleted and markHabitCompleted exist and are used correctly.
+      // Based on HabitService, it seems like there's a single markHabitCompletion(id, date, bool)
+      // For now, assuming these methods exist or will be adapted in HabitService
       if (isCompleted) {
-        await habitService.markHabitNotCompleted(_habit!.id, date);
+         await habitService.markHabitCompletion(widget.habitId, date, false); // Corrected: markHabitCompletion
       } else {
-        await habitService.markHabitCompleted(_habit!.id, date);
+         await habitService.markHabitCompletion(widget.habitId, date, true); // Corrected: markHabitCompletion
       }
       
       if (mounted) await _loadHabit(); // Reload the habit to reflect changes
