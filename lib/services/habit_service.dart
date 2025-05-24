@@ -41,13 +41,15 @@ class HabitService {
       daysOfWeek: daysOfWeek,
       reminderTime: reminderTime,
       notificationsEnabled: notificationsEnabled,
-      createdAt: startDate, // Use startDate as createdAt, or DateTime.now() if preferred for creation timestamp
+      createdAt: DateTime.now(), // Changed to DateTime.now()
       updatedAt: DateTime.now(),
       streak: 0,
       longestStreak: 0,
       totalCompletions: 0,
       completionHistory: {},
       dailyProgress: {}, 
+      startDate: startDate, // Added startDate
+      targetDate: targetDate, // Added targetDate
       // targetQuantity, quantityUnit, targetTime, subtasks would be set based on trackingType
       // For simOuNao, these are not applicable initially.
     );

@@ -104,8 +104,8 @@ class HabitDailyProgress {
       date: DateTime.parse(map['date']),
       isCompleted: map['isCompleted'] ?? false,
       quantityAchieved: map['quantityAchieved']?.toDouble(),
-      timeSpent: map['timeSpent'] != null 
-          ? Duration(seconds: map['timeSpent']) 
+      timeSpent: map['timeSpent'] != null
+          ? Duration(seconds: map['timeSpent'])
           : null,
       subtasks: map['subtasks'] != null
           ? (map['subtasks'] as List)
@@ -123,15 +123,15 @@ class HabitDailyProgress {
     switch (trackingType) {
       case HabitTrackingType.simOuNao:
         return isCompleted ? 1.0 : 0.0;
-      
+
       case HabitTrackingType.quantia:
         if (targetQuantity == null || quantityAchieved == null) return 0.0;
         return (quantityAchieved! / targetQuantity).clamp(0.0, 1.0);
-      
+
       case HabitTrackingType.cronometro:
         if (targetTime == null || timeSpent == null) return 0.0;
         return (timeSpent!.inSeconds / targetTime.inSeconds).clamp(0.0, 1.0);
-      
+
       case HabitTrackingType.listaAtividades:
         if (subtasks == null || subtasks!.isEmpty) return 0.0;
         int completed = subtasks!.where((s) => s.isCompleted).length;
@@ -211,6 +211,12 @@ class Habit {
   /// Map of daily progress for advanced tracking
   final Map<DateTime, HabitDailyProgress> dailyProgress;
 
+  /// Date when the habit starts
+  final DateTime startDate; // Added field
+
+  /// Date when the habit ends (optional)
+  final DateTime? targetDate; // Added field
+
   Habit({
     required this.id,
     required this.title,
@@ -235,6 +241,8 @@ class Habit {
     this.targetTime,
     this.subtasks,
     required this.dailyProgress,
+    required this.startDate, // Added to constructor
+    this.targetDate,      // Added to constructor
   });
 
   /// Creates a copy of this Habit with the given fields replaced with the new values.
@@ -262,6 +270,8 @@ class Habit {
     Duration? targetTime,
     List<HabitSubtask>? subtasks,
     Map<DateTime, HabitDailyProgress>? dailyProgress,
+    DateTime? startDate, // Added to copyWith
+    DateTime? targetDate, // Added to copyWith
   }) {
     return Habit(
       id: id ?? this.id,
@@ -287,6 +297,8 @@ class Habit {
       targetTime: targetTime ?? this.targetTime,
       subtasks: subtasks ?? this.subtasks,
       dailyProgress: dailyProgress ?? this.dailyProgress,
+      startDate: startDate ?? this.startDate, // Added to copyWith
+      targetDate: targetDate ?? this.targetDate, // Added to copyWith
     );
   }
 
@@ -322,6 +334,8 @@ class Habit {
       'dailyProgress': dailyProgress.map(
         (key, value) => MapEntry(key.toIso8601String(), value.toMap()),
       ),
+      'startDate': startDate.toIso8601String(), // Added to toMap
+      'targetDate': targetDate?.toIso8601String(), // Added to toMap
     };
   }
 
@@ -364,8 +378,8 @@ class Habit {
       ),
       targetQuantity: map['targetQuantity']?.toDouble(),
       quantityUnit: map['quantityUnit'],
-      targetTime: map['targetTime'] != null 
-          ? Duration(seconds: map['targetTime']) 
+      targetTime: map['targetTime'] != null
+          ? Duration(seconds: map['targetTime'])
           : null,
       subtasks: map['subtasks'] != null
           ? (map['subtasks'] as List)
@@ -375,11 +389,13 @@ class Habit {
       dailyProgress: map['dailyProgress'] != null
           ? (map['dailyProgress'] as Map<String, dynamic>).map(
               (key, value) => MapEntry(
-                DateTime.parse(key), 
+                DateTime.parse(key),
                 HabitDailyProgress.fromMap(value)
               ),
             )
           : {},
+      startDate: DateTime.parse(map['startDate']), // Added to fromMap
+      targetDate: map['targetDate'] != null ? DateTime.parse(map['targetDate']) : null, // Added to fromMap
     );
   }
 
@@ -409,7 +425,7 @@ class Habit {
     List<HabitSubtask>? subtasks,
   }) {
     final dateOnly = DateTime(date.year, date.month, date.day);
-    
+
     final progress = HabitDailyProgress(
       date: dateOnly,
       isCompleted: isCompleted ?? false,
@@ -417,9 +433,9 @@ class Habit {
       timeSpent: timeSpent,
       subtasks: subtasks,
     );
-    
+
     dailyProgress[dateOnly] = progress;
-    
+
     // Update completion history based on tracking type
     bool completed = false;
     switch (trackingType) {
@@ -427,13 +443,13 @@ class Habit {
         completed = isCompleted ?? false;
         break;
       case HabitTrackingType.quantia:
-        completed = targetQuantity != null && 
-                   quantityAchieved != null && 
+        completed = targetQuantity != null &&
+                   quantityAchieved != null &&
                    quantityAchieved >= targetQuantity!;
         break;
       case HabitTrackingType.cronometro:
-        completed = targetTime != null && 
-                   timeSpent != null && 
+        completed = targetTime != null &&
+                   timeSpent != null &&
                    timeSpent >= targetTime!;
         break;
       case HabitTrackingType.listaAtividades:
@@ -442,14 +458,14 @@ class Habit {
         }
         break;
     }
-    
+
     if (completed) {
       markCompleted(date);
     } else {
       markNotCompleted(date);
     }
   }
-  
+
   /// Updates the streak count based on the completion history.
   /// Public method that can be called from outside the class.
   void updateStreak() {
@@ -505,7 +521,7 @@ class Habit {
   /// Calculates the completion rate as a percentage.
   double getCompletionRate() {
     if (completionHistory.isEmpty) return 0.0;
-    
+
     int completed = completionHistory.values.where((v) => v).length;
     return completed / completionHistory.length;
   }
@@ -514,7 +530,7 @@ class Habit {
   double getTodaysCompletionPercentage() {
     final progress = getTodaysProgress();
     if (progress == null) return 0.0;
-    
+
     return progress.getCompletionPercentage(
       trackingType,
       targetQuantity: targetQuantity,

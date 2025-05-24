@@ -23,6 +23,7 @@ class HabitCard extends StatelessWidget {
     required this.onTap,
     required this.onToggleCompletion,
     required this.onDelete, // Added onDelete to constructor
+    // required DateTime selectedDate, // Removed selectedDate parameter
   });
 
   @override
@@ -152,7 +153,7 @@ class HabitCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                  
+
                   // Delete Button
                   IconButton(
                     icon: Icon(Icons.delete_outline, color: Colors.red[700]),
@@ -205,23 +206,23 @@ class HabitCard extends StatelessWidget {
   IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
       case 'health':
-        return Icons.favorite_border; 
+        return Icons.favorite_border;
       case 'fitness':
         return Icons.fitness_center;
       case 'productivity':
-        return Icons.work_outline; 
+        return Icons.work_outline;
       case 'education':
         return Icons.school_outlined;
       case 'finance':
         return Icons.attach_money;
       case 'social':
-        return Icons.people_outline; 
+        return Icons.people_outline;
       case 'mindfulness':
-        return Icons.self_improvement_outlined; 
+        return Icons.self_improvement_outlined;
       case 'creativity':
         return Icons.brush_outlined;
       default:
-        return Icons.star_border; 
+        return Icons.star_border;
     }
   }
 
