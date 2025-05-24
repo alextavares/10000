@@ -16,9 +16,9 @@ class MockAuthService implements AuthService {
   @override
   Stream<User?> get authStateChanges => Stream.value(null);
   @override
-  User? get currentUser => null;
+  User? get currentUser => null; // Keep as null if that's the intended mock behavior
   @override
-  String? get currentUserId => null;
+  String? get currentUserId => null; // Keep as null
   @override
   bool get isSignedIn => false;
   @override
@@ -39,8 +39,11 @@ class MockAuthService implements AuthService {
   Future<Map<String, dynamic>?> getUserProfile() async => null;
   @override
   Future<void> updateUserProfile(Map<String, dynamic> profileData) async {}
+  
+  // Assuming updateProfile is part of your AuthService interface based on other files
   @override
   Future<void> updateProfile({String? displayName, String? photoURL}) async {}
+  
   @override
   Future<void> updateLastLogin() async {}
   @override
@@ -56,38 +59,81 @@ class MockAuthService implements AuthService {
 class MockHabitService implements HabitService {
   @override
   Future<List<Habit>> getHabits() async => [];
+
+  // Corrected: Renamed getHabit to getHabitById to match interface
   @override
-  Future<Habit?> getHabit(String habitId) async => null;
+  Future<Habit?> getHabitById(String id) async => null;
+
+  // Corrected: Signature of addHabit to match HabitService interface
   @override
-  Future<String?> addHabit(Habit habit) async => 'mock_habit_id';
+  Future<void> addHabit({
+    required String title,
+    required String categoryName,
+    required IconData categoryIcon,
+    required Color categoryColor,
+    required HabitFrequency frequency,
+    required HabitTrackingType trackingType,
+    required DateTime startDate,
+    List<int>? daysOfWeek,
+    DateTime? targetDate,
+    TimeOfDay? reminderTime,
+    bool notificationsEnabled = false,
+    String priority = 'Normal',
+    String? description,
+  }) async {
+    // Mock implementation, can be simple or add to a list if needed for testing
+  }
+
   @override
-  Future<bool> updateHabit(Habit habit) async => true;
+  Future<void> updateHabit(Habit habit) async {} // Return type changed to Future<void>
+
   @override
-  Future<bool> deleteHabit(String habitId) async => true;
+  Future<void> deleteHabit(String habitId) async {} // Return type changed to Future<void>
+
+  // Added missing method from HabitService interface
   @override
-  Future<bool> markHabitCompleted(String habitId, DateTime date) async => true;
-  @override
-  Future<bool> markHabitNotCompleted(String habitId, DateTime date) async => true;
-  @override
-  Future<List<Habit>> getHabitsDueToday() async => [];
-  @override
-  Future<List<Habit>> getHabitsByCategory(String category) async => [];
-  @override
-  Future<List<String>> getCategories() async => [];
-  @override
-  Future<Map<String, dynamic>> getHabitStatistics() async => {
-        'totalHabits': 0,
-        'completedToday': 0,
-        'averageCompletionRate': 0.0,
-        'longestStreak': 0,
-        'totalCompletions': 0,
-      };
+  Future<void> markHabitCompletion(String habitId, DateTime date, bool completed) async {}
+
+  // Removed methods that are not in HabitService or don't need @override
+  // Future<bool> markHabitCompleted(String habitId, DateTime date) async => true;
+  // Future<bool> markHabitNotCompleted(String habitId, DateTime date) async => true;
+  // Future<List<Habit>> getHabitsDueToday() async => [];
+  // Future<List<Habit>> getHabitsByCategory(String category) async => [];
+  // Future<List<String>> getCategories() async => [];
+  // Future<Map<String, dynamic>> getHabitStatistics() async => {}; 
 }
 
 class MockAIService extends AIService {
   MockAIService() : super(apiKey: 'fake_key');
+  // Add method overrides if AIService interface requires them and they are missing.
 }
-class MockNotificationService extends NotificationService {}
+
+// Corrected: MockNotificationService needs to implement all methods from NotificationService
+// Assuming NotificationService has methods like initialize, requestPermissions, etc.
+// For now, adding a basic implementation. You might need to fill these out based on your interface.
+class MockNotificationService implements NotificationService {
+  @override
+  Future<void> initialize() async {}
+
+  @override
+  Future<bool> requestPermissions() async => true;
+
+  @override
+  Future<void> scheduleHabitReminder(Habit habit) async {}
+
+  @override
+  Future<void> cancelHabitReminder(Habit habit) async {}
+
+  // Assuming these are part of your NotificationService based on previous file
+  Future<void> scheduleTaskReminder(Task task) async {}
+  Future<void> cancelTaskReminder(Task task) async {}
+  @override
+  Future<void> showTestNotification() async {}
+
+  @override
+  Future<void> cancelAllNotifications() async {}
+}
+
 
 class MockTaskService implements TaskService {
   @override
@@ -98,8 +144,11 @@ class MockTaskService implements TaskService {
   Future<Task?> getTask(String taskId) async => null;
   @override
   Future<List<Task>> getTasks() async => [];
+  
+  // Assuming getTasksDueToday is part of your TaskService interface
   @override
-  Future<List<Task>> getTasksDueToday() async => [];
+  Future<List<Task>> getTasksDueToday() async => []; 
+  
   @override
   Future<bool> markTaskCompletion(String taskId, DateTime date, bool completed) async => true;
   @override

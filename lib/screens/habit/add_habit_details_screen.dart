@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:myapp/screens/habit/add_habit_frequency_screen.dart' show AddHabitCycle;
+import 'package:myapp/models/habit.dart' show HabitFrequency, HabitTrackingType; // Importar enums corretos
 import 'package:myapp/services/service_provider.dart'; 
 
 class AddHabitDetailsScreen extends StatefulWidget {
   final String selectedCategoryName;
   final IconData selectedCategoryIcon;
   final Color selectedCategoryColor;
-  final AddHabitCycle selectedFrequencyEnumFromScreen;
+  final HabitFrequency selectedFrequencyEnumFromScreen; // Alterado para HabitFrequency
 
   const AddHabitDetailsScreen({
     super.key,
@@ -30,7 +30,8 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
   DateTime? _targetDate;
   bool _enableTargetDate = false;
   TimeOfDay? _reminderTime;
-  final List<bool> _reminderDays = List.filled(7, false); 
+  // TODO: Implementar UI para selecionar _reminderDays se a frequência for semanal/customizada
+  // final List<bool> _reminderDays = List.filled(7, false); 
   String _priority = 'Normal';
 
   final List<String> _priorityOptions = ['Baixa', 'Normal', 'Alta'];
@@ -53,9 +54,25 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
       final habitService = ServiceProvider.of(context).habitService;
 
       List<int>? daysOfWeekForModel;
-      if (widget.selectedFrequencyEnumFromScreen == AddHabitCycle.specificWeekDays) {
-        // daysOfWeekForModel = ...; // TODO: Get from UI
-      }
+      // TODO: A UI para selecionar os dias da semana (daysOfWeek) precisa ser implementada 
+      // quando selectedFrequencyEnumFromScreen for HabitFrequency.weekly ou HabitFrequency.custom.
+      // Por enquanto, se for semanal, será null, o que pode não ser o ideal.
+      // Exemplo de como poderia ser (se _reminderDays fosse populado pela UI):
+      // if (widget.selectedFrequencyEnumFromScreen == HabitFrequency.weekly || widget.selectedFrequencyEnumFromScreen == HabitFrequency.custom) {
+      //   daysOfWeekForModel = [];
+      //   for (int i = 0; i < _reminderDays.length; i++) {
+      //     if (_reminderDays[i]) {
+      //       daysOfWeekForModel.add(i + 1); // Assumindo que 1=Segunda, ..., 7=Domingo
+      //     }
+      //   }
+      //   if (daysOfWeekForModel.isEmpty) daysOfWeekForModel = null; // Evita lista vazia se nenhum dia selecionado
+      // }
+
+      // TODO: Implementar UI para selecionar HabitTrackingType
+      // Por agora, definindo como simOuNao por padrão.
+      HabitTrackingType trackingType = HabitTrackingType.simOuNao;
+      // Outros campos como targetQuantity, quantityUnit, targetTime, subtasks
+      // precisariam ser coletados da UI com base no trackingType selecionado.
 
       try {
         await habitService.addHabit(
@@ -63,18 +80,22 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
           categoryName: widget.selectedCategoryName,
           categoryIcon: widget.selectedCategoryIcon,
           categoryColor: widget.selectedCategoryColor,
-          frequencyEnumFromScreen: widget.selectedFrequencyEnumFromScreen,
+          frequency: widget.selectedFrequencyEnumFromScreen, // CORRIGIDO
+          trackingType: trackingType, // ADICIONADO (com valor padrão)
           startDate: _startDate,
           targetDate: _enableTargetDate ? _targetDate : null,
           reminderTime: _reminderTime,
           priority: _priority,
-          daysOfWeek: daysOfWeekForModel,
+          daysOfWeek: daysOfWeekForModel, // Passando o valor (atualmente null ou a ser implementado)
+          // description: null, // Adicionar se houver campo de descrição
+          // notificationsEnabled: _reminderTime != null, // Exemplo
         );
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Hábito "$habitName" salvo com sucesso!')),
           );
+          // Retorna true para indicar sucesso e permitir que a tela anterior atualize se necessário
           Navigator.of(context).popUntil((route) => route.isFirst);
         }
       } catch (e) {
@@ -270,7 +291,7 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
               icon: Icons.notifications_none_outlined,
               title: 'Horário e lembretes',
               trailingText: _reminderTime != null ? _reminderTime!.format(context) : 'Nenhum', 
-              onTap: () => _selectTime(context), // Corrected onTap call
+              onTap: () => _selectTime(context), 
             ),
             _buildDetailItem(
               icon: Icons.outlined_flag,
@@ -278,6 +299,8 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
               trailingText: _priority,
               onTap: _showPriorityDialog,
             ),
+            // TODO: Adicionar UI para selecionar dias da semana se widget.selectedFrequencyEnumFromScreen for weekly/custom
+            // TODO: Adicionar UI para selecionar o HabitTrackingType
           ],
         ),
       ),

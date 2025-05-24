@@ -81,7 +81,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> with Single
                 print('Habit selected. Navigating to AddHabitScreen (Category Selection).');
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const AddHabitScreen()),
-                );
+                ).then((result) { // Adicionado .then para atualizar a tela Hoje se um hábito for adicionado
+                  if (result == true || result == null) { // result == null se apenas voltou
+                    if (_widgetTitles[_selectedIndex] == 'Hoje') {
+                      _homeScreenKey.currentState?.refreshScreenData(); 
+                    }
+                    // A tela de hábitos já se atualiza ao retornar do AddHabitScreen
+                  }
+                });
                 break;
               case AddItemType.recurringTask:
                 // TODO: Navigate to the screen for adding a recurring task
@@ -97,7 +104,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> with Single
                     if (_widgetTitles[_selectedIndex] == 'Tarefas') {
                       _tasksScreenKey.currentState?.refreshTasks();
                     } else if (_widgetTitles[_selectedIndex] == 'Hoje') {
-                      _homeScreenKey.currentState?.refreshTasks();
+                      _homeScreenKey.currentState?.refreshScreenData(); // CORRIGIDO AQUI
                     }
                   }
                 });

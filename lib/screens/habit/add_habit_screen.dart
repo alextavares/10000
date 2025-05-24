@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/models/habit.dart'; // Import Habit model
 // Will be replaced by HabitTrackingTypeScreen soon
 import 'habit_tracking_type_screen.dart'; // Import the target screen
 // For HabitTrackingType if needed here, though likely passed on
 
 class AddHabitScreen extends StatefulWidget {
-  const AddHabitScreen({super.key});
+  final Habit? habitToEdit; // Add this parameter
+
+  const AddHabitScreen({super.key, this.habitToEdit}); // Modify constructor
 
   @override
   State<AddHabitScreen> createState() => _AddHabitScreenState();
@@ -13,6 +16,7 @@ class AddHabitScreen extends StatefulWidget {
 class _AddHabitScreenState extends State<AddHabitScreen> {
   Map<String, dynamic>? _selectedCategoryData;
 
+  // TODO: Consider moving categories to a central place or making them more dynamic if needed.
   final List<Map<String, dynamic>> _categories = [
     {'name': 'Abandone um...', 'icon': Icons.do_not_disturb_on_outlined, 'color': Colors.red[400]!},
     {'name': 'Arte', 'icon': Icons.palette_outlined, 'color': Colors.pink[300]!},
@@ -33,13 +37,38 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.habitToEdit != null) {
+      // Attempt to pre-select the category based on the habit being edited.
+      // This assumes that habitToEdit.category corresponds to one of the 'name' fields in _categories.
+      // You might need a more robust way to map habitToEdit.category to _selectedCategoryData,
+      // especially if category information is stored differently or needs to be fetched.
+      final existingCategory = _categories.firstWhere(
+        (cat) => cat['name'] == widget.habitToEdit!.category, // Assuming Habit has category
+        orElse: () => _categories.firstWhere((cat) => cat['name'] == 'Outros'), // Fallback to 'Outros' or null
+      );
+      // Ensure the found category is not the special 'Criar categoria' one.
+      if (existingCategory['isSpecial'] != true) {
+         _selectedCategoryData = existingCategory;
+      }
+
+      // If you have other fields in AddHabitScreen that need to be pre-filled from habitToEdit,
+      // initialize them here. For example, if this screen also handled title, description, etc.
+      // _titleController.text = widget.habitToEdit!.title;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text(
-          'Selecione uma categoria para o seu hábito',
-          style: TextStyle(color: Colors.pinkAccent, fontSize: 18, fontWeight: FontWeight.bold),
+        title: Text(
+          widget.habitToEdit == null 
+              ? 'Selecione uma categoria para o seu hábito' 
+              : 'Editar categoria do hábito', // Change title if editing
+          style: const TextStyle(color: Colors.pinkAccent, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.black,
         elevation: 0,
@@ -56,26 +85,25 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             crossAxisCount: 2,
             crossAxisSpacing: 12.0,
             mainAxisSpacing: 12.0,
-            childAspectRatio: 2.5, // Adjusted for better text visibility if needed
+            childAspectRatio: 2.5, 
           ),
           itemCount: _categories.length,
           itemBuilder: (context, index) {
             final category = _categories[index];
-            final bool isSelected = _selectedCategoryData == category;
+            final bool isSelected = _selectedCategoryData?['name'] == category['name']; // Compare by name for safety
             return GestureDetector(
               onTap: () {
                 setState(() {
-                  _selectedCategoryData = category;
+                  // Prevent selecting 'Criar categoria' as a valid selection for next step
+                  if (category['isSpecial'] == true) {
+                     ScaffoldMessenger.of(context).showSnackBar(
+                       const SnackBar(content: Text('Funcionalidade "Criar categoria" pendente.')),
+                     );
+                    _selectedCategoryData = null; // Or keep previous valid selection
+                  } else {
+                    _selectedCategoryData = category;
+                  }
                 });
-                if (category['isSpecial'] == true) {
-                  // Revert selection if 'Criar categoria' is tapped, as it's not a selectable category for habit creation flow yet
-                  setState(() {
-                    _selectedCategoryData = null; 
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Funcionalidade "Criar categoria" pendente.')),
-                  );
-                }
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -128,18 +156,12 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             ElevatedButton(
               onPressed: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) ? () {
                 if (_selectedCategoryData != null) {
-                  // Navigate to HabitTrackingTypeScreen instead of AddHabitTitleScreen
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => HabitTrackingTypeScreen(
-                      // Pass necessary data to HabitTrackingTypeScreen
-                      // Note: HabitTrackingTypeScreen's constructor needs to be updated to accept these
                       categoryName: _selectedCategoryData!['name'] as String,
                       categoryIcon: _selectedCategoryData!['icon'] as IconData,
                       categoryColor: _selectedCategoryData!['color'] as Color,
-                      // We are initiating the flow, so some data might not be available yet
-                      // Example: habitTitle, description, frequency are not yet defined here
-                      // HabitTrackingTypeScreen might need a simplified constructor for this part of the flow
-                      // For now, let's assume it can handle these params or we will adjust it next.
+                      // habitToEdit: widget.habitToEdit, // Removed as it's not a parameter of HabitTrackingTypeScreen
                     ),
                   ));
                 }
@@ -147,14 +169,14 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) 
                                  ? Colors.pinkAccent 
-                                 : Colors.grey, // Disabled if no valid category selected
+                                 : Colors.grey, 
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: const Text('PRÓXIMA', style: TextStyle(color: Colors.white)),
+              child: Text(widget.habitToEdit == null ? 'PRÓXIMA' : 'SALVAR', style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),

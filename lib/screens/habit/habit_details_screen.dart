@@ -135,7 +135,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
       if (_habit!.notificationsEnabled && _habit!.reminderTime != null) {
         // It's better to pass the full habit object or at least its ID for cancellation.
         // Assuming cancelHabitReminder takes habit ID.
-        await notificationService.cancelHabitReminder(_habit!.id);
+        await notificationService.cancelHabitReminder(_habit!); // Corrected: Passing the full _habit object
       }
       
       await habitService.deleteHabit(_habit!.id);

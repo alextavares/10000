@@ -72,16 +72,23 @@ class _HabitsScreenState extends State<HabitsScreen> {
       _isLoading = true;
       _errorMessage = null;
     });
+    print('[HabitsScreen] Fetching habits...');
     try {
       final habits = await _habitService.getHabits();
       if (mounted) { 
+        print('[HabitsScreen] Habits fetched. Count: ${habits.length}');
+        if (habits.isNotEmpty) {
+          for (int i = 0; i < (habits.length > 2 ? 2 : habits.length); i++) { // Print details of first 2 habits
+            print('[HabitsScreen] Habit ${i+1}: ${habits[i].title}, Freq: ${habits[i].frequency}, DaysOfWeek: ${habits[i].daysOfWeek}, CreatedAt: ${habits[i].createdAt.toIso8601String()}, Tracking: ${habits[i].trackingType}');
+          }
+        }
         setState(() {
           _habits = habits;
           _isLoading = false;
         });
       }
     } catch (e) {
-      print('Error fetching habits: $e');
+      print('[HabitsScreen] Error fetching habits: $e');
       if (mounted) { 
         setState(() {
           _errorMessage = "Failed to load habits: $e";
@@ -96,8 +103,8 @@ class _HabitsScreenState extends State<HabitsScreen> {
     setState(() {
       _activelySelectedDayIndexInWeek = index;
       _selectedDate = _weekDays[index];
-      // Re-fetch or filter habits based on the new _selectedDate
-      _fetchHabits(); // Or a more optimized filter if habits are already loaded
+      print('[HabitsScreen] Day selected: $_selectedDate, weekday: ${_selectedDate.weekday}');
+      // _fetchHabits(); // Temporarily commented out for debugging - let ListView rebuild handle filtering
     });
   }
   
@@ -106,10 +113,9 @@ class _HabitsScreenState extends State<HabitsScreen> {
     try {
       final dateToMark = _selectedDate; 
       await _habitService.markHabitCompletion(habit.id, dateToMark, completed);
-      // No 'success' variable to check, assume success if no exception
-      _fetchHabits(); // Refresh the habits list
+      _fetchHabits(); 
     } catch (e) {
-      print("Error toggling habit completion: $e");
+      print("[HabitsScreen] Error toggling habit completion: $e");
       if(mounted){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
@@ -143,7 +149,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
     if (confirm == true) {
         try {
             await _habitService.deleteHabit(habitId);
-            // No 'success' variable to check, assume success if no exception
             _fetchHabits(); 
             if(mounted){
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -151,7 +156,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                 );
             }
         } catch (e) {
-            print("Error deleting habit: $e");
+            print("[HabitsScreen] Error deleting habit: $e");
             if(mounted){
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: $e')),
@@ -223,6 +228,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('[HabitsScreen] Building UI. Selected date: $_selectedDate, weekday: ${_selectedDate.weekday}');
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Column(
@@ -291,37 +297,34 @@ class _HabitsScreenState extends State<HabitsScreen> {
                             itemBuilder: (context, index) {
                               final habit = _habits[index];
                               bool showHabit = false;
+                              print('[HabitsScreen] ListView itemBuilder for: ${habit.title}, SelectedDate: $_selectedDate (weekday: ${_selectedDate.weekday})');
+                              
                               if (habit.frequency == habit_model.HabitFrequency.daily) {
                                 showHabit = true;
+                                print('  - Daily habit. SHOWING: $showHabit');
                               } else if (habit.frequency == habit_model.HabitFrequency.weekly || habit.frequency == habit_model.HabitFrequency.custom) {
+                                print('  - Weekly/Custom. Habit days: ${habit.daysOfWeek}, Selected weekday: ${_selectedDate.weekday}');
                                 if (habit.daysOfWeek != null && habit.daysOfWeek!.contains(_selectedDate.weekday)) {
                                   showHabit = true;
                                 }
+                                print('  - SHOWING: $showHabit');
                               } else if (habit.frequency == habit_model.HabitFrequency.monthly) {
+                                print('  - Monthly. Habit creation day: ${habit.createdAt.day}, Selected day: ${_selectedDate.day}');
                                 if (habit.createdAt.day == _selectedDate.day) {
                                   showHabit = true;
                                 }
+                                print('  - SHOWING: $showHabit');
                               }
 
                               if (!showHabit) {
+                                print('  - HIDING habit: ${habit.title}');
                                 return const SizedBox.shrink();
                               }
+                              print('  - RENDERING HabitCard for: ${habit.title}');
                               return HabitCard(
                                 habit: habit,
                                 onTap: () async {
-                                  // Edit functionality needs to be properly designed.
-                                  // For now, navigating to AddHabitScreen without habitToEdit or 
-                                  // creating a dedicated EditHabitScreen.
-                                  // final result = await Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => const AddHabitScreen(/* habitToEdit: habit */),
-                                  //   ),
-                                  // );
-                                  // if (result == true && mounted) {
-                                  //   _fetchHabits(); 
-                                  // }
-                                  print("Edit habit tapped: ${habit.title}"); // Placeholder for edit
+                                  print("Edit habit tapped: ${habit.title}"); 
                                 },
                                 onToggleCompletion: (completed) {
                                   _toggleHabitCompletion(habit, completed);
@@ -341,9 +344,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
             context,
             MaterialPageRoute(builder: (context) => const AddHabitScreen()),
           );
-          // Assuming AddHabitScreen or its flow might return true if a habit was successfully added.
-          // This can be made more robust by returning the actual habit object or a specific success status.
-          if (result == true || result == null) { // Refresh if true (explicit success) or null (navigated back)
+          if (result == true || result == null) { 
             _fetchHabits(); 
           }
         },
