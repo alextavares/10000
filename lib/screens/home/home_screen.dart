@@ -178,6 +178,10 @@ class HomeScreenState extends State<HomeScreen> {
             date.day == _selectedDate.day
           );
         }
+      } else if (habit.frequency == habit_model.HabitFrequency.someTimesPerPeriod) {
+        showHabit = true; // Para "algumas vezes por período", sempre mostra
+      } else if (habit.frequency == habit_model.HabitFrequency.repeat) {
+        showHabit = true; // Para "repetir", sempre mostra por enquanto
       }
       return showHabit;
     }).toList();

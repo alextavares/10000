@@ -18,9 +18,14 @@ class HabitService {
     required HabitFrequency frequency, 
     required HabitTrackingType trackingType, 
     required DateTime startDate, 
-    List<int>? daysOfWeek, 
+    List<int>? daysOfWeek,
     List<int>? daysOfMonth, // Added daysOfMonth
     List<DateTime>? specificYearDates, // Added specificYearDates
+    int? timesPerPeriod,
+    String? periodType,
+    int? repeatEveryDays,
+    bool? isFlexible,
+    bool? alternateDays,
     DateTime? targetDate,
     TimeOfDay? reminderTime,
     bool notificationsEnabled = false,
@@ -40,6 +45,11 @@ class HabitService {
       // Pass daysOfMonth to Habit constructor (ensure Habit model is updated)
       daysOfMonth: daysOfMonth,
       specificYearDates: specificYearDates, // Pass specificYearDates to Habit constructor
+      timesPerPeriod: timesPerPeriod,
+      periodType: periodType,
+      repeatEveryDays: repeatEveryDays,
+      isFlexible: isFlexible,
+      alternateDays: alternateDays,
       reminderTime: reminderTime,
       notificationsEnabled: notificationsEnabled,
       createdAt: DateTime.now(),

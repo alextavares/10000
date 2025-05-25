@@ -330,6 +330,14 @@ class _HabitsScreenState extends State<HabitsScreen> {
                                   );
                                 }
                                 print('  - SHOWING: $showHabit');
+                              } else if (habit.frequency == habit_model.HabitFrequency.someTimesPerPeriod) {
+                                print('  - SomeTimesPerPeriod. Always showing for now');
+                                showHabit = true; // Para "algumas vezes por período", sempre mostra
+                                print('  - SHOWING: $showHabit');
+                              } else if (habit.frequency == habit_model.HabitFrequency.repeat) {
+                                print('  - Repeat. Always showing for now');
+                                showHabit = true; // Para "repetir", sempre mostra por enquanto
+                                print('  - SHOWING: $showHabit');
                               }
 
                               if (!showHabit) {

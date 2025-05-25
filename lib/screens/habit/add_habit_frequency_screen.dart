@@ -33,11 +33,23 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
     HabitFrequency.weekly: 'Alguns dias da semana',
     HabitFrequency.monthly: 'Dias específicos do mês',
     HabitFrequency.specificDaysOfYear: 'Dias específicos do ano', // Using the new enum value
+    HabitFrequency.someTimesPerPeriod: 'Algumas vezes por período',
+    HabitFrequency.repeat: 'Repetir',
   };
 
   final List<int> _selectedWeekDays = [];
-  final List<int> _selectedMonthDays = []; 
-  final List<DateTime> _selectedYearDates = []; 
+  final List<int> _selectedMonthDays = [];
+  final List<DateTime> _selectedYearDates = [];
+
+  // Variáveis para "algumas vezes por período"
+  int _timesPerPeriod = 1;
+  String _selectedPeriodType = 'SEMANA';
+  final List<String> _periodTypes = ['SEMANA', 'MÊS', 'ANO'];
+
+  // Variáveis para "repetir"
+  int _repeatEveryDays = 2;
+  bool _isFlexible = false;
+  bool _alternateDays = false;
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedCalendarDay = DateTime.now();
@@ -207,6 +219,211 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
       ],
     );
   }
+
+  Widget _buildSomeTimesPerPeriodSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        const Text('Configure a frequência:', style: TextStyle(color: Colors.white70, fontSize: 15)),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            // Campo numérico para quantidade
+            SizedBox(
+              width: 80,
+              child: TextField(
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                decoration: InputDecoration(
+                  hintText: '1',
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[700]!),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.pinkAccent),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[800],
+                ),
+                onChanged: (value) {
+                  final newValue = int.tryParse(value);
+                  if (newValue != null && newValue > 0) {
+                    setState(() {
+                      _timesPerPeriod = newValue;
+                    });
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text('vezes por', style: TextStyle(color: Colors.white, fontSize: 16)),
+            const SizedBox(width: 12),
+            // Dropdown para período
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey[700]!),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _selectedPeriodType,
+                    dropdownColor: Colors.grey[800],
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                    items: _periodTypes.map((String period) {
+                      return DropdownMenuItem<String>(
+                        value: period,
+                        child: Text(period),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          _selectedPeriodType = newValue;
+                        });
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'O hábito será realizado $_timesPerPeriod ${_timesPerPeriod == 1 ? 'vez' : 'vezes'} por ${_selectedPeriodType.toLowerCase()}',
+          style: TextStyle(color: Colors.grey[400], fontSize: 13),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRepeatSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        const Text('Configure a repetição:', style: TextStyle(color: Colors.white70, fontSize: 15)),
+        const SizedBox(height: 12),
+        
+        // A cada X dias
+        Row(
+          children: [
+            const Text('A cada', style: TextStyle(color: Colors.white, fontSize: 16)),
+            const SizedBox(width: 12),
+            SizedBox(
+              width: 80,
+              child: TextField(
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                decoration: InputDecoration(
+                  hintText: '2',
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[700]!),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.pinkAccent),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[800],
+                ),
+                onChanged: (value) {
+                  final newValue = int.tryParse(value);
+                  if (newValue != null && newValue > 0) {
+                    setState(() {
+                      _repeatEveryDays = newValue;
+                    });
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text('dias', style: TextStyle(color: Colors.white, fontSize: 16)),
+          ],
+        ),
+        
+        const SizedBox(height: 20),
+        
+        // Flexível
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey[850],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Flexível', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Switch(
+                    value: _isFlexible,
+                    onChanged: (value) {
+                      setState(() {
+                        _isFlexible = value;
+                      });
+                    },
+                    activeColor: Colors.pinkAccent,
+                    inactiveThumbColor: Colors.grey[700],
+                    inactiveTrackColor: Colors.grey[800],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Será exibida todos os dias até ser concluída.',
+                style: TextStyle(color: Colors.grey[400], fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Alternar dias
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey[850],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Alternar dias', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              Switch(
+                value: _alternateDays,
+                onChanged: (value) {
+                  setState(() {
+                    _alternateDays = value;
+                  });
+                },
+                activeColor: Colors.pinkAccent,
+                inactiveThumbColor: Colors.grey[700],
+                inactiveTrackColor: Colors.grey[800],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
   
   bool _canProceed() {
     if (_selectedFrequency == HabitFrequency.weekly) {
@@ -218,7 +435,13 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
     if (_selectedFrequency == HabitFrequency.specificDaysOfYear) {
       return _selectedYearDates.isNotEmpty;
     }
-    return _selectedFrequency != HabitFrequency.custom; // Allow daily, or custom if it was defined for other uses 
+    if (_selectedFrequency == HabitFrequency.someTimesPerPeriod) {
+      return _timesPerPeriod > 0;
+    }
+    if (_selectedFrequency == HabitFrequency.repeat) {
+      return _repeatEveryDays > 0;
+    }
+    return _selectedFrequency != HabitFrequency.custom; // Allow daily, or custom if it was defined for other uses
   }
 
   @override
@@ -257,13 +480,22 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                           setState(() {
                             _selectedFrequency = value!;
                             if (_selectedFrequency != HabitFrequency.weekly) {
-                              _selectedWeekDays.clear(); 
+                              _selectedWeekDays.clear();
                             }
                             if (_selectedFrequency != HabitFrequency.monthly) {
                               _selectedMonthDays.clear();
                             }
                             if (_selectedFrequency != HabitFrequency.specificDaysOfYear) {
                                _selectedYearDates.clear();
+                            }
+                            if (_selectedFrequency != HabitFrequency.someTimesPerPeriod) {
+                              _timesPerPeriod = 1;
+                              _selectedPeriodType = 'SEMANA';
+                            }
+                            if (_selectedFrequency != HabitFrequency.repeat) {
+                              _repeatEveryDays = 2;
+                              _isFlexible = false;
+                              _alternateDays = false;
                             }
                           });
                         },
@@ -325,6 +557,12 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                   if (_selectedFrequency == HabitFrequency.specificDaysOfYear)
                     _buildYearDaySelector(),
 
+                  if (_selectedFrequency == HabitFrequency.someTimesPerPeriod)
+                    _buildSomeTimesPerPeriodSelector(),
+
+                  if (_selectedFrequency == HabitFrequency.repeat)
+                    _buildRepeatSelector(),
+
                 ],
               ),
             ),
@@ -355,8 +593,13 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                             selectedTrackingType: widget.selectedTrackingType,
                             selectedFrequency: _selectedFrequency, 
                             selectedDaysOfWeek: _selectedFrequency == HabitFrequency.weekly ? _selectedWeekDays : null,
-                            selectedDaysOfMonth: _selectedFrequency == HabitFrequency.monthly ? _selectedMonthDays : null, 
-                            selectedYearDates: _selectedFrequency == HabitFrequency.specificDaysOfYear ? _selectedYearDates : null, 
+                            selectedDaysOfMonth: _selectedFrequency == HabitFrequency.monthly ? _selectedMonthDays : null,
+                            selectedYearDates: _selectedFrequency == HabitFrequency.specificDaysOfYear ? _selectedYearDates : null,
+                            timesPerPeriod: _selectedFrequency == HabitFrequency.someTimesPerPeriod ? _timesPerPeriod : null,
+                            periodType: _selectedFrequency == HabitFrequency.someTimesPerPeriod ? _selectedPeriodType : null,
+                            repeatEveryDays: _selectedFrequency == HabitFrequency.repeat ? _repeatEveryDays : null,
+                            isFlexible: _selectedFrequency == HabitFrequency.repeat ? _isFlexible : null,
+                            alternateDays: _selectedFrequency == HabitFrequency.repeat ? _alternateDays : null,
                           ),
                         ));
                       } : null, 

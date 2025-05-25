@@ -15,6 +15,11 @@ class AddHabitScheduleScreen extends StatefulWidget {
   final List<int>? selectedDaysOfWeek; // For weekly frequency
   final List<int>? selectedDaysOfMonth; // For monthly frequency
   final List<DateTime>? selectedYearDates; // For specific days of year
+  final int? timesPerPeriod; // For some times per period
+  final String? periodType; // For some times per period
+  final int? repeatEveryDays; // For repeat option
+  final bool? isFlexible; // For repeat option
+  final bool? alternateDays; // For repeat option
 
   const AddHabitScheduleScreen({
     super.key,
@@ -28,6 +33,11 @@ class AddHabitScheduleScreen extends StatefulWidget {
     this.selectedDaysOfWeek,
     this.selectedDaysOfMonth,
     this.selectedYearDates, // Added selectedYearDates
+    this.timesPerPeriod,
+    this.periodType,
+    this.repeatEveryDays,
+    this.isFlexible,
+    this.alternateDays,
   });
 
   @override
@@ -218,9 +228,14 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
         description: widget.habitDescription, 
         frequency: widget.selectedFrequency, 
         trackingType: widget.selectedTrackingType, 
-        daysOfWeek: widget.selectedDaysOfWeek, 
+        daysOfWeek: widget.selectedDaysOfWeek,
         daysOfMonth: widget.selectedDaysOfMonth, // Pass days of month
         specificYearDates: widget.selectedYearDates, // Pass specific year dates
+        timesPerPeriod: widget.timesPerPeriod,
+        periodType: widget.periodType,
+        repeatEveryDays: widget.repeatEveryDays,
+        isFlexible: widget.isFlexible,
+        alternateDays: widget.alternateDays,
         startDate: _startDate, 
         targetDate: _isTargetDateEnabled ? _targetDate : null, 
         reminderTime: _reminderTime,
@@ -287,7 +302,7 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                             fontWeight: FontWeight.bold,
                             fontSize: 16)),
                     subtitle: Text(
-                        'Frequência: ${widget.selectedFrequency.toString().split('.').last}${widget.selectedDaysOfWeek != null && widget.selectedDaysOfWeek!.isNotEmpty ? ' (Dias: ${widget.selectedDaysOfWeek!.join(', ')})' : ''}${widget.selectedDaysOfMonth != null && widget.selectedDaysOfMonth!.isNotEmpty ? ' (Dias do Mês: ${widget.selectedDaysOfMonth!.join(', ')})' : ''}${widget.selectedYearDates != null && widget.selectedYearDates!.isNotEmpty ? ' (Datas: ${widget.selectedYearDates!.map((d) => DateFormat('dd/MM/yy').format(d)).join(', ')})' : ''}',
+                        'Frequência: ${widget.selectedFrequency.toString().split('.').last}${widget.selectedDaysOfWeek != null && widget.selectedDaysOfWeek!.isNotEmpty ? ' (Dias: ${widget.selectedDaysOfWeek!.join(', ')})' : ''}${widget.selectedDaysOfMonth != null && widget.selectedDaysOfMonth!.isNotEmpty ? ' (Dias do Mês: ${widget.selectedDaysOfMonth!.join(', ')})' : ''}${widget.selectedYearDates != null && widget.selectedYearDates!.isNotEmpty ? ' (Datas: ${widget.selectedYearDates!.map((d) => DateFormat('dd/MM/yy').format(d)).join(', ')})' : ''}${widget.timesPerPeriod != null && widget.periodType != null ? ' (${widget.timesPerPeriod} vezes por ${widget.periodType!.toLowerCase()})' : ''}${widget.repeatEveryDays != null ? ' (A cada ${widget.repeatEveryDays} dias)' : ''}${widget.isFlexible == true ? ' (Flexível)' : ''}${widget.alternateDays == true ? ' (Alternar dias)' : ''}',
                         style:
                             TextStyle(color: Colors.grey[400], fontSize: 12)),
                     tileColor: Colors.grey[850],

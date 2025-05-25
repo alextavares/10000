@@ -5,7 +5,9 @@ enum HabitFrequency {
   daily,
   weekly,
   monthly,
-  specificDaysOfYear, 
+  specificDaysOfYear,
+  someTimesPerPeriod, // Nova opção: algumas vezes por período
+  repeat, // Nova opção: repetir
   custom,
 }
 
@@ -148,6 +150,11 @@ class Habit {
   final List<int>? daysOfWeek;
   final List<int>? daysOfMonth; // Added daysOfMonth field
   final List<DateTime>? specificYearDates;
+  final int? timesPerPeriod; // Quantas vezes por período (ex: 3 vezes)
+  final String? periodType; // Tipo do período (SEMANA, MÊS, ANO)
+  final int? repeatEveryDays; // A cada X dias (para opção "Repetir")
+  final bool? isFlexible; // Flexível - será exibida todos os dias até ser concluída
+  final bool? alternateDays; // Alternar dias
   final TimeOfDay? reminderTime;
   final bool notificationsEnabled;
   final DateTime createdAt;
@@ -177,6 +184,11 @@ class Habit {
     this.daysOfWeek,
     this.daysOfMonth, // Added to constructor
     this.specificYearDates,
+    this.timesPerPeriod,
+    this.periodType,
+    this.repeatEveryDays,
+    this.isFlexible,
+    this.alternateDays,
     this.reminderTime,
     this.notificationsEnabled = false,
     required this.createdAt,
@@ -207,6 +219,11 @@ class Habit {
     List<int>? daysOfWeek,
     List<int>? daysOfMonth, // Added to copyWith
     List<DateTime>? specificYearDates,
+    int? timesPerPeriod,
+    String? periodType,
+    int? repeatEveryDays,
+    bool? isFlexible,
+    bool? alternateDays,
     TimeOfDay? reminderTime,
     bool? notificationsEnabled,
     DateTime? createdAt,
@@ -236,6 +253,11 @@ class Habit {
       daysOfWeek: daysOfWeek ?? this.daysOfWeek,
       daysOfMonth: daysOfMonth ?? this.daysOfMonth, // Added to copyWith logic
       specificYearDates: specificYearDates ?? this.specificYearDates,
+      timesPerPeriod: timesPerPeriod ?? this.timesPerPeriod,
+      periodType: periodType ?? this.periodType,
+      repeatEveryDays: repeatEveryDays ?? this.repeatEveryDays,
+      isFlexible: isFlexible ?? this.isFlexible,
+      alternateDays: alternateDays ?? this.alternateDays,
       reminderTime: reminderTime ?? this.reminderTime,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       createdAt: createdAt ?? this.createdAt,
@@ -268,6 +290,11 @@ class Habit {
       'daysOfWeek': daysOfWeek,
       'daysOfMonth': daysOfMonth, // Added to toMap
       'specificYearDates': specificYearDates?.map((d) => d.toIso8601String()).toList(),
+      'timesPerPeriod': timesPerPeriod,
+      'periodType': periodType,
+      'repeatEveryDays': repeatEveryDays,
+      'isFlexible': isFlexible,
+      'alternateDays': alternateDays,
       'reminderTime': reminderTime != null
           ? '${reminderTime!.hour}:${reminderTime!.minute}'
           : null,
@@ -309,7 +336,7 @@ class Habit {
       daysOfWeek: map['daysOfWeek'] != null
           ? List<int>.from(map['daysOfWeek'])
           : null,
-      daysOfMonth: map['daysOfMonth'] != null 
+      daysOfMonth: map['daysOfMonth'] != null
           ? List<int>.from(map['daysOfMonth'])
           : null, // Added to fromMap
       specificYearDates: map['specificYearDates'] != null
@@ -317,6 +344,11 @@ class Habit {
               .map((d) => DateTime.parse(d))
               .toList()
           : null,
+      timesPerPeriod: map['timesPerPeriod'],
+      periodType: map['periodType'],
+      repeatEveryDays: map['repeatEveryDays'],
+      isFlexible: map['isFlexible'],
+      alternateDays: map['alternateDays'],
       reminderTime: map['reminderTime'] != null
           ? TimeOfDay(
               hour: int.parse(map['reminderTime'].split(':')[0]),
@@ -455,11 +487,32 @@ class Habit {
         }
         return isSelectedDay;
       case HabitFrequency.specificDaysOfYear:
-        return specificYearDates?.any((date) => 
-            date.year == today.year && 
-            date.month == today.month && 
+        return specificYearDates?.any((date) =>
+            date.year == today.year &&
+            date.month == today.month &&
             date.day == today.day
         ) ?? false;
+      case HabitFrequency.someTimesPerPeriod:
+        // Para "algumas vezes por período", sempre retorna true
+        // A lógica de controle será feita nas telas baseada no progresso
+        return true;
+      case HabitFrequency.repeat:
+        // Para "repetir", implementar lógica baseada nas configurações
+        if (isFlexible == true) {
+          // Se é flexível, sempre mostra até ser concluído
+          return true;
+        }
+        if (repeatEveryDays != null && repeatEveryDays! > 0) {
+          // A cada X dias
+          final daysSinceStart = today.difference(DateTime(startDate.year, startDate.month, startDate.day)).inDays;
+          return daysSinceStart % repeatEveryDays! == 0;
+        }
+        if (alternateDays == true) {
+          // Alternar dias (dia sim, dia não)
+          final daysSinceStart = today.difference(DateTime(startDate.year, startDate.month, startDate.day)).inDays;
+          return daysSinceStart % 2 == 0;
+        }
+        return false;
       case HabitFrequency.custom:
         return false;
     }

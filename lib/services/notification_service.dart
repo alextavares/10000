@@ -246,6 +246,14 @@ class NotificationService {
 
         return nextYearDates.isNotEmpty ? nextYearDates.first : null;
 
+      case HabitFrequency.someTimesPerPeriod:
+        // For "some times per period", treat like daily for notifications
+        return scheduledDate;
+        
+      case HabitFrequency.repeat:
+        // For "repeat", treat like daily for notifications
+        return scheduledDate;
+        
       case HabitFrequency.custom:
         // Custom frequency would need custom logic
         return scheduledDate;
@@ -263,6 +271,10 @@ class NotificationService {
         return DateTimeComponents.dayOfMonthAndTime;
       case HabitFrequency.specificDaysOfYear:
         return DateTimeComponents.dateAndTime;
+      case HabitFrequency.someTimesPerPeriod:
+        return DateTimeComponents.time;
+      case HabitFrequency.repeat:
+        return DateTimeComponents.time;
       case HabitFrequency.custom:
         return DateTimeComponents.time;
     }
