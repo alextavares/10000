@@ -9,10 +9,12 @@ class AddHabitScheduleScreen extends StatefulWidget {
   final IconData selectedCategoryIcon;
   final Color selectedCategoryColor;
   final String habitTitle;
-  final String? habitDescription; // Corrected: This is passed from the previous screen
+  final String? habitDescription; 
   final HabitTrackingType selectedTrackingType;
   final HabitFrequency selectedFrequency;
   final List<int>? selectedDaysOfWeek; // For weekly frequency
+  final List<int>? selectedDaysOfMonth; // For monthly frequency
+  final List<DateTime>? selectedYearDates; // For specific days of year
 
   const AddHabitScheduleScreen({
     super.key,
@@ -20,10 +22,12 @@ class AddHabitScheduleScreen extends StatefulWidget {
     required this.selectedCategoryIcon,
     required this.selectedCategoryColor,
     required this.habitTitle,
-    this.habitDescription, // Ensured it's here
+    this.habitDescription, 
     required this.selectedTrackingType,
     required this.selectedFrequency,
     this.selectedDaysOfWeek,
+    this.selectedDaysOfMonth,
+    this.selectedYearDates, // Added selectedYearDates
   });
 
   @override
@@ -35,12 +39,10 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
   DateTime? _targetDate;
   TimeOfDay? _reminderTime;
   bool _notificationsEnabled = false;
-  // String _priority = 'Normal'; // TODO: Implement priority selection
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isSaving = false;
 
-  // New state variables for Target Date Switch and Duration
   bool _isTargetDateEnabled = false;
   int? _targetDurationDays;
   final TextEditingController _daysController = TextEditingController();
@@ -48,11 +50,10 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
   @override
   void initState() {
     super.initState();
-    // Ensure start date is not in the past if today is picked, or adjust as needed.
-    // For simplicity, allow today. If user picks a past date, DatePicker firstDate handles it.
-    // print(
-    //     "AddHabitScheduleScreen received: title=${widget.habitTitle}, tracking=${widget.selectedTrackingType}, freq=${widget.selectedFrequency}");
-    
+    // Example of how you might use selectedYearDates if needed for initial setup
+    // if (widget.selectedYearDates != null && widget.selectedYearDates!.isNotEmpty) {
+    //   _startDate = widget.selectedYearDates!.first; // Or some other logic
+    // }
     _daysController.addListener(() {
       final days = int.tryParse(_daysController.text);
       if (days != null && days > 0) {
@@ -63,7 +64,6 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
       } else if (_daysController.text.isEmpty) {
         setState(() {
           _targetDurationDays = null;
-          // _targetDate = null; // Keep existing target date if days are cleared, user can clear via date picker or switch
         });
       }
     });
@@ -89,7 +89,7 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                 ? DateTime.now().add(const Duration(days: 1))
                 : _startDate.add(const Duration(days: 1)))
             : DateTime(DateTime.now().year -
-                5), // Allow past start dates up to 5 years
+                5), 
         lastDate: DateTime(DateTime.now().year + 5),
         helpText: isTargetDate
             ? 'SELECIONE A DATA ALVO'
@@ -100,13 +100,13 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: const ColorScheme.light(
-                primary: Colors.pinkAccent, // header background color
-                onPrimary: Colors.white, // header text color
-                onSurface: Colors.black87, // body text color
+                primary: Colors.pinkAccent, 
+                onPrimary: Colors.white, 
+                onSurface: Colors.black87, 
               ),
               textButtonTheme: TextButtonThemeData(
                 style: TextButton.styleFrom(
-                  foregroundColor: Colors.pinkAccent, // button text color
+                  foregroundColor: Colors.pinkAccent, 
                 ),
               ),
             ),
@@ -119,26 +119,23 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
           _targetDate = picked;
           if (_isTargetDateEnabled) { 
             if (_targetDate!.isBefore(_startDate.add(const Duration(days:1)))) {
-              _targetDate = _startDate.add(const Duration(days:1)); // Ensure target is after start
+              _targetDate = _startDate.add(const Duration(days:1));
             }
             _targetDurationDays = _targetDate!.difference(_startDate).inDays;
             _daysController.text = _targetDurationDays.toString();
           }
         } else {
           _startDate = picked;
-          // If target date is enabled and set, and new start date is after or same as target date,
-          // or if duration is set, recalculate target date based on duration.
           if (_isTargetDateEnabled) {
             if (_targetDurationDays != null && _targetDurationDays! > 0) {
               _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
             } else if (_targetDate != null && !_startDate.isBefore(_targetDate!)) {
-              // If no fixed duration, and start date moved beyond target, set target to day after start
               _targetDate = _startDate.add(const Duration(days: 1));
               _targetDurationDays = _targetDate!.difference(_startDate).inDays;
               _daysController.text = _targetDurationDays.toString();
             } else if (_targetDate != null){
                _targetDurationDays = _targetDate!.difference(_startDate).inDays;
-               if(_targetDurationDays! <=0 ) _targetDurationDays =1; // ensure positive
+               if(_targetDurationDays! <=0 ) _targetDurationDays =1; 
               _daysController.text = _targetDurationDays.toString();
             }
           }
@@ -161,17 +158,17 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                 primary: Colors.pinkAccent,
                 onPrimary: Colors.white,
                 onSurface: Colors.black87,
-                surface: Colors.white, // Background of time picker dial
+                surface: Colors.white, 
               ),
               timePickerTheme: TimePickerThemeData(
-                  backgroundColor: Colors.grey[900], // Overall background
+                  backgroundColor: Colors.grey[900], 
                   hourMinuteTextColor: WidgetStateColor.resolveWith((states) =>
                       states.contains(WidgetState.selected)
                           ? Colors.pinkAccent
                           : Colors.white70),
                   hourMinuteColor: WidgetStateColor.resolveWith((states) =>
                       states.contains(WidgetState.selected)
-                          ? Colors.pinkAccent.withAlpha(38) // ~0.15 opacity
+                          ? Colors.pinkAccent.withAlpha(38) 
                           : Colors.grey[800]!),
                   dayPeriodTextColor: WidgetStateColor.resolveWith((states) =>
                       states.contains(WidgetState.selected)
@@ -179,13 +176,13 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                           : Colors.white70),
                   dayPeriodColor: WidgetStateColor.resolveWith((states) =>
                       states.contains(WidgetState.selected)
-                          ? Colors.pinkAccent.withAlpha(38) // ~0.15 opacity
+                          ? Colors.pinkAccent.withAlpha(38) 
                           : Colors.grey[800]!),
                   dialHandColor: Colors.pinkAccent,
                   dialTextColor: WidgetStateColor.resolveWith((states) =>
                       states.contains(WidgetState.selected)
                           ? Colors.white
-                          : Colors.pinkAccent.withAlpha(178)), // ~0.7 opacity
+                          : Colors.pinkAccent.withAlpha(178)), 
                   entryModeIconColor: Colors.pinkAccent,
                   dialBackgroundColor: Colors.grey[850], 
                   helpTextStyle: const TextStyle(color: Colors.white70)),
@@ -218,10 +215,12 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
         categoryName: widget.selectedCategoryName,
         categoryIcon: widget.selectedCategoryIcon,
         categoryColor: widget.selectedCategoryColor,
-        description: widget.habitDescription, // Corrected to use widget.habitDescription
+        description: widget.habitDescription, 
         frequency: widget.selectedFrequency, 
         trackingType: widget.selectedTrackingType, 
         daysOfWeek: widget.selectedDaysOfWeek, 
+        daysOfMonth: widget.selectedDaysOfMonth, // Pass days of month
+        specificYearDates: widget.selectedYearDates, // Pass specific year dates
         startDate: _startDate, 
         targetDate: _isTargetDateEnabled ? _targetDate : null, 
         reminderTime: _reminderTime,
@@ -238,7 +237,6 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
       Navigator.of(context).popUntil((route) => route.isFirst);
     } catch (e) {
       if (!mounted) return;
-      // print('Error saving habit: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text('Erro ao salvar o hábito: ${e.toString()}',
@@ -289,7 +287,7 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                             fontWeight: FontWeight.bold,
                             fontSize: 16)),
                     subtitle: Text(
-                        'Categoria: ${widget.selectedCategoryName} | Acompanhamento: ${widget.selectedTrackingType.toString().split('.').last}',
+                        'Frequência: ${widget.selectedFrequency.toString().split('.').last}${widget.selectedDaysOfWeek != null && widget.selectedDaysOfWeek!.isNotEmpty ? ' (Dias: ${widget.selectedDaysOfWeek!.join(', ')})' : ''}${widget.selectedDaysOfMonth != null && widget.selectedDaysOfMonth!.isNotEmpty ? ' (Dias do Mês: ${widget.selectedDaysOfMonth!.join(', ')})' : ''}${widget.selectedYearDates != null && widget.selectedYearDates!.isNotEmpty ? ' (Datas: ${widget.selectedYearDates!.map((d) => DateFormat('dd/MM/yy').format(d)).join(', ')})' : ''}',
                         style:
                             TextStyle(color: Colors.grey[400], fontSize: 12)),
                     tileColor: Colors.grey[850],
@@ -298,6 +296,7 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                   ),
                   const SizedBox(height: 20),
 
+                  // Start Date
                   ListTile(
                     leading: const Icon(Icons.calendar_today,
                         color: Colors.pinkAccent),
@@ -309,106 +308,102 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                     onTap: () => _selectDate(context, false),
                   ),
 
-                  // --- Updated Target Date Section ---
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.flag_outlined, color: Colors.pinkAccent),
-                        title: const Text('Data Alvo', style: TextStyle(color: Colors.white)),
-                        trailing: Switch(
-                          value: _isTargetDateEnabled,
-                          onChanged: (value) {
-                            setState(() {
-                              _isTargetDateEnabled = value;
-                              if (_isTargetDateEnabled) {
-                                if (_targetDate == null || !_targetDate!.isAfter(_startDate)) {
-                                   _targetDurationDays = 30; // Default to 30 days
-                                  _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
-                                  _daysController.text = _targetDurationDays.toString();
+                  // Target Date
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          leading: const Icon(Icons.flag_outlined, color: Colors.pinkAccent),
+                          title: const Text('Data Alvo', style: TextStyle(color: Colors.white)),
+                          trailing: Switch(
+                            value: _isTargetDateEnabled,
+                            onChanged: (value) {
+                              setState(() {
+                                _isTargetDateEnabled = value;
+                                if (_isTargetDateEnabled) {
+                                  if (_targetDate == null || !_targetDate!.isAfter(_startDate)) {
+                                    _targetDurationDays = 30; 
+                                    _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
+                                    _daysController.text = _targetDurationDays.toString();
+                                  } else {
+                                    _targetDurationDays = _targetDate!.difference(_startDate).inDays;
+                                    if(_targetDurationDays! <= 0) { 
+                                        _targetDurationDays = 30;
+                                        _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
+                                    }
+                                    _daysController.text = _targetDurationDays.toString();
+                                  }
                                 } else {
-                                   _targetDurationDays = _targetDate!.difference(_startDate).inDays;
-                                   if(_targetDurationDays! <= 0) { 
-                                       _targetDurationDays = 30;
-                                       _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
-                                   }
-                                   _daysController.text = _targetDurationDays.toString();
                                 }
-                              } else {
-                                // _targetDate = null; // Keep date but not duration, or clear both?
-                                // _targetDurationDays = null;
-                                // _daysController.clear();
-                              }
-                            });
-                          },
-                          activeColor: Colors.pinkAccent,
-                           inactiveThumbColor: Colors.grey[700],
-                           inactiveTrackColor: Colors.grey[800]?.withAlpha(178), // ~0.7 opacity
-                        ),
-                      ),
-                      if (_isTargetDateEnabled)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 70.0, right: 16.0, bottom: 16.0, top: 0), // Adjusted left padding to align with ListTile text
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: InkWell(
-                                  onTap: () => _selectDate(context, true),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[800],
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.grey[700]!)
-                                    ),
-                                    child: Text(
-                                      _targetDate == null
-                                          ? 'Selecionar data'
-                                          : DateFormat('dd/MM/yyyy').format(_targetDate!),
-                                      style: TextStyle(color: _targetDate == null ? Colors.grey[400] : Colors.white, fontSize: 15),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              SizedBox(
-                                width: 70, // Fixed width for the days TextField
-                                child: TextField(
-                                  controller: _daysController,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)],
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                                  decoration: InputDecoration(
-                                    hintText: 'dias',
-                                    hintStyle: TextStyle(color: Colors.grey[500]),
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.grey[700]!),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(color: Colors.pinkAccent),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.grey[800],
-                                  ),
-                                ),
-                              ),
-                               const Padding(
-                                padding: EdgeInsets.only(left: 8.0),
-                                child: Text("dias.", style: TextStyle(color: Colors.white, fontSize: 16)),
-                              )
-                            ],
+                              });
+                            },
+                            activeColor: Colors.pinkAccent,
+                            inactiveThumbColor: Colors.grey[700],
+                            inactiveTrackColor: Colors.grey[800]?.withAlpha(178), 
                           ),
                         ),
-                    ],
-                  ),
-                  // --- End of Updated Target Date Section ---
+                        if (_isTargetDateEnabled)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 70.0, right: 16.0, bottom: 16.0, top: 0), 
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: InkWell(
+                                    onTap: () => _selectDate(context, true),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[800],
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.grey[700]!)
+                                      ),
+                                      child: Text(
+                                        _targetDate == null
+                                            ? 'Selecionar data'
+                                            : DateFormat('dd/MM/yyyy').format(_targetDate!),
+                                        style: TextStyle(color: _targetDate == null ? Colors.grey[400] : Colors.white, fontSize: 15),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: 70, 
+                                  child: TextField(
+                                    controller: _daysController,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)],
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                                    decoration: InputDecoration(
+                                      hintText: 'dias',
+                                      hintStyle: TextStyle(color: Colors.grey[500]),
+                                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.grey[700]!),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(color: Colors.pinkAccent),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      filled: true,
+                                      fillColor: Colors.grey[800],
+                                    ),
+                                  ),
+                                ),
+                                 const Padding(
+                                  padding: EdgeInsets.only(left: 8.0),
+                                  child: Text("dias.", style: TextStyle(color: Colors.white, fontSize: 16)),
+                                )
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
 
                   const Divider(color: Colors.grey),
 
@@ -450,7 +445,7 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
                       activeColor: Colors.pinkAccent,
                       inactiveThumbColor: Colors.grey[700],
                       inactiveTrackColor: Colors.grey[800],
-                      tileColor: Colors.grey[850]?.withAlpha(128), // ~0.5 opacity
+                      tileColor: Colors.grey[850]?.withAlpha(128), 
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),

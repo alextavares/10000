@@ -161,13 +161,22 @@ class HomeScreenState extends State<HomeScreen> {
           showHabit = true;
         }
       } else if (habit.frequency == habit_model.HabitFrequency.monthly) {
-        if (habit.startDate.day == _selectedDate.day) {
+        if (habit.daysOfMonth != null && habit.daysOfMonth!.contains(_selectedDate.day)) {
           showHabit = true;
-        } else if (habit.startDate.day > 28) { 
-            DateTime lastDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 0);
-            if (_selectedDate.day == lastDayOfMonth.day) {
-                 showHabit = true;
-            }
+        } else if (habit.daysOfMonth != null && habit.daysOfMonth!.contains(0)) {
+          // Check if today is the last day of the month
+          final lastDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 0).day;
+          if (_selectedDate.day == lastDayOfMonth) {
+            showHabit = true;
+          }
+        }
+      } else if (habit.frequency == habit_model.HabitFrequency.specificDaysOfYear) {
+        if (habit.specificYearDates != null) {
+          showHabit = habit.specificYearDates!.any((date) =>
+            date.year == _selectedDate.year &&
+            date.month == _selectedDate.month &&
+            date.day == _selectedDate.day
+          );
         }
       }
       return showHabit;

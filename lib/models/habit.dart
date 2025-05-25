@@ -5,15 +5,16 @@ enum HabitFrequency {
   daily,
   weekly,
   monthly,
+  specificDaysOfYear, 
   custom,
 }
 
 /// Represents the type of tracking for a habit.
 enum HabitTrackingType {
-  simOuNao,      // Simple yes/no completion
-  quantia,       // Numeric goal (e.g., drink 8 glasses of water)
-  cronometro,    // Time-based goal (e.g., meditate for 30 minutes)
-  listaAtividades, // List of activities/subtasks (premium feature)
+  simOuNao,      
+  quantia,       
+  cronometro,    
+  listaAtividades, 
 }
 
 /// Represents a subtask for habits with list tracking type.
@@ -61,9 +62,9 @@ class HabitSubtask {
 class HabitDailyProgress {
   final DateTime date;
   final bool isCompleted;
-  final double? quantityAchieved; // For quantia type
-  final Duration? timeSpent;      // For cronometro type
-  final List<HabitSubtask>? subtasks; // For listaAtividades type
+  final double? quantityAchieved; 
+  final Duration? timeSpent;      
+  final List<HabitSubtask>? subtasks; 
 
   HabitDailyProgress({
     required this.date,
@@ -115,7 +116,6 @@ class HabitDailyProgress {
     );
   }
 
-  /// Calculates completion percentage for this day
   double getCompletionPercentage(HabitTrackingType trackingType, {
     double? targetQuantity,
     Duration? targetTime,
@@ -123,15 +123,12 @@ class HabitDailyProgress {
     switch (trackingType) {
       case HabitTrackingType.simOuNao:
         return isCompleted ? 1.0 : 0.0;
-
       case HabitTrackingType.quantia:
         if (targetQuantity == null || quantityAchieved == null) return 0.0;
         return (quantityAchieved! / targetQuantity).clamp(0.0, 1.0);
-
       case HabitTrackingType.cronometro:
         if (targetTime == null || timeSpent == null) return 0.0;
         return (timeSpent!.inSeconds / targetTime.inSeconds).clamp(0.0, 1.0);
-
       case HabitTrackingType.listaAtividades:
         if (subtasks == null || subtasks!.isEmpty) return 0.0;
         int completed = subtasks!.where((s) => s.isCompleted).length;
@@ -140,82 +137,34 @@ class HabitDailyProgress {
   }
 }
 
-/// Represents a habit that the user wants to track.
 class Habit {
-  /// Unique identifier for the habit
   final String id;
-
-  /// Title of the habit
   final String title;
-
-  /// Optional description of the habit
   final String? description;
-
-  /// Category of the habit (e.g., Health, Productivity, etc.)
   final String category;
-
-  /// Icon to represent the habit
   final IconData icon;
-
-  /// Color associated with the habit
   final Color color;
-
-  /// Frequency of the habit (e.g., daily, weekly, etc.)
   final HabitFrequency frequency;
-
-  /// Days of the week when the habit should be performed (for weekly habits)
   final List<int>? daysOfWeek;
-
-  /// Time of day when the habit should be performed
+  final List<int>? daysOfMonth; // Added daysOfMonth field
+  final List<DateTime>? specificYearDates;
   final TimeOfDay? reminderTime;
-
-  /// Whether notifications are enabled for this habit
   final bool notificationsEnabled;
-
-  /// Date when the habit was created
   final DateTime createdAt;
-
-  /// Date when the habit was last modified
   final DateTime updatedAt;
-
-  /// AI-generated suggestions for this habit
   final List<String>? aiSuggestions;
-
-  /// Streak count (number of consecutive completions)
   int streak;
-
-  /// Longest streak achieved
   int longestStreak;
-
-  /// Total number of completions
   int totalCompletions;
-
-  /// Map of completion dates and their status
   final Map<DateTime, bool> completionHistory;
-
-  /// Type of tracking for this habit
   final HabitTrackingType trackingType;
-
-  /// Target quantity for quantia tracking type
   final double? targetQuantity;
-
-  /// Unit for quantity tracking (e.g., "copos", "páginas", "km")
   final String? quantityUnit;
-
-  /// Target time for cronometro tracking type
   final Duration? targetTime;
-
-  /// List of subtasks for listaAtividades tracking type
   final List<HabitSubtask>? subtasks;
-
-  /// Map of daily progress for advanced tracking
   final Map<DateTime, HabitDailyProgress> dailyProgress;
-
-  /// Date when the habit starts
-  final DateTime startDate; // Added field
-
-  /// Date when the habit ends (optional)
-  final DateTime? targetDate; // Added field
+  final DateTime startDate;
+  final DateTime? targetDate;
 
   Habit({
     required this.id,
@@ -226,6 +175,8 @@ class Habit {
     required this.color,
     required this.frequency,
     this.daysOfWeek,
+    this.daysOfMonth, // Added to constructor
+    this.specificYearDates,
     this.reminderTime,
     this.notificationsEnabled = false,
     required this.createdAt,
@@ -241,11 +192,10 @@ class Habit {
     this.targetTime,
     this.subtasks,
     required this.dailyProgress,
-    required this.startDate, // Added to constructor
-    this.targetDate,      // Added to constructor
+    required this.startDate,
+    this.targetDate,
   });
 
-  /// Creates a copy of this Habit with the given fields replaced with the new values.
   Habit copyWith({
     String? id,
     String? title,
@@ -255,6 +205,8 @@ class Habit {
     Color? color,
     HabitFrequency? frequency,
     List<int>? daysOfWeek,
+    List<int>? daysOfMonth, // Added to copyWith
+    List<DateTime>? specificYearDates,
     TimeOfDay? reminderTime,
     bool? notificationsEnabled,
     DateTime? createdAt,
@@ -270,8 +222,8 @@ class Habit {
     Duration? targetTime,
     List<HabitSubtask>? subtasks,
     Map<DateTime, HabitDailyProgress>? dailyProgress,
-    DateTime? startDate, // Added to copyWith
-    DateTime? targetDate, // Added to copyWith
+    DateTime? startDate,
+    DateTime? targetDate,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -282,6 +234,8 @@ class Habit {
       color: color ?? this.color,
       frequency: frequency ?? this.frequency,
       daysOfWeek: daysOfWeek ?? this.daysOfWeek,
+      daysOfMonth: daysOfMonth ?? this.daysOfMonth, // Added to copyWith logic
+      specificYearDates: specificYearDates ?? this.specificYearDates,
       reminderTime: reminderTime ?? this.reminderTime,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       createdAt: createdAt ?? this.createdAt,
@@ -297,12 +251,11 @@ class Habit {
       targetTime: targetTime ?? this.targetTime,
       subtasks: subtasks ?? this.subtasks,
       dailyProgress: dailyProgress ?? this.dailyProgress,
-      startDate: startDate ?? this.startDate, // Added to copyWith
-      targetDate: targetDate ?? this.targetDate, // Added to copyWith
+      startDate: startDate ?? this.startDate,
+      targetDate: targetDate ?? this.targetDate,
     );
   }
 
-  /// Converts the Habit to a Map.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -313,6 +266,8 @@ class Habit {
       'color': color.value,
       'frequency': frequency.toString(),
       'daysOfWeek': daysOfWeek,
+      'daysOfMonth': daysOfMonth, // Added to toMap
+      'specificYearDates': specificYearDates?.map((d) => d.toIso8601String()).toList(),
       'reminderTime': reminderTime != null
           ? '${reminderTime!.hour}:${reminderTime!.minute}'
           : null,
@@ -334,12 +289,11 @@ class Habit {
       'dailyProgress': dailyProgress.map(
         (key, value) => MapEntry(key.toIso8601String(), value.toMap()),
       ),
-      'startDate': startDate.toIso8601String(), // Added to toMap
-      'targetDate': targetDate?.toIso8601String(), // Added to toMap
+      'startDate': startDate.toIso8601String(),
+      'targetDate': targetDate?.toIso8601String(),
     };
   }
 
-  /// Creates a Habit from a Map.
   factory Habit.fromMap(Map<String, dynamic> map) {
     return Habit(
       id: map['id'],
@@ -354,6 +308,14 @@ class Habit {
       ),
       daysOfWeek: map['daysOfWeek'] != null
           ? List<int>.from(map['daysOfWeek'])
+          : null,
+      daysOfMonth: map['daysOfMonth'] != null 
+          ? List<int>.from(map['daysOfMonth'])
+          : null, // Added to fromMap
+      specificYearDates: map['specificYearDates'] != null
+          ? (map['specificYearDates'] as List)
+              .map((d) => DateTime.parse(d))
+              .toList()
           : null,
       reminderTime: map['reminderTime'] != null
           ? TimeOfDay(
@@ -394,12 +356,11 @@ class Habit {
               ),
             )
           : {},
-      startDate: DateTime.parse(map['startDate']), // Added to fromMap
-      targetDate: map['targetDate'] != null ? DateTime.parse(map['targetDate']) : null, // Added to fromMap
+      startDate: DateTime.parse(map['startDate']),
+      targetDate: map['targetDate'] != null ? DateTime.parse(map['targetDate']) : null,
     );
   }
 
-  /// Marks the habit as completed for the given date.
   void markCompleted(DateTime date) {
     final dateOnly = DateTime(date.year, date.month, date.day);
     completionHistory[dateOnly] = true;
@@ -407,7 +368,6 @@ class Habit {
     updateStreak();
   }
 
-  /// Marks the habit as not completed for the given date.
   void markNotCompleted(DateTime date) {
     final dateOnly = DateTime(date.year, date.month, date.day);
     completionHistory[dateOnly] = false;
@@ -417,7 +377,6 @@ class Habit {
     updateStreak();
   }
 
-  /// Records progress for advanced tracking types
   void recordProgress(DateTime date, {
     bool? isCompleted,
     double? quantityAchieved,
@@ -425,7 +384,6 @@ class Habit {
     List<HabitSubtask>? subtasks,
   }) {
     final dateOnly = DateTime(date.year, date.month, date.day);
-
     final progress = HabitDailyProgress(
       date: dateOnly,
       isCompleted: isCompleted ?? false,
@@ -433,10 +391,7 @@ class Habit {
       timeSpent: timeSpent,
       subtasks: subtasks,
     );
-
     dailyProgress[dateOnly] = progress;
-
-    // Update completion history based on tracking type
     bool completed = false;
     switch (trackingType) {
       case HabitTrackingType.simOuNao:
@@ -458,7 +413,6 @@ class Habit {
         }
         break;
     }
-
     if (completed) {
       markCompleted(date);
     } else {
@@ -466,71 +420,84 @@ class Habit {
     }
   }
 
-  /// Updates the streak count based on the completion history.
-  /// Public method that can be called from outside the class.
   void updateStreak() {
     int currentStreak = 0;
     DateTime today = DateTime.now();
     DateTime dateToCheck = DateTime(today.year, today.month, today.day);
-
-    // Check backwards from today
     while (completionHistory[dateToCheck] == true) {
       currentStreak++;
       dateToCheck = dateToCheck.subtract(const Duration(days: 1));
     }
-
     streak = currentStreak;
     if (streak > longestStreak) {
       longestStreak = streak;
     }
   }
 
-  /// Checks if the habit is due today.
   bool isDueToday() {
     final now = DateTime.now();
-    final today = now.weekday; // 1 = Monday, 7 = Sunday
-
+    final today = DateTime(now.year, now.month, now.day);
     switch (frequency) {
       case HabitFrequency.daily:
         return true;
       case HabitFrequency.weekly:
-        return daysOfWeek?.contains(today) ?? false;
+        return daysOfWeek?.contains(now.weekday) ?? false;
       case HabitFrequency.monthly:
-        // Due on the same day of the month as when it was created
-        return now.day == createdAt.day;
+        // Check if today is one of the selected days of the month
+        // Or if it's the last day of the month and 0 was selected.
+        bool isSelectedDay = daysOfMonth?.contains(now.day) ?? false;
+        bool isLastDayAndSelected = (daysOfMonth?.contains(0) ?? false) && 
+                                    (now.month != DateTime.february || !isLeapYear(now.year) ? (now.day == daysInMonth(now.year, now.month)) : (now.day == 29 || now.day == 28) ); // Simplified, needs robust last day logic
+        // A more robust way for last day:
+        if (daysOfMonth?.contains(0) ?? false) {
+          final lastDayOfMonth = DateTime(now.year, now.month + 1, 0).day;
+          if (now.day == lastDayOfMonth) return true;
+        }
+        return isSelectedDay;
+      case HabitFrequency.specificDaysOfYear:
+        return specificYearDates?.any((date) => 
+            date.year == today.year && 
+            date.month == today.month && 
+            date.day == today.day
+        ) ?? false;
       case HabitFrequency.custom:
-        // Custom logic would go here
-        return daysOfWeek?.contains(today) ?? false;
+        return false;
     }
   }
 
-  /// Checks if the habit was completed today.
+  // Helper function to check for leap year (for February)
+  bool isLeapYear(int year) => (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+
+  // Helper function to get days in month (simplified)
+  int daysInMonth(int year, int month) {
+    if (month == DateTime.february) {
+      return isLeapYear(year) ? 29 : 28;
+    }
+    const days = <int>[0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return days[month];
+  }
+
   bool isCompletedToday() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return completionHistory[today] == true;
   }
 
-  /// Gets today's progress for advanced tracking
   HabitDailyProgress? getTodaysProgress() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return dailyProgress[today];
   }
 
-  /// Calculates the completion rate as a percentage.
   double getCompletionRate() {
     if (completionHistory.isEmpty) return 0.0;
-
     int completed = completionHistory.values.where((v) => v).length;
     return completed / completionHistory.length;
   }
 
-  /// Gets completion percentage for today based on tracking type
   double getTodaysCompletionPercentage() {
     final progress = getTodaysProgress();
     if (progress == null) return 0.0;
-
     return progress.getCompletionPercentage(
       trackingType,
       targetQuantity: targetQuantity,

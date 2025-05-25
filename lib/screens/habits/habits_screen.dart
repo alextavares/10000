@@ -309,9 +309,25 @@ class _HabitsScreenState extends State<HabitsScreen> {
                                 }
                                 print('  - SHOWING: $showHabit');
                               } else if (habit.frequency == habit_model.HabitFrequency.monthly) {
-                                print('  - Monthly. Habit creation day: ${habit.createdAt.day}, Selected day: ${_selectedDate.day}');
-                                if (habit.createdAt.day == _selectedDate.day) {
+                                print('  - Monthly. Habit daysOfMonth: ${habit.daysOfMonth}, Selected day: ${_selectedDate.day}');
+                                if (habit.daysOfMonth != null && habit.daysOfMonth!.contains(_selectedDate.day)) {
                                   showHabit = true;
+                                } else if (habit.daysOfMonth != null && habit.daysOfMonth!.contains(0)) {
+                                  // Check if today is the last day of the month
+                                  final lastDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 0).day;
+                                  if (_selectedDate.day == lastDayOfMonth) {
+                                    showHabit = true;
+                                  }
+                                }
+                                print('  - SHOWING: $showHabit');
+                              } else if (habit.frequency == habit_model.HabitFrequency.specificDaysOfYear) {
+                                print('  - SpecificDaysOfYear. Habit specificYearDates: ${habit.specificYearDates}, Selected date: $_selectedDate');
+                                if (habit.specificYearDates != null) {
+                                  showHabit = habit.specificYearDates!.any((date) =>
+                                    date.year == _selectedDate.year &&
+                                    date.month == _selectedDate.month &&
+                                    date.day == _selectedDate.day
+                                  );
                                 }
                                 print('  - SHOWING: $showHabit');
                               }

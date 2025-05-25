@@ -75,6 +75,8 @@ class MockHabitService implements HabitService {
     required HabitTrackingType trackingType,
     required DateTime startDate,
     List<int>? daysOfWeek,
+    List<int>? daysOfMonth,
+    List<DateTime>? specificYearDates,
     DateTime? targetDate,
     TimeOfDay? reminderTime,
     bool notificationsEnabled = false,

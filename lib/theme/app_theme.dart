@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Colors - Updated to match dark theme from images
@@ -36,50 +35,48 @@ class AppTheme {
       onError: Colors.white,
       brightness: Brightness.light,
     ),
-    textTheme: GoogleFonts.poppinsTextTheme(
-      const TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: textColor,
-        ),
-        displayMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: textColor,
-        ),
-        displaySmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: textColor,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: textColor,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: textColor,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: textColor,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: textColor,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: textColor,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: subtitleColor,
-        ),
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: textColor,
+      ),
+      displayMedium: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: textColor,
+      ),
+      displaySmall: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: textColor,
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: textColor,
+      ),
+      headlineSmall: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: textColor,
+      ),
+      titleLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: textColor,
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 16,
+        color: textColor,
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 14,
+        color: textColor,
+      ),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        color: subtitleColor,
       ),
     ),
     appBarTheme: const AppBarTheme(
@@ -98,38 +95,6 @@ class AppTheme {
           horizontal: 16,
           vertical: 12,
         ),
-      ),
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        foregroundColor: primaryColor,
-        side: const BorderSide(color: primaryColor),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-      ),
-    ),
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: primaryColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-      ),
-    ),
-    cardTheme: CardThemeData(
-      color: surfaceColor,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -156,59 +121,6 @@ class AppTheme {
         vertical: 16,
       ),
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: surfaceColor,
-      selectedItemColor: primaryColor,
-      unselectedItemColor: subtitleColor,
-      type: BottomNavigationBarType.fixed,
-      elevation: 8,
-    ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: primaryColor,
-      foregroundColor: Colors.white,
-    ),
-    dividerTheme: const DividerThemeData(
-      color: dividerColor,
-      thickness: 1,
-      space: 1,
-    ),
-    checkboxTheme: CheckboxThemeData(
-      fillColor: WidgetStateProperty.resolveWith<Color>((states) {
-        if (states.contains(WidgetState.selected)) {
-          return primaryColor;
-        }
-        return Colors.transparent;
-      }),
-      side: const BorderSide(color: subtitleColor),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4),
-      ),
-    ),
-    switchTheme: SwitchThemeData(
-      thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
-        if (states.contains(WidgetState.selected)) {
-          return primaryColor;
-        }
-        return Colors.grey;
-      }),
-      trackColor: WidgetStateProperty.resolveWith<Color>((states) {
-        if (states.contains(WidgetState.selected)) {
-          return primaryColor.withOpacity(0.5);
-        }
-        return Colors.grey.withOpacity(0.5);
-      }),
-    ),
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: primaryColor,
-    ),
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: Colors.black87,
-      contentTextStyle: const TextStyle(color: Colors.white),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      behavior: SnackBarBehavior.floating,
-    ),
   );
 
   // Dark Theme
@@ -228,50 +140,48 @@ class AppTheme {
       onError: Colors.white,
       brightness: Brightness.dark,
     ),
-    textTheme: GoogleFonts.poppinsTextTheme(
-      const TextTheme(
-        displayLarge: TextStyle(
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        displayMedium: TextStyle(
-          fontSize: 28,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        displaySmall: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-        headlineMedium: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-        titleLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: Colors.white,
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Colors.white,
-        ),
-        bodySmall: TextStyle(
-          fontSize: 12,
-          color: Colors.white70,
-        ),
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      displayMedium: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      displaySmall: TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+      ),
+      headlineSmall: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+      ),
+      titleLarge: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+      ),
+      bodyLarge: TextStyle(
+        fontSize: 16,
+        color: Colors.white,
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 14,
+        color: Colors.white,
+      ),
+      bodySmall: TextStyle(
+        fontSize: 12,
+        color: Colors.white70,
       ),
     ),
     appBarTheme: const AppBarTheme(
@@ -280,25 +190,6 @@ class AppTheme {
       elevation: 0,
     ),
     scaffoldBackgroundColor: const Color(0xFF121212),
-    cardTheme: CardThemeData(
-      color: const Color(0xFF1F1F1F),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Color(0xFF1F1F1F),
-      selectedItemColor: primaryColor,
-      unselectedItemColor: Colors.white70,
-      type: BottomNavigationBarType.fixed,
-      elevation: 8,
-    ),
-    dividerTheme: const DividerThemeData(
-      color: Color(0xFF2C2C2C),
-      thickness: 1,
-      space: 1,
-    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: const Color(0xFF1F1F1F),
@@ -323,18 +214,6 @@ class AppTheme {
         vertical: 16,
       ),
     ),
-  );
-
-  // AI Widget Styles
-  static BoxDecoration aiCardDecoration = BoxDecoration(
-    color: aiBackgroundColor,
-    borderRadius: BorderRadius.circular(12),
-    border: Border.all(color: aiSecondaryColor),
-  );
-
-  static TextStyle aiTextStyle = const TextStyle(
-    color: Color(0xFF4A148C),
-    fontWeight: FontWeight.w500,
   );
 
   // Method to determine text color based on background color

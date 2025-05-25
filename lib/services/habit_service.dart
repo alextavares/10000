@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/models/habit.dart'; // Use alias for the entire model file if still needed, else direct
+import 'package:myapp/models/habit.dart'; 
 import 'package:uuid/uuid.dart';
 
 class HabitService {
@@ -15,20 +15,18 @@ class HabitService {
     required String categoryName,
     required IconData categoryIcon,
     required Color categoryColor,
-    required HabitFrequency frequency, // Changed from AddHabitCycle to HabitFrequency
-    required HabitTrackingType trackingType, // Added trackingType
-    required DateTime startDate, // Should be passed from AddHabitScheduleScreen
+    required HabitFrequency frequency, 
+    required HabitTrackingType trackingType, 
+    required DateTime startDate, 
     List<int>? daysOfWeek, 
+    List<int>? daysOfMonth, // Added daysOfMonth
+    List<DateTime>? specificYearDates, // Added specificYearDates
     DateTime? targetDate,
     TimeOfDay? reminderTime,
     bool notificationsEnabled = false,
-    String priority = 'Normal', // Priority can be added later if needed
+    String priority = 'Normal', 
     String? description,
   }) async {
-    // The 'frequency' parameter is now directly HabitFrequency, so no switch case needed here for conversion.
-    // It's assumed that if it's weekly, daysOfWeek will be provided.
-    // If it's custom, specific configuration for custom frequency might be needed elsewhere or passed.
-
     final newHabit = Habit(
       id: _uuid.v4(),
       title: title,
@@ -36,26 +34,33 @@ class HabitService {
       category: categoryName,
       icon: categoryIcon,
       color: categoryColor,
-      frequency: frequency, // Use the passed frequency directly
-      trackingType: trackingType, // Use the passed trackingType
+      frequency: frequency, 
+      trackingType: trackingType, 
       daysOfWeek: daysOfWeek,
+      // Pass daysOfMonth to Habit constructor (ensure Habit model is updated)
+      daysOfMonth: daysOfMonth,
+      specificYearDates: specificYearDates, // Pass specificYearDates to Habit constructor
       reminderTime: reminderTime,
       notificationsEnabled: notificationsEnabled,
-      createdAt: DateTime.now(), // Changed to DateTime.now()
+      createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       streak: 0,
       longestStreak: 0,
       totalCompletions: 0,
       completionHistory: {},
       dailyProgress: {}, 
-      startDate: startDate, // Added startDate
-      targetDate: targetDate, // Added targetDate
-      // targetQuantity, quantityUnit, targetTime, subtasks would be set based on trackingType
-      // For simOuNao, these are not applicable initially.
+      startDate: startDate, 
+      targetDate: targetDate, 
     );
 
     _habits.add(newHabit);
-    debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}, Tracking: ${newHabit.trackingType}');
+    debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}, Tracking: ${newHabit.trackingType}, Freq: ${newHabit.frequency}');
+    if (daysOfMonth != null) {
+      debugPrint('Days of Month: ${daysOfMonth.join(', ')}');
+    }
+    if (specificYearDates != null) {
+      debugPrint('Specific Year Dates: ${specificYearDates.map((d) => d.toIso8601String()).join(', ')}');
+    }
     debugPrint('Total habits: ${_habits.length}');
   }
 
@@ -90,12 +95,7 @@ class HabitService {
   Future<void> markHabitCompletion(String habitId, DateTime date, bool completed) async {
     final habit = await getHabitById(habitId);
     if (habit != null) {
-      // Ensure the habit model's markCompleted/NotCompleted handles dailyProgress for simOuNao if needed
-      // Or, update dailyProgress here.
-      habit.recordProgress(date, isCompleted: completed); // Use recordProgress for unified update
-      // No need to call updateHabit separately if recordProgress modifies the habit and HabitService uses references
-      // or if getHabitById returns a copy, then updateHabit(habit) would be needed.
-      // Assuming _habits list holds references, direct modification via habit.recordProgress is enough before a UI update.
+      habit.recordProgress(date, isCompleted: completed); 
       debugPrint('Habit $habitId completion for $date marked as $completed');
     } else {
        debugPrint('Habit $habitId not found for marking completion.');

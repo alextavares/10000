@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
@@ -39,7 +40,9 @@ class NotificationService {
   /// Handles notification tap events.
   void _onNotificationTapped(NotificationResponse response) {
     // Handle notification tap based on the payload
-    print('Notification tapped: ${response.payload}');
+    // TODO: Replace with proper logging framework
+    // For now, using debugPrint which is acceptable in development
+    debugPrint('Notification tapped: ${response.payload}');
     
     // You can add custom handling here, such as navigating to a specific screen
     // based on the notification payload
@@ -124,7 +127,6 @@ class NotificationService {
     }
 
     final now = tz.TZDateTime.now(tz.local);
-    final today = now.weekday; // 1 = Monday, 7 = Sunday
 
     // Create a TZDateTime for the reminder time today
     tz.TZDateTime scheduledDate = tz.TZDateTime(
@@ -204,6 +206,46 @@ class NotificationService {
         
         return scheduledDate;
 
+      case HabitFrequency.specificDaysOfYear:
+        // Find the next specific date in the year
+        if (habit.specificYearDates == null || habit.specificYearDates!.isEmpty) {
+          return null;
+        }
+
+        // Convert specific dates to TZDateTime for this year
+        final currentYear = now.year;
+        final specificDates = habit.specificYearDates!
+            .map((date) => tz.TZDateTime(
+                  tz.local,
+                  currentYear,
+                  date.month,
+                  date.day,
+                  habit.reminderTime!.hour,
+                  habit.reminderTime!.minute,
+                ))
+            .where((date) => date.isAfter(now))
+            .toList()
+          ..sort();
+
+        if (specificDates.isNotEmpty) {
+          return specificDates.first;
+        }
+
+        // If no dates this year, try next year
+        final nextYearDates = habit.specificYearDates!
+            .map((date) => tz.TZDateTime(
+                  tz.local,
+                  currentYear + 1,
+                  date.month,
+                  date.day,
+                  habit.reminderTime!.hour,
+                  habit.reminderTime!.minute,
+                ))
+            .toList()
+          ..sort();
+
+        return nextYearDates.isNotEmpty ? nextYearDates.first : null;
+
       case HabitFrequency.custom:
         // Custom frequency would need custom logic
         return scheduledDate;
@@ -219,6 +261,8 @@ class NotificationService {
         return DateTimeComponents.dayOfWeekAndTime;
       case HabitFrequency.monthly:
         return DateTimeComponents.dayOfMonthAndTime;
+      case HabitFrequency.specificDaysOfYear:
+        return DateTimeComponents.dateAndTime;
       case HabitFrequency.custom:
         return DateTimeComponents.time;
     }
