@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart'; 
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/models/habit.dart' as habit_model;
 import 'package:myapp/services/service_provider.dart';
-import 'package:myapp/services/habit_service.dart'; 
+import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/widgets/habit_card.dart';
 import 'package:myapp/screens/habit/add_habit_screen.dart';
 import 'package:myapp/theme/app_theme.dart';
@@ -229,7 +230,19 @@ class _HabitsScreenState extends State<HabitsScreen> {
   @override
   Widget build(BuildContext context) {
     print('[HabitsScreen] Building UI. Selected date: $_selectedDate, weekday: ${_selectedDate.weekday}');
-    return Scaffold(
+    return Consumer<HabitService>(
+      builder: (context, habitService, child) {
+        // Atualiza a referência do serviço
+        _habitService = habitService;
+        
+        // Recarrega os hábitos quando há mudanças
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _fetchHabits();
+          }
+        });
+        
+        return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Column(
         children: [
@@ -375,6 +388,8 @@ class _HabitsScreenState extends State<HabitsScreen> {
         backgroundColor: AppTheme.primaryColor,
         child: const Icon(Icons.add, color: Colors.white),
       ),
+    );
+      },
     );
   }
 }

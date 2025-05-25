@@ -204,7 +204,7 @@ class FakeUser implements User {
   List<MultiFactorInfo> get providerSettings => [];
 }
 
-class MockHabitService implements HabitService {
+class MockHabitService extends ChangeNotifier implements HabitService {
   @override
   Future<List<Habit>> getHabits() async => [];
 

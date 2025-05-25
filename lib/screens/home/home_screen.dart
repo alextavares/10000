@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/models/task.dart' as task_model;
 import 'package:myapp/models/habit.dart' as habit_model;
-import 'package:myapp/screens/task/add_task_screen.dart'; 
+import 'package:myapp/screens/task/add_task_screen.dart';
 import 'package:myapp/services/service_provider.dart';
+import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/widgets/task_card.dart';
 import 'package:myapp/widgets/habit_card.dart'; // Adicionar import do HabitCard
 
@@ -308,7 +310,9 @@ class HomeScreenState extends State<HomeScreen> {
     if (_weekDays.isEmpty) {
       return const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE91E63))));
     }
-    return Scaffold(
+    return Consumer<HabitService>(
+      builder: (context, habitService, child) {
+        return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
@@ -409,6 +413,8 @@ class HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+      },
     );
   }
 }

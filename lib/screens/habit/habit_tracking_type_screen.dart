@@ -225,35 +225,18 @@ class _HabitTrackingTypeScreenState extends State<HabitTrackingTypeScreen> {
         ));
         break;
       case HabitTrackingType.quantia:
-        // TODO: Navigate to AddHabitQuantityConfigScreen, passing category and trackingType
-        print('Navigate to Quantity Config Screen');
-        // Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddHabitQuantityConfigScreen(
-        //   categoryName: widget.categoryName,
-        //   categoryIcon: widget.categoryIcon,
-        //   categoryColor: widget.categoryColor,
-        //   trackingType: _selectedTrackingType!,
-        // )));
-        break;
       case HabitTrackingType.cronometro:
-        // TODO: Navigate to AddHabitTimerConfigScreen, passing category and trackingType
-        print('Navigate to Timer Config Screen');
-        // Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddHabitTimerConfigScreen(
-        //   categoryName: widget.categoryName,
-        //   categoryIcon: widget.categoryIcon,
-        //   categoryColor: widget.categoryColor,
-        //   trackingType: _selectedTrackingType!,
-        // )));
-        break;
       case HabitTrackingType.listaAtividades:
-        // TODO: Navigate to AddHabitSubtasksConfigScreen, passing category and trackingType
-        // Handle premium feature logic here if necessary
-        print('Navigate to Subtasks Config Screen (Premium)');
-        // Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddHabitSubtasksConfigScreen(
-        //   categoryName: widget.categoryName,
-        //   categoryIcon: widget.categoryIcon,
-        //   categoryColor: widget.categoryColor,
-        //   trackingType: _selectedTrackingType!,
-        // )));
+        // Para outros tipos de rastreamento, navegar diretamente para a tela de título
+        // pois as telas específicas de configuração ainda não foram implementadas
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AddHabitTitleScreen(
+            selectedCategoryName: widget.categoryName,
+            selectedCategoryIcon: widget.categoryIcon,
+            selectedCategoryColor: widget.categoryColor,
+            selectedTrackingType: _selectedTrackingType!,
+          ),
+        ));
         break;
     }
   }

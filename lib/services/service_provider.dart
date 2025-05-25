@@ -52,7 +52,7 @@ class ServiceProvider extends InheritedWidget {
         Provider<AuthService>(
           create: (_) => AuthService(),
         ),
-        Provider<HabitService>(
+        ChangeNotifierProvider<HabitService>(
           create: (_) => HabitService(),
         ),
         Provider<TaskService>(

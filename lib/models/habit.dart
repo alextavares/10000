@@ -478,8 +478,8 @@ class Habit {
         // Check if today is one of the selected days of the month
         // Or if it's the last day of the month and 0 was selected.
         bool isSelectedDay = daysOfMonth?.contains(now.day) ?? false;
-        bool isLastDayAndSelected = (daysOfMonth?.contains(0) ?? false) && 
-                                    (now.month != DateTime.february || !isLeapYear(now.year) ? (now.day == daysInMonth(now.year, now.month)) : (now.day == 29 || now.day == 28) ); // Simplified, needs robust last day logic
+        // bool isLastDayAndSelected = (daysOfMonth?.contains(0) ?? false) &&
+        //                             (now.month != DateTime.february || !isLeapYear(now.year) ? (now.day == daysInMonth(now.year, now.month)) : (now.day == 29 || now.day == 28) ); // Simplified, needs robust last day logic
         // A more robust way for last day:
         if (daysOfMonth?.contains(0) ?? false) {
           final lastDayOfMonth = DateTime(now.year, now.month + 1, 0).day;

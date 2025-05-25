@@ -204,6 +204,22 @@ class HabitCard extends StatelessWidget {
           return 'Semanalmente'; // Changed to Portuguese
         case HabitFrequency.monthly:
            return 'Mensalmente (Dia ${habit.createdAt.day})'; // Changed to Portuguese
+        case HabitFrequency.specificDaysOfYear:
+          return 'Datas específicas do ano';
+        case HabitFrequency.someTimesPerPeriod:
+          if (habit.timesPerPeriod != null && habit.periodType != null) {
+            return '${habit.timesPerPeriod}x por ${habit.periodType!.toLowerCase()}';
+          }
+          return 'Algumas vezes por período';
+        case HabitFrequency.repeat:
+          if (habit.isFlexible == true) {
+            return 'Flexível';
+          } else if (habit.alternateDays == true) {
+            return 'Alternar dias';
+          } else if (habit.repeatEveryDays != null) {
+            return 'A cada ${habit.repeatEveryDays} dias';
+          }
+          return 'Repetir';
         case HabitFrequency.custom:
           if (habit.daysOfWeek != null && habit.daysOfWeek!.isNotEmpty) {
             List<String> dayAbbreviations = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']; // Portuguese
@@ -211,8 +227,6 @@ class HabitCard extends StatelessWidget {
             return 'Personalizado ($selectedDays)'; // Changed to Portuguese
           }
           return 'Personalizado'; // Changed to Portuguese
-        default:
-          return 'Sem lembrete'; // Changed to Portuguese
       }
     }
   }

@@ -57,7 +57,7 @@ class MockAuthService implements AuthService {
   Future<UserCredential?> signInWithGoogle() async => null;
 }
 
-class MockHabitService implements HabitService {
+class MockHabitService extends ChangeNotifier implements HabitService {
   @override
   Future<List<Habit>> getHabits() async => [];
 

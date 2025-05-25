@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models/habit.dart'; 
 import 'package:uuid/uuid.dart';
 
-class HabitService {
+class HabitService extends ChangeNotifier {
   final List<Habit> _habits = [];
   final _uuid = const Uuid();
 
@@ -64,6 +64,7 @@ class HabitService {
     );
 
     _habits.add(newHabit);
+    notifyListeners(); // Notifica as telas que escutam mudanças
     debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}, Tracking: ${newHabit.trackingType}, Freq: ${newHabit.frequency}');
     if (daysOfMonth != null) {
       debugPrint('Days of Month: ${daysOfMonth.join(', ')}');
