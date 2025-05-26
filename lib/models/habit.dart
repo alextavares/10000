@@ -466,24 +466,24 @@ class Habit {
     }
   }
 
-  bool isDueToday() {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+  bool isDueToday([DateTime? date]) {
+    final checkDate = date ?? DateTime.now();
+    final today = DateTime(checkDate.year, checkDate.month, checkDate.day);
     switch (frequency) {
       case HabitFrequency.daily:
         return true;
       case HabitFrequency.weekly:
-        return daysOfWeek?.contains(now.weekday) ?? false;
+        final result = daysOfWeek?.contains(checkDate.weekday) ?? false;
+        print('Weekly habit check: $title, today=${checkDate.weekday}, daysOfWeek=$daysOfWeek, result=$result');
+        return result;
       case HabitFrequency.monthly:
         // Check if today is one of the selected days of the month
         // Or if it's the last day of the month and 0 was selected.
-        bool isSelectedDay = daysOfMonth?.contains(now.day) ?? false;
-        // bool isLastDayAndSelected = (daysOfMonth?.contains(0) ?? false) &&
-        //                             (now.month != DateTime.february || !isLeapYear(now.year) ? (now.day == daysInMonth(now.year, now.month)) : (now.day == 29 || now.day == 28) ); // Simplified, needs robust last day logic
+        bool isSelectedDay = daysOfMonth?.contains(checkDate.day) ?? false;
         // A more robust way for last day:
         if (daysOfMonth?.contains(0) ?? false) {
-          final lastDayOfMonth = DateTime(now.year, now.month + 1, 0).day;
-          if (now.day == lastDayOfMonth) return true;
+          final lastDayOfMonth = DateTime(checkDate.year, checkDate.month + 1, 0).day;
+          if (checkDate.day == lastDayOfMonth) return true;
         }
         return isSelectedDay;
       case HabitFrequency.specificDaysOfYear:

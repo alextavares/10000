@@ -80,7 +80,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
         print('[HabitsScreen] Habits fetched. Count: ${habits.length}');
         if (habits.isNotEmpty) {
           for (int i = 0; i < (habits.length > 2 ? 2 : habits.length); i++) { // Print details of first 2 habits
-            print('[HabitsScreen] Habit ${i+1}: ${habits[i].title}, Freq: ${habits[i].frequency}, DaysOfWeek: ${habits[i].daysOfWeek}, CreatedAt: ${habits[i].createdAt.toIso8601String()}, Tracking: ${habits[i].trackingType}');
+            print('[HabitsScreen] Habit ${i+1}: ${habits[i].title}, Freq: ${habits[i].frequency}, DaysOfWeek: ${habits[i].daysOfWeek}, DaysOfMonth: ${habits[i].daysOfMonth}, CreatedAt: ${habits[i].createdAt.toIso8601String()}, Tracking: ${habits[i].trackingType}');
           }
         }
         setState(() {

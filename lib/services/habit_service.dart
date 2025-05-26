@@ -66,6 +66,9 @@ class HabitService extends ChangeNotifier {
     _habits.add(newHabit);
     notifyListeners(); // Notifica as telas que escutam mudanças
     debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}, Tracking: ${newHabit.trackingType}, Freq: ${newHabit.frequency}');
+    if (daysOfWeek != null) {
+      debugPrint('Days of Week: ${daysOfWeek.join(', ')}');
+    }
     if (daysOfMonth != null) {
       debugPrint('Days of Month: ${daysOfMonth.join(', ')}');
     }
@@ -87,6 +90,7 @@ class HabitService extends ChangeNotifier {
     final index = _habits.indexWhere((h) => h.id == habitToUpdate.id);
     if (index != -1) {
       _habits[index] = habitToUpdate.copyWith(updatedAt: DateTime.now());
+      notifyListeners(); // Notifica as telas que escutam mudanças
       debugPrint('Habit updated: ${habitToUpdate.title}');
     } else {
       debugPrint('Habit with id ${habitToUpdate.id} not found for update.');
@@ -97,6 +101,7 @@ class HabitService extends ChangeNotifier {
     final initialLength = _habits.length;
     _habits.removeWhere((habit) => habit.id == id);
     if (_habits.length < initialLength) {
+      notifyListeners(); // Notifica as telas que escutam mudanças
       debugPrint('Habit deleted: $id');
     } else {
       debugPrint('Habit with id $id not found for deletion.');
@@ -107,6 +112,7 @@ class HabitService extends ChangeNotifier {
     final habit = await getHabitById(habitId);
     if (habit != null) {
       habit.recordProgress(date, isCompleted: completed); 
+      notifyListeners(); // Notifica as telas que escutam mudanças
       debugPrint('Habit $habitId completion for $date marked as $completed');
     } else {
        debugPrint('Habit $habitId not found for marking completion.');

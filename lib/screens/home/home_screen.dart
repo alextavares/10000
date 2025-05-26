@@ -159,19 +159,27 @@ class HomeScreenState extends State<HomeScreen> {
       if (habit.frequency == habit_model.HabitFrequency.daily) {
         showHabit = true;
       } else if (habit.frequency == habit_model.HabitFrequency.weekly || habit.frequency == habit_model.HabitFrequency.custom) {
+        print('Home: Weekly habit ${habit.title}, daysOfWeek: ${habit.daysOfWeek}, selectedWeekday: ${_selectedDate.weekday}');
         if (habit.daysOfWeek != null && habit.daysOfWeek!.contains(_selectedDate.weekday)) {
           showHabit = true;
+          print('Home: Showing weekly habit ${habit.title}');
+        } else {
+          print('Home: NOT showing weekly habit ${habit.title}');
         }
       } else if (habit.frequency == habit_model.HabitFrequency.monthly) {
+        print('Home: Monthly habit ${habit.title}, daysOfMonth: ${habit.daysOfMonth}, selectedDay: ${_selectedDate.day}');
         if (habit.daysOfMonth != null && habit.daysOfMonth!.contains(_selectedDate.day)) {
           showHabit = true;
+          print('Home: Showing monthly habit ${habit.title} - day match');
         } else if (habit.daysOfMonth != null && habit.daysOfMonth!.contains(0)) {
           // Check if today is the last day of the month
           final lastDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 0).day;
           if (_selectedDate.day == lastDayOfMonth) {
             showHabit = true;
+            print('Home: Showing monthly habit ${habit.title} - last day of month');
           }
         }
+        print('Home: Monthly habit ${habit.title} - SHOWING: $showHabit');
       } else if (habit.frequency == habit_model.HabitFrequency.specificDaysOfYear) {
         if (habit.specificYearDates != null) {
           showHabit = habit.specificYearDates!.any((date) =>
