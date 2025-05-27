@@ -63,73 +63,159 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
   }
 
   Widget _buildMonthDaySelector() {
-    List<Widget> dayButtons = [];
-    for (int i = 1; i <= 31; i++) {
-      final isSelected = _selectedMonthDays.contains(i);
-      dayButtons.add(
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              if (isSelected) {
-                _selectedMonthDays.remove(i);
-              } else {
-                _selectedMonthDays.add(i);
-              }
-              _selectedMonthDays.sort();
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: isSelected ? Colors.pinkAccent : Colors.grey[800],
-            foregroundColor: Colors.white,
-            shape: const CircleBorder(),
-            padding: const EdgeInsets.all(10),
-            minimumSize: const Size(40, 40), 
-          ),
-          child: Text('$i', style: const TextStyle(fontSize: 14)),
-        ),
-      );
-    }
-    final isLastDaySelected = _selectedMonthDays.contains(0); // Assuming 0 represents "Last Day"
-    dayButtons.add(
-       ElevatedButton(
-          onPressed: () {
-            setState(() {
-              if (isLastDaySelected) {
-                _selectedMonthDays.remove(0);
-              } else {
-                _selectedMonthDays.add(0);
-              }
-               _selectedMonthDays.sort();
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: isLastDaySelected ? Colors.pinkAccent : Colors.grey[800],
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12 ),
-          ),
-          child: const Text('Últi...', style: TextStyle(fontSize: 14)), // Abbreviated for "Último dia"
-        ),
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        const Text('Selecione os dias do mês:', style: TextStyle(color: Colors.white70, fontSize: 15)),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8.0, 
-          runSpacing: 8.0, 
-          alignment: WrapAlignment.start, 
-          children: dayButtons,
+        Row(
+          children: [
+            const Icon(Icons.calendar_month, color: Colors.pinkAccent, size: 18),
+            const SizedBox(width: 8),
+            const Text('Selecione os dias do mês:', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+          ],
         ),
+        const SizedBox(height: 4),
+        Text(
+          'Toque nos dias do mês em que você deseja realizar este hábito',
+          style: TextStyle(color: Colors.grey[400], fontSize: 13),
+        ),
+        const SizedBox(height: 16),
+        
+        // Grade organizada de dias (7 colunas)
+        SizedBox(
+          height: 200, // Altura fixa para garantir que seja visível
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 1,
+            ),
+            itemCount: 32, // 31 dias + último dia
+            itemBuilder: (context, index) {
+            if (index < 31) {
+              final day = index + 1;
+              final isSelected = _selectedMonthDays.contains(day);
+              return GestureDetector(
+                onTap: () {
+                  print('Day $day tapped, currently selected: $isSelected');
+                  setState(() {
+                    if (isSelected) {
+                      _selectedMonthDays.remove(day);
+                      print('Removed day $day, now selected: $_selectedMonthDays');
+                    } else {
+                      _selectedMonthDays.add(day);
+                      print('Added day $day, now selected: $_selectedMonthDays');
+                    }
+                    _selectedMonthDays.sort();
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.pinkAccent : Colors.grey[800],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isSelected ? Colors.pinkAccent : Colors.grey[600]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$day',
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.grey[300],
+                        fontSize: 16,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              // Último dia do mês
+              final isSelected = _selectedMonthDays.contains(0);
+              return GestureDetector(
+                onTap: () {
+                  print('Last day tapped, currently selected: $isSelected');
+                  setState(() {
+                    if (isSelected) {
+                      _selectedMonthDays.remove(0);
+                      print('Removed last day, now selected: $_selectedMonthDays');
+                    } else {
+                      _selectedMonthDays.add(0);
+                      print('Added last day, now selected: $_selectedMonthDays');
+                    }
+                    _selectedMonthDays.sort();
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.pinkAccent : Colors.grey[800],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: isSelected ? Colors.pinkAccent : Colors.grey[600]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Últ.',
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.grey[300],
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+        ),
+        
+        const SizedBox(height: 16),
+        
         if (_selectedMonthDays.isEmpty)
-          Padding(
-            padding: const EdgeInsets.only(top: 12.0, left: 4.0),
-            child: Text(
-              'Selecione pelo menos um dia',
-              style: TextStyle(color: Colors.redAccent.shade100, fontSize: 13),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.redAccent.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.redAccent.shade100, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Selecione pelo menos um dia do mês para continuar.',
+                    style: TextStyle(color: Colors.redAccent.shade100, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.green.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.green.shade300, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Dias selecionados: ${_selectedMonthDays.length}',
+                  style: TextStyle(color: Colors.green.shade300, fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
           ),
       ],
@@ -141,16 +227,60 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
-        Text(
-          _selectedYearDates.isEmpty 
-            ? 'Selecione pelo menos um dia' 
-            : 'Datas selecionadas: ${_selectedYearDates.length}',
-          style: TextStyle(
-            color: _selectedYearDates.isEmpty ? Colors.redAccent.shade100 : Colors.white,
-            fontSize: 13
-          )
+        Row(
+          children: [
+            const Icon(Icons.event, color: Colors.pinkAccent, size: 18),
+            const SizedBox(width: 8),
+            const Text('Selecione datas específicas:', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+          ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 4),
+        Text(
+          'Toque nas datas do calendário em que você deseja realizar este hábito',
+          style: TextStyle(color: Colors.grey[400], fontSize: 13),
+        ),
+        const SizedBox(height: 12),
+        if (_selectedYearDates.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.redAccent.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.redAccent.shade100, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Selecione pelo menos uma data para continuar.',
+                    style: TextStyle(color: Colors.redAccent.shade100, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.green.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.green.shade300, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Datas selecionadas: ${_selectedYearDates.length}',
+                  style: TextStyle(color: Colors.green.shade300, fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
             color: Colors.grey[850],
@@ -471,22 +601,36 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                 children: [
                   ..._frequencyOptions.entries.map((entry) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      padding: const EdgeInsets.symmetric(vertical: 2.0),
                       child: RadioListTile<HabitFrequency>(
-                        title: Text(entry.value, style: const TextStyle(color: Colors.white, fontSize: 16)),
+                        title: Text(entry.value, style: const TextStyle(color: Colors.white, fontSize: 15)),
                         value: entry.key,
                         groupValue: _selectedFrequency,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+                        dense: true,
                         onChanged: (HabitFrequency? value) {
                           setState(() {
                             _selectedFrequency = value!;
                             if (_selectedFrequency != HabitFrequency.weekly) {
                               _selectedWeekDays.clear();
+                            } else if (_selectedFrequency == HabitFrequency.weekly && _selectedWeekDays.isEmpty) {
+                              // Auto-select today's weekday when switching to weekly
+                              final today = DateTime.now();
+                              _selectedWeekDays.add(today.weekday);
                             }
                             if (_selectedFrequency != HabitFrequency.monthly) {
                               _selectedMonthDays.clear();
+                            } else if (_selectedFrequency == HabitFrequency.monthly && _selectedMonthDays.isEmpty) {
+                              // Auto-select today's day of month when switching to monthly
+                              final today = DateTime.now();
+                              _selectedMonthDays.add(today.day);
                             }
                             if (_selectedFrequency != HabitFrequency.specificDaysOfYear) {
                                _selectedYearDates.clear();
+                            } else if (_selectedFrequency == HabitFrequency.specificDaysOfYear && _selectedYearDates.isEmpty) {
+                              // Auto-select today's date when switching to specific days of year
+                              final today = DateTime.now();
+                              _selectedYearDates.add(DateTime(today.year, today.month, today.day));
                             }
                             if (_selectedFrequency != HabitFrequency.someTimesPerPeriod) {
                               _timesPerPeriod = 1;
@@ -513,8 +657,19 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Selecione os dias da semana:', style: TextStyle(color: Colors.white70, fontSize: 15)),
-                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today, color: Colors.pinkAccent, size: 18),
+                              const SizedBox(width: 8),
+                              const Text('Selecione os dias da semana:', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Toque nos dias em que você deseja realizar este hábito',
+                            style: TextStyle(color: Colors.grey[400], fontSize: 13),
+                          ),
+                          const SizedBox(height: 16),
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
@@ -545,7 +700,26 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                           if (_selectedWeekDays.isEmpty)
                              Padding(
                                padding: const EdgeInsets.only(top:12.0),
-                               child: Text('Selecione pelo menos um dia da semana.', style: TextStyle(color: Colors.redAccent.shade100, fontSize: 13)),
+                               child: Container(
+                                 padding: const EdgeInsets.all(12),
+                                 decoration: BoxDecoration(
+                                   color: Colors.redAccent.withOpacity(0.1),
+                                   borderRadius: BorderRadius.circular(8),
+                                   border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                                 ),
+                                 child: Row(
+                                   children: [
+                                     Icon(Icons.warning_amber_rounded, color: Colors.redAccent.shade100, size: 20),
+                                     const SizedBox(width: 8),
+                                     Expanded(
+                                       child: Text(
+                                         'Selecione pelo menos um dia da semana para continuar.',
+                                         style: TextStyle(color: Colors.redAccent.shade100, fontSize: 13),
+                                       ),
+                                     ),
+                                   ],
+                                 ),
+                               ),
                              )
                         ],
                       ),
@@ -581,8 +755,10 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: _canProceed() 
+                    onPressed: _canProceed()
                     ? () {
+                        
+                        
                         Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => AddHabitScheduleScreen(
                             selectedCategoryName: widget.selectedCategoryName,
@@ -591,7 +767,7 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                             habitTitle: widget.habitTitle,
                             habitDescription: widget.habitDescription,
                             selectedTrackingType: widget.selectedTrackingType,
-                            selectedFrequency: _selectedFrequency, 
+                            selectedFrequency: _selectedFrequency,
                             selectedDaysOfWeek: _selectedFrequency == HabitFrequency.weekly ? _selectedWeekDays : null,
                             selectedDaysOfMonth: _selectedFrequency == HabitFrequency.monthly ? _selectedMonthDays : null,
                             selectedYearDates: _selectedFrequency == HabitFrequency.specificDaysOfYear ? _selectedYearDates : null,
@@ -602,18 +778,25 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                             alternateDays: _selectedFrequency == HabitFrequency.repeat ? _alternateDays : null,
                           ),
                         ));
-                      } : null, 
+                      } : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pinkAccent,
+                      backgroundColor: _canProceed() ? Colors.pinkAccent : Colors.grey[700],
+                      foregroundColor: _canProceed() ? Colors.white : Colors.grey[400],
                       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                       textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                       disabledBackgroundColor: Colors.grey[700],
-                       disabledForegroundColor: Colors.grey[400],
+                      disabledBackgroundColor: Colors.grey[700],
+                      disabledForegroundColor: Colors.grey[400],
                     ),
-                    child: const Text('PRÓXIMA', style: TextStyle(color: Colors.white)),
+                    child: Text(
+                      'PRÓXIMA',
+                      style: TextStyle(
+                        color: _canProceed() ? Colors.white : Colors.grey[400],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -219,15 +219,17 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
     });
 
     try {
+      
+      
       final habitService = ServiceProvider.of(context).habitService;
       await habitService.addHabit(
         title: widget.habitTitle,
         categoryName: widget.selectedCategoryName,
         categoryIcon: widget.selectedCategoryIcon,
         categoryColor: widget.selectedCategoryColor,
-        description: widget.habitDescription, 
-        frequency: widget.selectedFrequency, 
-        trackingType: widget.selectedTrackingType, 
+        description: widget.habitDescription,
+        frequency: widget.selectedFrequency,
+        trackingType: widget.selectedTrackingType,
         daysOfWeek: widget.selectedDaysOfWeek,
         daysOfMonth: widget.selectedDaysOfMonth, // Pass days of month
         specificYearDates: widget.selectedYearDates, // Pass specific year dates
@@ -236,8 +238,8 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
         repeatEveryDays: widget.repeatEveryDays,
         isFlexible: widget.isFlexible,
         alternateDays: widget.alternateDays,
-        startDate: _startDate, 
-        targetDate: _isTargetDateEnabled ? _targetDate : null, 
+        startDate: _startDate,
+        targetDate: _isTargetDateEnabled ? _targetDate : null,
         reminderTime: _reminderTime,
         notificationsEnabled: _notificationsEnabled,
       );

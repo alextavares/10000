@@ -66,14 +66,11 @@ class HabitService extends ChangeNotifier {
     _habits.add(newHabit);
     notifyListeners(); // Notifica as telas que escutam mudanças
     debugPrint('Habit added: ${newHabit.title}, ID: ${newHabit.id}, Tracking: ${newHabit.trackingType}, Freq: ${newHabit.frequency}');
-    if (daysOfWeek != null) {
-      debugPrint('Days of Week: ${daysOfWeek.join(', ')}');
+    if (newHabit.daysOfWeek != null) {
+      debugPrint('Days of Week: ${newHabit.daysOfWeek!.join(', ')}');
     }
-    if (daysOfMonth != null) {
-      debugPrint('Days of Month: ${daysOfMonth.join(', ')}');
-    }
-    if (specificYearDates != null) {
-      debugPrint('Specific Year Dates: ${specificYearDates.map((d) => d.toIso8601String()).join(', ')}');
+    if (newHabit.daysOfMonth != null) {
+      debugPrint('Days of Month: ${newHabit.daysOfMonth!.join(', ')}');
     }
     debugPrint('Total habits: ${_habits.length}');
   }

@@ -235,13 +235,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
         // Atualiza a referência do serviço
         _habitService = habitService;
         
-        // Recarrega os hábitos quando há mudanças
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            _fetchHabits();
-          }
-        });
-        
         return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: Column(
