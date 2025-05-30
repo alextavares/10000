@@ -2,9 +2,12 @@ import 'package:flutter/foundation.dart'; // Import for kDebugMode
 import 'package:flutter/material.dart';
 import 'package:myapp/models/task.dart';
 import 'package:myapp/screens/task/add_task_screen.dart'; // Import AddTaskScreen
+import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart'; // Import AddRecurringTaskScreen
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/widgets/task_card.dart'; // Import the new TaskCard
+import 'package:myapp/widgets/recurring_task_card.dart'; // Import the new RecurringTaskCard
 import 'package:myapp/screens/habit/add_habit_screen.dart'; // Added import
+import 'package:myapp/models/recurring_task.dart';
 
 class TasksScreen extends StatefulWidget {
   final TabController tabController; // Accept TabController
@@ -17,11 +20,13 @@ class TasksScreen extends StatefulWidget {
 
 class TasksScreenState extends State<TasksScreen> { // Made public
   late Future<List<Task>> _tasksFuture;
+  late Future<List<RecurringTask>> _recurringTasksFuture;
 
   @override
   void initState() {
     super.initState();
-    _tasksFuture = Future.value([]); 
+    _tasksFuture = Future.value([]);
+    _recurringTasksFuture = Future.value([]);
     if (kDebugMode) {
       print('[TasksScreen] initState: Initialized.');
     }
@@ -34,6 +39,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
       print('[TasksScreen] didChangeDependencies: Fetching tasks.');
     }
     _tasksFuture = _fetchTasks();
+    _recurringTasksFuture = _fetchRecurringTasks();
   }
 
   Future<List<Task>> _fetchTasks() async {
@@ -50,12 +56,27 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     return tasks;
   }
 
-  void refreshTasks() { 
+  Future<List<RecurringTask>> _fetchRecurringTasks() async {
+    if (kDebugMode) {
+      print('[TasksScreen] _fetchRecurringTasks: Attempting to fetch recurring tasks.');
+    }
+    // Ensure context is valid and mounted before accessing ServiceProvider
+    if (!mounted) return [];
+    final recurringTaskService = ServiceProvider.of(context).recurringTaskService;
+    final recurringTasks = await recurringTaskService.getRecurringTasks();
+    if (kDebugMode) {
+      print('[TasksScreen] _fetchRecurringTasks: Fetched ${recurringTasks.length} recurring tasks.');
+    }
+    return recurringTasks;
+  }
+
+  void refreshTasks() {
     if (kDebugMode) {
       print('[TasksScreen] refreshTasks: Refreshing tasks.');
     }
     setState(() {
       _tasksFuture = _fetchTasks();
+      _recurringTasksFuture = _fetchRecurringTasks();
     });
   }
 
@@ -118,6 +139,65 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     }
   }
 
+  void _handleEditRecurringTask(RecurringTask recurringTask) async {
+    if (kDebugMode) {
+      print('[TasksScreen] _handleEditRecurringTask: Editing recurring task ID: ${recurringTask.id}');
+    }
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddRecurringTaskScreen(recurringTaskToEdit: recurringTask),
+      ),
+    );
+    if (result == true) {
+      refreshTasks();
+    }
+  }
+
+  void _handleDeleteRecurringTask(String recurringTaskId) async {
+    if (kDebugMode) {
+      print('[TasksScreen] _handleDeleteRecurringTask: Deleting recurring task ID: $recurringTaskId');
+    }
+    // Ensure context is valid and mounted
+    if (!mounted) return;
+    final recurringTaskService = ServiceProvider.of(context).recurringTaskService;
+
+    final confirmDelete = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Exclusão'),
+          content: const Text('Tem certeza de que deseja excluir esta tarefa recorrente?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmDelete == true) {
+      final success = await recurringTaskService.deleteRecurringTask(recurringTaskId);
+      // Ensure context is valid and mounted for ScaffoldMessenger
+      if (!mounted) return;
+      if (success) {
+        refreshTasks();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Tarefa recorrente excluída com sucesso')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Falha ao excluir tarefa recorrente')),
+        );
+      }
+    }
+  }
+
   void _showAddTaskOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -145,15 +225,17 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                 leading: Icon(Icons.repeat, color: Colors.blueAccent[100]), // Adjusted icon color
                 title: const Text('Tarefa recorrente', style: TextStyle(color: Colors.white)),
                 subtitle: Text('Atividade que se repete ao longo do tempo, sem rastreamento ou estatísticas.', style: TextStyle(color: Colors.grey[400])),
-                onTap: () {
+                onTap: () async {
                   Navigator.of(context).pop();
                   if (kDebugMode) {
-                    print('[TasksScreen] _showAddTaskOptions: Navigating to Add Recurring Task (Not Implemented).');
+                    print('[TasksScreen] _showAddTaskOptions: Navigating to AddRecurringTaskScreen.');
                   }
-                  // TODO: Navigate to the screen for adding a recurring task
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Navegação para Adicionar Tarefa Recorrente pendente.')),
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const AddRecurringTaskScreen()),
                   );
+                  if (result == true) {
+                    refreshTasks();
+                  }
                 },
               ),
               ListTile(
@@ -264,15 +346,61 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     );
   }
   
-  // Dedicated view for recurring tasks, can be expanded later
+  // Dedicated view for recurring tasks
   Widget _buildRecurringTasksView() {
     if (kDebugMode) {
-      print('[TasksScreen] _buildRecurringTasksView: Building recurring tasks view (currently empty).');
+      print('[TasksScreen] _buildRecurringTasksView: Building recurring tasks view.');
     }
-    // For now, shows the same empty state, but can be customized
-    return _buildEmptyState(
-      message: 'Sem tarefas recorrentes pendentes',
-      subMessage: 'Adicione suas tarefas recorrentes aqui.',
+    return FutureBuilder<List<RecurringTask>>(
+      future: _recurringTasksFuture,
+      builder: (context, snapshot) {
+        if (kDebugMode) {
+          print('[TasksScreen] FutureBuilder (Recurring): Connection state: ${snapshot.connectionState}');
+          if (snapshot.hasData) {
+            print('[TasksScreen] FutureBuilder (Recurring): Has data: ${snapshot.data!.length} recurring tasks.');
+          }
+          if (snapshot.hasError) {
+            print('[TasksScreen] FutureBuilder (Recurring): Has error: ${snapshot.error}');
+          }
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          if (kDebugMode) {
+            print('[TasksScreen] FutureBuilder (Recurring): No recurring tasks found or data is empty.');
+          }
+          return _buildEmptyState(
+            message: 'Sem tarefas recorrentes pendentes',
+            subMessage: 'Adicione suas tarefas recorrentes aqui.',
+          );
+        } else {
+          final recurringTasks = snapshot.data!;
+          if (kDebugMode) {
+            print('[TasksScreen] FutureBuilder (Recurring): Displaying ${recurringTasks.length} recurring tasks.');
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 150.0),
+            itemCount: recurringTasks.length,
+            itemBuilder: (context, index) {
+              final recurringTask = recurringTasks[index];
+              return RecurringTaskCard(
+                recurringTask: recurringTask,
+                onToggleCompletion: (recurringTaskId, completed) {
+                  if (kDebugMode) {
+                    print('[TasksScreen] RecurringTaskCard: Toggling completion for recurring task ID: $recurringTaskId to $completed');
+                  }
+                  ServiceProvider.of(context).recurringTaskService.markRecurringTaskCompletion(recurringTaskId, DateTime.now(), completed);
+                  refreshTasks();
+                },
+                onEdit: () => _handleEditRecurringTask(recurringTask),
+                onDelete: () => _handleDeleteRecurringTask(recurringTask.id),
+              );
+            },
+          );
+        }
+      },
     );
   }
 

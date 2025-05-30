@@ -8,6 +8,7 @@ import 'package:myapp/screens/categories/categories_screen.dart';
 import 'package:myapp/widgets/app_drawer.dart';
 import 'package:myapp/widgets/add_item_bottom_sheet.dart'; // Import the bottom sheet
 import 'package:myapp/screens/habit/add_habit_screen.dart'; // Import AddHabitScreen for navigation
+import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart'; // Import AddRecurringTaskScreen for navigation
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -91,9 +92,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> with Single
                 });
                 break;
               case AddItemType.recurringTask:
-                // TODO: Navigate to the screen for adding a recurring task
-                print('Recurring Task selected. Navigate to Add Recurring Task Screen.');
-                // Example: Navigator.push(context, MaterialPageRoute(builder: (context) => AddRecurringTaskScreen()));
+                print('Recurring Task selected. Navigating to AddRecurringTaskScreen.');
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const AddRecurringTaskScreen()),
+                ).then((result) {
+                  if (result == true) {
+                    if (_widgetTitles[_selectedIndex] == 'Tarefas') {
+                      _tasksScreenKey.currentState?.refreshTasks();
+                    } else if (_widgetTitles[_selectedIndex] == 'Hoje') {
+                      _homeScreenKey.currentState?.refreshScreenData();
+                    }
+                  }
+                });
                 break;
               case AddItemType.task:
                 print('Task selected. Navigating to AddTaskScreen.');
@@ -204,6 +214,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> with Single
           ? FloatingActionButton(
               onPressed: () => _showAddItemBottomSheet(context),
               backgroundColor: const Color(0xFFE91E63),
+              heroTag: 'mainFab', // <--- Added unique heroTag here
               child: const Icon(Icons.add, color: Colors.white),
             )
           : null,

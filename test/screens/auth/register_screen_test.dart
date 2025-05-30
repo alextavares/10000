@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myapp/models/habit.dart';
 import 'package:myapp/models/task.dart';
+import 'package:myapp/models/recurring_task.dart';
 import 'package:myapp/screens/auth/login_screen.dart';
 import 'package:myapp/screens/auth/register_screen.dart';
 import 'package:myapp/services/ai_service.dart';
@@ -10,6 +11,7 @@ import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/services/task_service.dart';
+import 'package:myapp/services/recurring_task_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 
 // Mock Services
@@ -321,6 +323,35 @@ class MockNotificationService implements NotificationService {
   // Future<void> scheduleDailyHabitReminder(Habit habit) async {}
 }
 
+class MockRecurringTaskService implements RecurringTaskService {
+  @override
+  Future<bool> createRecurringTask(RecurringTask recurringTask) async => true;
+  @override
+  Future<bool> updateRecurringTask(RecurringTask recurringTask) async => true;
+  @override
+  Future<bool> deleteRecurringTask(String recurringTaskId) async => true;
+  @override
+  Future<List<RecurringTask>> getRecurringTasks() async => [];
+  @override
+  Future<RecurringTask?> getRecurringTask(String recurringTaskId) async => null;
+  @override
+  Future<List<RecurringTask>> getRecurringTasksDueToday() async => [];
+  @override
+  Future<List<RecurringTask>> getRecurringTasksByCategory(String category) async => [];
+  @override
+  Future<bool> markRecurringTaskCompletion(String recurringTaskId, DateTime date, bool completed) async => true;
+  @override
+  Future<bool> recordRecurringTaskProgress(String recurringTaskId, DateTime date, {bool? isCompleted, List<RecurringTaskSubtask>? subtasks}) async => true;
+  @override
+  Future<Map<String, dynamic>> getRecurringTaskStats(String recurringTaskId) async => {};
+  @override
+  Future<Map<String, List<RecurringTask>>> getRecurringTasksForDateRange(DateTime startDate, DateTime endDate) async => {};
+  @override
+  Stream<List<RecurringTask>> getRecurringTasksStream() => Stream.value([]);
+  @override
+  Stream<List<RecurringTask>> getRecurringTasksDueTodayStream() => Stream.value([]);
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -329,6 +360,7 @@ void main() {
       authService: MockAuthService(),
       habitService: MockHabitService(),
       taskService: MockTaskService(),
+      recurringTaskService: MockRecurringTaskService(),
       aiService: MockAIService(), // AIService might need a constructor argument if not default
       notificationService: MockNotificationService(),
       child: MaterialApp(

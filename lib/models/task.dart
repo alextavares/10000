@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Timestamp
-import 'package:flutter/material.dart'; // For IconData, Color, TimeOfDay
+import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:flutter/material.dart'; 
 
 enum TaskType {
   yesNo,
-  // Future types: multipleChoice, numericalInput, etc.
 }
 
 class Task {
@@ -14,16 +13,12 @@ class Task {
   final TaskType type;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final DateTime? dueDate; // Optional due date for tasks
-  final TimeOfDay? reminderTime; // Optional reminder time
-  final bool notificationsEnabled; // Added notificationsEnabled field
+  final DateTime? dueDate; 
+  final TimeOfDay? reminderTime; 
+  final bool notificationsEnabled; 
 
-  // For Yes/No tasks: Map of completion dates and their status (true for yes, false for no/skipped)
   final Map<DateTime, bool> completionHistory;
-  final bool isCompleted; // Added for consistency
-
-  // Future extensibility:
-  // final Map<String, dynamic>? options; // For multiple choice, numerical ranges, etc.
+  final bool isCompleted; 
 
   Task({
     required this.id,
@@ -35,13 +30,11 @@ class Task {
     required this.updatedAt,
     this.dueDate,
     this.reminderTime,
-    required this.notificationsEnabled, // Added to constructor
+    required this.notificationsEnabled,
     required this.completionHistory,
     required this.isCompleted,
-    // this.options,
   });
 
-  /// Creates a copy of this Task with the given fields replaced with the new values.
   Task copyWith({
     String? id,
     String? title,
@@ -52,7 +45,7 @@ class Task {
     DateTime? updatedAt,
     DateTime? dueDate,
     TimeOfDay? reminderTime,
-    bool? notificationsEnabled, // Added to copyWith
+    bool? notificationsEnabled,
     Map<DateTime, bool>? completionHistory,
     bool? isCompleted,
   }) {
@@ -66,43 +59,46 @@ class Task {
       updatedAt: updatedAt ?? this.updatedAt,
       dueDate: dueDate ?? this.dueDate,
       reminderTime: reminderTime ?? this.reminderTime,
-      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled, // Added to copyWith
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       completionHistory: completionHistory ?? this.completionHistory,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }
 
-  /// Converts the Task to a Map for Firestore.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
       'description': description,
       'category': category,
-      'type': type.toString(), // Store enum as string
-      'createdAt': Timestamp.fromDate(createdAt), // Convert DateTime to Timestamp
-      'updatedAt': Timestamp.fromDate(updatedAt), // Convert DateTime to Timestamp
+      'type': type.toString(), 
+      'createdAt': Timestamp.fromDate(createdAt), 
+      'updatedAt': Timestamp.fromDate(updatedAt), 
       'dueDate': dueDate != null ? Timestamp.fromDate(dueDate!) : null,
-      // MODIFIED: Force null for reminderTime for this test in toMap
-      'reminderTime': reminderTime == null ? null : '${reminderTime!.hour}:${reminderTime!.minute}',
-      'notificationsEnabled': notificationsEnabled, // Added to toMap
-      // MODIFIED: Force an empty map for completionHistory for this test in toMap
+      'reminderTime': reminderTime != null 
+          ? '${reminderTime!.hour}:${reminderTime!.minute}'
+          : null,
+      'notificationsEnabled': notificationsEnabled, 
       'completionHistory': completionHistory.map((key, value) => MapEntry(key.toIso8601String(), value)),
       'isCompleted': isCompleted,
     };
   }
 
-  /// Creates a Task from a Firestore Map.
   factory Task.fromMap(Map<String, dynamic> map) {
     // Helper to convert Firestore Timestamp or ISO String to DateTime
+    // Added null check for safety when parsing dates from Firestore
     DateTime parseDateTime(dynamic dateValue) {
+      if (dateValue == null) {
+        return DateTime.now(); // Provide a fallback if date is null
+      }
       if (dateValue is Timestamp) {
         return dateValue.toDate();
       }
       if (dateValue is String) {
         return DateTime.parse(dateValue);
       }
-      throw ArgumentError('Invalid date format in Task.fromMap: $dateValue');
+      // Fallback for unexpected types, or re-throw if stricter validation is needed
+      return DateTime.now(); 
     }
 
     return Task(
@@ -112,7 +108,7 @@ class Task {
       category: map['category'],
       type: TaskType.values.firstWhere(
         (e) => e.toString() == map['type'],
-        orElse: () => TaskType.yesNo, // Default value if type is missing or invalid
+        orElse: () => TaskType.yesNo, 
       ),
       createdAt: parseDateTime(map['createdAt']),
       updatedAt: parseDateTime(map['updatedAt']),
@@ -123,26 +119,23 @@ class Task {
               minute: int.parse(map['reminderTime'].split(':')[1]),
             )
           : null,
-      notificationsEnabled: map['notificationsEnabled'] ?? false, // Added to fromMap
+      notificationsEnabled: map['notificationsEnabled'] ?? false, 
       completionHistory: (map['completionHistory'] as Map<String, dynamic>? ?? {})
           .map((key, value) => MapEntry(DateTime.parse(key), value as bool)),
       isCompleted: map['isCompleted'] ?? false,
     );
   }
 
-  /// Marks the task as completed for the given date.
   void markCompleted(DateTime date) {
     final dateOnly = DateTime(date.year, date.month, date.day);
     completionHistory[dateOnly] = true;
   }
 
-  /// Marks the task as not completed for the given date.
   void markNotCompleted(DateTime date) {
     final dateOnly = DateTime(date.year, date.month, date.day);
     completionHistory[dateOnly] = false;
   }
 
-  /// Checks if the task was completed today.
   bool isCompletedToday() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

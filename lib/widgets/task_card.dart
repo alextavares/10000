@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/task.dart';
-// Import AppTheme
 
 class TaskCard extends StatelessWidget {
   final Task task;
@@ -22,10 +21,10 @@ class TaskCard extends StatelessWidget {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 16.0),
-      color: Theme.of(context).cardTheme.color, // Use theme color
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), // Match HabitCard
+      color: Colors.grey[850], // Use dark gray for card background
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), 
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0), // Reduced padding
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,17 +35,17 @@ class TaskCard extends StatelessWidget {
                   child: Text(
                     task.title,
                     style: TextStyle(
-                      color: Theme.of(context).textTheme.titleLarge?.color, // Use theme color
+                      color: Colors.white, // White text for title
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       decoration: isCompletedToday ? TextDecoration.lineThrough : null,
-                      decorationColor: Theme.of(context).textTheme.titleLarge?.color, // Use theme color
+                      decorationColor: Colors.white, 
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert, color: Theme.of(context).iconTheme.color), // Use theme color
+                  icon: const Icon(Icons.more_vert, color: Colors.white), // White icon
                   onSelected: (value) {
                     if (value == 'edit') {
                       onEdit();
@@ -57,14 +56,14 @@ class TaskCard extends StatelessWidget {
                   itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                     PopupMenuItem<String>(
                       value: 'edit',
-                      child: Text('Edit', style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)),
+                      child: Text('Edit', style: TextStyle(color: Colors.white)), // White text
                     ),
                     PopupMenuItem<String>(
                       value: 'delete',
-                      child: Text('Delete', style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color)),
+                      child: Text('Delete', style: TextStyle(color: Colors.redAccent)), // Red text for delete
                     ),
                   ],
-                  color: Theme.of(context).cardColor, // Use theme color
+                  color: Colors.grey[800], // Dark background for popup menu
                   tooltip: 'More options',
                 ),
               ],
@@ -74,7 +73,7 @@ class TaskCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   task.description!,
-                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 14), // Use theme color
+                  style: TextStyle(color: Colors.grey[400], fontSize: 14), // Lighter gray for description
                 ),
               ),
             if (task.dueDate != null)
@@ -82,11 +81,11 @@ class TaskCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Row(
                   children: [
-                    Icon(Icons.calendar_today, color: Theme.of(context).iconTheme.color, size: 16), // Use theme color
+                    const Icon(Icons.calendar_today, color: Colors.grey, size: 16), // Gray icon
                     const SizedBox(width: 4),
                     Text(
                       'Due: ${task.dueDate!.toLocal().toString().split(' ')[0]}',
-                      style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12), // Use theme color
+                      style: TextStyle(color: Colors.grey[400], fontSize: 12), // Lighter gray for date
                     ),
                   ],
                 ),
@@ -96,16 +95,16 @@ class TaskCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Row(
                   children: [
-                    Icon(Icons.access_time, color: Theme.of(context).iconTheme.color, size: 16), // Use theme color
+                    const Icon(Icons.access_time, color: Colors.grey, size: 16), // Gray icon
                     const SizedBox(width: 4),
                     Text(
                       'Reminder: ${task.reminderTime!.format(context)}',
-                      style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 12), // Use theme color
+                      style: TextStyle(color: Colors.grey[400], fontSize: 12), // Lighter gray for reminder
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: 4), // Reduced height
+            const SizedBox(height: 4), 
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -114,12 +113,12 @@ class TaskCard extends StatelessWidget {
                     onToggleCompletion(task.id, !isCompletedToday);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isCompletedToday ? Colors.grey : Theme.of(context).primaryColor, // Use theme primary color
+                    backgroundColor: isCompletedToday ? Colors.pinkAccent : Colors.pinkAccent, // Use pink for button
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // Reduced padding
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), 
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: Text(isCompletedToday ? 'Mark Incomplete' : 'Mark Complete', style: const TextStyle(fontSize: 12)), // Reduced font size
+                  child: Text(isCompletedToday ? 'Marcar Incompleto' : 'Marcar Concluído', style: const TextStyle(fontSize: 12)), // Translated text
                 ),
               ],
             ),

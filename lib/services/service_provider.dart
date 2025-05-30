@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:myapp/services/auth_service.dart';
 import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/services/task_service.dart';
+import 'package:myapp/services/recurring_task_service.dart';
 import 'package:myapp/services/ai_service.dart';
 import 'package:myapp/services/notification_service.dart';
 
@@ -17,6 +18,9 @@ class ServiceProvider extends InheritedWidget {
   /// Task service.
   final TaskService taskService;
 
+  /// Recurring task service.
+  final RecurringTaskService recurringTaskService;
+
   /// AI service.
   final AIService aiService;
 
@@ -30,6 +34,7 @@ class ServiceProvider extends InheritedWidget {
     required this.authService,
     required this.habitService,
     required this.taskService,
+    required this.recurringTaskService,
     required this.aiService,
     required this.notificationService,
   });
@@ -58,6 +63,9 @@ class ServiceProvider extends InheritedWidget {
         Provider<TaskService>(
           create: (_) => TaskService(),
         ),
+        Provider<RecurringTaskService>(
+          create: (_) => RecurringTaskService(),
+        ),
         Provider<AIService>(
           create: (_) => AIService(apiKey: aiApiKey),
         ),
@@ -65,12 +73,13 @@ class ServiceProvider extends InheritedWidget {
           create: (_) => NotificationService(),
         ),
       ],
-      child: Consumer5<AuthService, HabitService, TaskService, AIService, NotificationService>(
-        builder: (context, authService, habitService, taskService, aiService, notificationService, _) {
+      child: Consumer6<AuthService, HabitService, TaskService, RecurringTaskService, AIService, NotificationService>(
+        builder: (context, authService, habitService, taskService, recurringTaskService, aiService, notificationService, _) {
           return ServiceProvider(
             authService: authService,
             habitService: habitService,
             taskService: taskService,
+            recurringTaskService: recurringTaskService,
             aiService: aiService,
             notificationService: notificationService,
             child: child,
@@ -85,6 +94,7 @@ class ServiceProvider extends InheritedWidget {
     return authService != oldWidget.authService ||
         habitService != oldWidget.habitService ||
         taskService != oldWidget.taskService ||
+        recurringTaskService != oldWidget.recurringTaskService ||
         aiService != oldWidget.aiService ||
         notificationService != oldWidget.notificationService;
   }
@@ -100,6 +110,9 @@ extension ServiceProviderExtension on BuildContext {
 
   /// Gets the TaskService.
   TaskService get taskService => ServiceProvider.of(this).taskService;
+
+  /// Gets the RecurringTaskService.
+  RecurringTaskService get recurringTaskService => ServiceProvider.of(this).recurringTaskService;
 
   /// Gets the AIService.
   AIService get aiService => ServiceProvider.of(this).aiService;
