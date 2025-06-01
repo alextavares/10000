@@ -1,0 +1,79 @@
+name: Quality Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.0-0.2.pre'
+        channel: 'beta'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Verify formatting
+      run: dart format --output=none --set-exit-if-changed .
+      
+    - name: Analyze code
+      run: flutter analyze
+      
+    - name: Run tests
+      run: flutter test --coverage
+      
+    - name: Check for security issues
+      run: |
+        # Verificar se não há API keys hardcoded
+        if grep -r "AIzaSy" lib/ --include="*.dart"; then
+          echo "❌ API keys hardcoded encontradas!"
+          exit 1
+        fi
+        
+        # Verificar se não há print statements
+        print_count=$(grep -r "print(" lib/ --include="*.dart" | wc -l)
+        if [ $print_count -gt 5 ]; then
+          echo "❌ Muitos print statements encontrados: $print_count"
+          exit 1
+        fi
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        
+    - name: Generate coverage report
+      run: |
+        flutter test --coverage
+        genhtml coverage/lcov.info -o coverage/html
+        
+    - name: Comment coverage on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = 'coverage/lcov.info';
+          
+          if (fs.existsSync(path)) {
+            const coverage = fs.readFileSync(path, 'utf8');
+            const lines = coverage.split('\n');
+            const summary = lines.filter(line => line.startsWith('LF:') || line.startsWith('LH:'));
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '📊 **Coverage Report**\n\nCoverage details available in the workflow artifacts.'
+            });
+          }

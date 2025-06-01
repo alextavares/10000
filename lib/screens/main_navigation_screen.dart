@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
 import 'package:myapp/screens/tasks/tasks_screen.dart';
-import 'package:myapp/screens/task/add_task_screen.dart';
+import 'package:myapp/screens/task/add_task_screen.dart'; 
 import 'package:myapp/screens/timer/timer_screen.dart';
 import 'package:myapp/screens/categories/categories_screen.dart';
 import 'package:myapp/widgets/app_drawer.dart';
-import 'package:myapp/widgets/add_item_bottom_sheet.dart'; // Import the bottom sheet
-import 'package:myapp/screens/habit/add_habit_screen.dart'; // Import AddHabitScreen for navigation
-import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart'; // Import AddRecurringTaskScreen for navigation
-import 'package:myapp/screens/search/search_screen.dart'; // Import SearchScreen
-import 'package:myapp/screens/filter/filter_screen.dart'; // Import FilterScreen
-import 'package:myapp/screens/stats/stats_screen.dart'; // Import StatsScreen
+import 'package:myapp/widgets/add_item_bottom_sheet.dart';
+import 'package:myapp/screens/habit/add_habit_screen.dart'; 
+import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart';
+import 'package:myapp/screens/search/search_screen.dart';
+import 'package:myapp/screens/filter/filter_screen.dart';
+import 'package:myapp/screens/stats/stats_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -35,6 +35,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     'Tarefas',
     'Timer',
     'Categorias',
+    // Add titles for new screens if they become part of this navigation
+    // 'Personalizar', 
+    // 'Configurações', 
+    // 'Backup'
   ];
 
   late final List<Widget> _widgetOptions;
@@ -49,6 +53,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       TasksScreen(key: _tasksScreenKey, tabController: _tabController),
       const TimerScreen(),
       const CategoriesScreen(),
+      // Add new screens here if they are managed by this bottom navigation
+      // const PersonalizarScreen(), 
+      // const ConfiguracoesScreen(), 
+      // const BackupScreen(),
     ];
     _tabController.addListener(() {
       if (_selectedIndex == 2 && _tabController.indexIsChanging) {
@@ -69,6 +77,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     });
   }
 
+  // Callback for AppDrawer to change screen
+  void _onDrawerItemSelected(int index) {
+    // Ensure index is within bounds of _widgetOptions
+    if (index >= 0 && index < _widgetOptions.length) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+    // For items like 'Personalizar', 'Configurações', 'Backup' that might open new routes
+    // an index outside the bounds of _widgetOptions can be used, or specific string identifiers.
+    // For now, this handles only the main bottom navigation screens.
+  }
+
   void _showAddItemBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -82,12 +103,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       builder: (BuildContext bc) {
         return AddItemBottomSheet(
           onItemSelected: (AddItemType type) {
-            Navigator.pop(context); // Close the bottom sheet first
+            Navigator.pop(context); 
             switch (type) {
               case AddItemType.habit:
-                print(
-                  'Habit selected. Navigating to AddHabitScreen (Category Selection).',
-                );
                 Navigator.of(context)
                     .push(
                       MaterialPageRoute(
@@ -95,20 +113,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                       ),
                     )
                     .then((result) {
-                      // Adicionado .then para atualizar a tela Hoje se um hábito for adicionado
-                      if (result == true || result == null) {
-                        // result == null se apenas voltou
-                        if (_widgetTitles[_selectedIndex] == 'Hoje') {
+                      if (result == true || result == null) { 
+                        if (_selectedIndex == 0) { // Hoje screen
                           _homeScreenKey.currentState?.refreshScreenData();
                         }
-                        // A tela de hábitos já se atualiza ao retornar do AddHabitScreen
                       }
                     });
                 break;
               case AddItemType.recurringTask:
-                print(
-                  'Recurring Task selected. Navigating to AddRecurringTaskScreen.',
-                );
                 Navigator.of(context)
                     .push(
                       MaterialPageRoute(
@@ -117,16 +129,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                     )
                     .then((result) {
                       if (result == true) {
-                        if (_widgetTitles[_selectedIndex] == 'Tarefas') {
+                        if (_selectedIndex == 2) { // Tarefas screen
                           _tasksScreenKey.currentState?.refreshTasks();
-                        } else if (_widgetTitles[_selectedIndex] == 'Hoje') {
+                        } else if (_selectedIndex == 0) { // Hoje screen
                           _homeScreenKey.currentState?.refreshScreenData();
                         }
                       }
                     });
                 break;
               case AddItemType.task:
-                print('Task selected. Navigating to AddTaskScreen.');
                 Navigator.of(context)
                     .push(
                       MaterialPageRoute(
@@ -135,11 +146,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                     )
                     .then((result) {
                       if (result == true) {
-                        if (_widgetTitles[_selectedIndex] == 'Tarefas') {
+                        if (_selectedIndex == 2) { // Tarefas screen
                           _tasksScreenKey.currentState?.refreshTasks();
-                        } else if (_widgetTitles[_selectedIndex] == 'Hoje') {
-                          _homeScreenKey.currentState
-                              ?.refreshScreenData(); // CORRIGIDO AQUI
+                        } else if (_selectedIndex == 0) { // Hoje screen
+                          _homeScreenKey.currentState?.refreshScreenData(); 
                         }
                       }
                     });
@@ -153,11 +163,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
 
   @override
   Widget build(BuildContext context) {
-    bool isTasksScreenSelected = _widgetTitles[_selectedIndex] == 'Tarefas';
+    bool isTasksScreenSelected = _selectedIndex == 2;
     bool showFab =
-        _widgetTitles[_selectedIndex] == 'Hoje' ||
-        _widgetTitles[_selectedIndex] == 'Hábitos' ||
-        _widgetTitles[_selectedIndex] == 'Tarefas';
+        _selectedIndex == 0 || // Hoje
+        _selectedIndex == 1 || // Hábitos
+        _selectedIndex == 2;   // Tarefas
 
     return Scaffold(
       appBar: AppBar(
@@ -173,9 +183,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          if (_widgetTitles[_selectedIndex] == 'Hoje' ||
-              _widgetTitles[_selectedIndex] == 'Hábitos' ||
-              _widgetTitles[_selectedIndex] == 'Tarefas') ...[
+          if (_selectedIndex == 0 || // Hoje
+              _selectedIndex == 1 || // Hábitos
+              _selectedIndex == 2) ...[ // Tarefas
             IconButton(
               icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () {
@@ -193,21 +203,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                         builder:
                             (context) => FilterScreen(
                               initialOptions:
-                                  FilterOptions(), // You can pass current filter state here
+                                  FilterOptions(), 
                             ),
                       ),
                     )
                     .then((filterOptions) {
                       if (filterOptions != null) {
-                        // Apply the filter options to the current screen
-                        // You can implement this logic based on which screen is active
                         print('Filter options applied: $filterOptions');
                       }
                     });
               },
             ),
-            if (_widgetTitles[_selectedIndex] == 'Hábitos' ||
-                _widgetTitles[_selectedIndex] == 'Tarefas')
+            if (_selectedIndex == 1 || _selectedIndex == 2) // Hábitos or Tarefas
               IconButton(
                 icon: const Icon(
                   Icons.file_download_outlined,
@@ -217,7 +224,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                   /* Archive/Download action */
                 },
               ),
-            if (_widgetTitles[_selectedIndex] == 'Hoje') ...[
+            if (_selectedIndex == 0) ...[ // Hoje
               IconButton(
                 icon: const Icon(Icons.bar_chart, color: Colors.white),
                 onPressed: () {
@@ -240,7 +247,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
               ),
             ],
           ],
-          if (_widgetTitles[_selectedIndex] == 'Timer') ...[
+          if (_selectedIndex == 3) ...[ // Timer
             IconButton(
               icon: const Icon(Icons.info_outline, color: Colors.white),
               onPressed: () {},
@@ -257,7 +264,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
               onPressed: () {},
             ),
           ],
-          if (_widgetTitles[_selectedIndex] == 'Categorias') ...[
+          if (_selectedIndex == 4) ...[ // Categorias
             IconButton(
               icon: const Icon(Icons.check_circle_outline, color: Colors.white),
               onPressed: () {},
@@ -307,7 +314,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         selectedItemColor: const Color(0xFFE91E63),
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.black,
-        onTap: _onItemTapped,
+        onTap: _onItemTapped, // For BottomNavigationBar taps
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
         selectedLabelStyle: const TextStyle(
@@ -316,13 +323,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         ),
         unselectedLabelStyle: const TextStyle(fontSize: 12, color: Colors.grey),
       ),
-      drawer: const AppDrawer(),
+      drawer: AppDrawer( // Updated AppDrawer instantiation
+        currentSelectedIndex: _selectedIndex,
+        onItemSelected: _onDrawerItemSelected, 
+      ),
       floatingActionButton:
           showFab
               ? FloatingActionButton(
                 onPressed: () => _showAddItemBottomSheet(context),
                 backgroundColor: const Color(0xFFE91E63),
-                heroTag: 'mainFab', // <--- Added unique heroTag here
+                heroTag: 'mainFab', 
                 child: const Icon(Icons.add, color: Colors.white),
               )
               : null,
