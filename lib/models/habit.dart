@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/utils/logger.dart';
 
 /// Represents the frequency of a habit.
 enum HabitFrequency {
@@ -172,6 +173,9 @@ class Habit {
   final Map<DateTime, HabitDailyProgress> dailyProgress;
   final DateTime startDate;
   final DateTime? targetDate;
+  final String priority;
+  final String? userId;
+  final bool isArchived;
 
   Habit({
     required this.id,
@@ -206,6 +210,9 @@ class Habit {
     required this.dailyProgress,
     required this.startDate,
     this.targetDate,
+    this.priority = 'Normal',
+    this.userId,
+    this.isArchived = false,
   });
 
   Habit copyWith({
@@ -241,6 +248,9 @@ class Habit {
     Map<DateTime, HabitDailyProgress>? dailyProgress,
     DateTime? startDate,
     DateTime? targetDate,
+    String? priority,
+    String? userId,
+    bool? isArchived,
   }) {
     return Habit(
       id: id ?? this.id,
@@ -275,6 +285,9 @@ class Habit {
       dailyProgress: dailyProgress ?? this.dailyProgress,
       startDate: startDate ?? this.startDate,
       targetDate: targetDate ?? this.targetDate,
+      priority: priority ?? this.priority,
+      userId: userId ?? this.userId,
+      isArchived: isArchived ?? this.isArchived,
     );
   }
 
@@ -318,6 +331,9 @@ class Habit {
       ),
       'startDate': startDate.toIso8601String(),
       'targetDate': targetDate?.toIso8601String(),
+      'priority': priority,
+      'userId': userId,
+      'isArchived': isArchived,
     };
   }
 
@@ -390,6 +406,9 @@ class Habit {
           : {},
       startDate: DateTime.parse(map['startDate']),
       targetDate: map['targetDate'] != null ? DateTime.parse(map['targetDate']) : null,
+      priority: map['priority'] ?? 'Normal',
+      userId: map['userId'],
+      isArchived: map['isArchived'] ?? false,
     );
   }
 
@@ -474,7 +493,7 @@ class Habit {
         return true;
       case HabitFrequency.weekly:
         final result = daysOfWeek?.contains(checkDate.weekday) ?? false;
-        print('Weekly habit check: $title, today=${checkDate.weekday}, daysOfWeek=$daysOfWeek, result=$result');
+        Logger.debug('Weekly habit check: $title, today=${checkDate.weekday}, daysOfWeek=$daysOfWeek, result=$result');
         return result;
       case HabitFrequency.monthly:
         // Check if today is one of the selected days of the month

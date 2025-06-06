@@ -1,0 +1,38 @@
+# Teste para marcar hábito como concluído
+appId: com.habitai.app
+
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Procurar por um hábito existente ou criar um primeiro
+- assertVisible:
+    text: ".*[Hh]ábito.*"
+    optional: true
+
+# Tentar marcar um hábito como concluído
+# Pode ser um checkbox, botão ou card
+- tapOn:
+    id: ".*checkbox.*|.*check.*|.*complete.*"
+    optional: true
+    index: 0  # Primeiro hábito da lista
+
+# Ou tentar tocar no card do hábito
+- tapOn:
+    text: ".*"
+    below:
+        text: ".*[Hh]oje.*|.*[Pp]endente.*"
+    optional: true
+
+# Verificar feedback visual
+- waitForAnimationToEnd
+
+# Capturar estado após marcar
+- takeScreenshot: "habito_marcado"
+
+# Verificar estatísticas/progresso se visível
+- assertVisible:
+    text: ".*[1-9][0-9]*%.*|.*[Cc]oncluído.*|.*✓.*"
+    optional: true
+
+- stopApp

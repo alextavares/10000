@@ -117,13 +117,12 @@ class _AddRecurringTaskFrequencyScreenState extends State<AddRecurringTaskFreque
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 32),
             Expanded(
               child: ListView.builder(
+                padding: const EdgeInsets.all(24.0),
                 itemCount: frequencyOptions.length,
                 itemBuilder: (context, index) {
                   final option = frequencyOptions[index];
@@ -136,23 +135,50 @@ class _AddRecurringTaskFrequencyScreenState extends State<AddRecurringTaskFreque
               ),
             ),
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'ANTERIOR',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        ),
+                        child: const Text(
+                          'ANTERIOR',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: _navigateToNextStep,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE91E63),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                        child: const Text(
+                          'PRÓXIMA',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Indicadores de progresso
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                         width: 8,
@@ -190,17 +216,6 @@ class _AddRecurringTaskFrequencyScreenState extends State<AddRecurringTaskFreque
                         ),
                       ),
                     ],
-                  ),
-                  TextButton(
-                    onPressed: _navigateToNextStep,
-                    child: const Text(
-                      'PRÓXIMA',
-                      style: TextStyle(
-                        color: Color(0xFFE91E63),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                 ],
               ),

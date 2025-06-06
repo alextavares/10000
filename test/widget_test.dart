@@ -1,32 +1,60 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:myapp/main.dart';
+import 'test_helpers/test_setup.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  setUpAll(() async {
+    await setupTestEnvironment();
+  });
+
+  testWidgets('App deve inicializar corretamente', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    // For testing purposes, we can assume onboarding is completed or not.
-    // Let's assume it's completed for this test.
-    await tester.pumpWidget(const MyApp(onboardingCompleted: true));
+    await tester.pumpWidget(MyApp(onboardingCompleted: true));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the app starts correctly
+    // Should show the main navigation
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
+    
+    // Should have navigation items
+    expect(find.byIcon(Icons.home), findsOneWidget);
+    expect(find.byIcon(Icons.fitness_center), findsOneWidget);
+    expect(find.byIcon(Icons.task_alt), findsOneWidget);
+    expect(find.byIcon(Icons.insights), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('App deve mostrar onboarding quando não completado', (WidgetTester tester) async {
+    // Build our app with onboarding not completed
+    await tester.pumpWidget(MyApp(onboardingCompleted: false));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Should show onboarding screen
+    expect(find.text('Welcome to HabitAI'), findsOneWidget);
+  });
+
+  testWidgets('Navegação entre telas deve funcionar', (WidgetTester tester) async {
+    // Build our app
+    await tester.pumpWidget(MyApp(onboardingCompleted: true));
+    await tester.pumpAndSettle();
+
+    // Navigate to habits
+    await tester.tap(find.byIcon(Icons.fitness_center));
+    await tester.pumpAndSettle();
+
+    // Navigate to tasks
+    await tester.tap(find.byIcon(Icons.task_alt));
+    await tester.pumpAndSettle();
+
+    // Navigate to insights
+    await tester.tap(find.byIcon(Icons.insights));
+    await tester.pumpAndSettle();
+
+    // Navigate back to home
+    await tester.tap(find.byIcon(Icons.home));
+    await tester.pumpAndSettle();
+
+    // Should be back at home
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
   });
 }

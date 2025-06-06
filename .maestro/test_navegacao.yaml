@@ -1,0 +1,50 @@
+# Teste de navegação entre telas principais
+appId: com.habitai.app
+
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Capturar tela inicial
+- takeScreenshot: "tela_inicial"
+
+# Testar navegação para estatísticas/progresso
+- tapOn:
+    text: ".*[Ee]statística.*|.*[Pp]rogresso.*|.*[Rr]elatório.*"
+    optional: true
+    
+- waitForAnimationToEnd
+- takeScreenshot: "tela_estatisticas"
+
+# Voltar para home
+- tapOn:
+    text: ".*[Hh]ome.*|.*[Ii]nício.*|.*[Hh]ábitos.*"
+    optional: true
+
+# Testar navegação para perfil/configurações
+- tapOn:
+    text: ".*[Pp]erfil.*|.*[Cc]onfigura.*|.*[Aa]juste.*"
+    optional: true
+    
+- waitForAnimationToEnd
+- takeScreenshot: "tela_perfil"
+
+# Testar navegação por bottom navigation se existir
+- tapOn:
+    id: ".*bottom.*nav.*|.*tab.*"
+    index: 2
+    optional: true
+
+# Testar menu drawer se existir
+- tapOn:
+    id: ".*drawer.*|.*menu.*"
+    optional: true
+    
+- swipe:
+    direction: RIGHT  # Abrir drawer
+- waitForAnimationToEnd
+- takeScreenshot: "menu_drawer"
+- swipe:
+    direction: LEFT  # Fechar drawer
+
+- stopApp

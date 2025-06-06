@@ -7,275 +7,168 @@ import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/services/ai_service.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/services/task_service.dart';
-import 'package:myapp/services/recurring_task_service.dart';
-import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
-import 'package:myapp/models/habit.dart'; // Necessário para MockHabitService
+import 'package:myapp/models/habit.dart';
 import 'package:myapp/models/task.dart';
-import 'package:myapp/models/recurring_task.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mockito/mockito.dart';
+import 'package:mockito/annotations.dart';
+import '../test_helpers/test_setup.dart';
 
-// Mock Services (copiados de onboarding_benefits_screen_test.dart)
-class MockAuthService implements AuthService {
-  @override
-  Stream<User?> get authStateChanges => Stream.value(null);
-  @override
-  User? get currentUser => null; // Keep as null if that's the intended mock behavior
-  @override
-  String? get currentUserId => null; // Keep as null
-  @override
-  bool get isSignedIn => false;
-  @override
-  Future<void> signOut() async {}
-  @override
-  Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
-    throw UnimplementedError('signInWithEmailAndPassword not mocked');
-  }
-  @override
-  Future<UserCredential> createUserWithEmailAndPassword(String email, String password, String displayName) async {
-    throw UnimplementedError('createUserWithEmailAndPassword not mocked');
-  }
-  @override
-  Future<void> sendPasswordResetEmail(String email) async {}
-  @override
-  Future<void> deleteAccount() async {}
-  @override
-  Future<Map<String, dynamic>?> getUserProfile() async => null;
-  @override
-  Future<void> updateUserProfile(Map<String, dynamic> profileData) async {}
-  
-  // Assuming updateProfile is part of your AuthService interface based on other files
-  @override
-  Future<void> updateProfile({String? displayName, String? photoURL}) async {}
-  
-  @override
-  Future<void> updateLastLogin() async {}
-  @override
-  Future<void> reauthenticateWithCredential(AuthCredential credential) async {}
-  @override
-  Future<void> updateEmail(String newEmail) async {}
-  @override
-  Future<void> updatePassword(String newPassword) async {}
-  @override
-  Future<UserCredential?> signInWithGoogle() async => null;
-}
-
-class MockHabitService extends ChangeNotifier implements HabitService {
-  @override
-  Future<List<Habit>> getHabits() async => [];
-
-  // Corrected: Renamed getHabit to getHabitById to match interface
-  @override
-  Future<Habit?> getHabitById(String id) async => null;
-
-  // Corrected: Signature of addHabit to match HabitService interface
-  @override
-  Future<void> addHabit({
-    required String title,
-    required String categoryName,
-    required IconData categoryIcon,
-    required Color categoryColor,
-    required HabitFrequency frequency,
-    required HabitTrackingType trackingType,
-    required DateTime startDate,
-    List<int>? daysOfWeek,
-    List<int>? daysOfMonth,
-    List<DateTime>? specificYearDates,
-    int? timesPerPeriod,
-    String? periodType,
-    int? repeatEveryDays,
-    bool? isFlexible,
-    bool? alternateDays,
-    DateTime? targetDate,
-    TimeOfDay? reminderTime,
-    bool notificationsEnabled = false,
-    String priority = 'Normal',
-    String? description,
-  }) async {
-    // Mock implementation, can be simple or add to a list if needed for testing
-  }
-
-  @override
-  Future<void> updateHabit(Habit habit) async {} // Return type changed to Future<void>
-
-  @override
-  Future<void> deleteHabit(String habitId) async {} // Return type changed to Future<void>
-
-  // Added missing method from HabitService interface
-  @override
-  Future<void> markHabitCompletion(String habitId, DateTime date, bool completed) async {}
-
-  // Removed methods that are not in HabitService or don't need @override
-  // Future<bool> markHabitCompleted(String habitId, DateTime date) async => true;
-  // Future<bool> markHabitNotCompleted(String habitId, DateTime date) async => true;
-  // Future<List<Habit>> getHabitsDueToday() async => [];
-  // Future<List<Habit>> getHabitsByCategory(String category) async => [];
-  // Future<List<String>> getCategories() async => [];
-  // Future<Map<String, dynamic>> getHabitStatistics() async => {}; 
-}
-
-class MockAIService extends AIService {
-  MockAIService() : super(apiKey: 'fake_key');
-  // Add method overrides if AIService interface requires them and they are missing.
-}
-
-// Corrected: MockNotificationService needs to implement all methods from NotificationService
-// Assuming NotificationService has methods like initialize, requestPermissions, etc.
-// For now, adding a basic implementation. You might need to fill these out based on your interface.
-class MockNotificationService implements NotificationService {
-  @override
-  Future<void> initialize() async {}
-
-  @override
-  Future<bool> requestPermissions() async => true;
-
-  @override
-  Future<void> scheduleHabitReminder(Habit habit) async {}
-
-  @override
-  Future<void> cancelHabitReminder(Habit habit) async {}
-
-  // Assuming these are part of your NotificationService based on previous file
-  Future<void> scheduleTaskReminder(Task task) async {}
-  Future<void> cancelTaskReminder(Task task) async {}
-  @override
-  Future<void> showTestNotification() async {}
-
-  @override
-  Future<void> cancelAllNotifications() async {}
-}
-
-
-class MockTaskService implements TaskService {
-  @override
-  Future<String?> addTask(Task task) async => 'mock_task_id';
-  @override
-  Future<bool> deleteTask(String taskId) async => true;
-  @override
-  Future<Task?> getTask(String taskId) async => null;
-  @override
-  Future<List<Task>> getTasks() async => [];
-  
-  // Assuming getTasksDueToday is part of your TaskService interface
-  @override
-  Future<List<Task>> getTasksDueToday() async => []; 
-  
-  @override
-  Future<bool> markTaskCompletion(String taskId, DateTime date, bool completed) async => true;
-  @override
-  Future<bool> updateTask(Task task) async => true;
-}
-
-class MockRecurringTaskService implements RecurringTaskService {
-  @override
-  Future<bool> createRecurringTask(RecurringTask recurringTask) async => true;
-  @override
-  Future<bool> updateRecurringTask(RecurringTask recurringTask) async => true;
-  @override
-  Future<bool> deleteRecurringTask(String recurringTaskId) async => true;
-  @override
-  Future<List<RecurringTask>> getRecurringTasks() async => [];
-  @override
-  Future<RecurringTask?> getRecurringTask(String recurringTaskId) async => null;
-  @override
-  Future<List<RecurringTask>> getRecurringTasksDueToday() async => [];
-  @override
-  Future<List<RecurringTask>> getRecurringTasksByCategory(String category) async => [];
-  @override
-  Future<bool> markRecurringTaskCompletion(String recurringTaskId, DateTime date, bool completed) async => true;
-  @override
-  Future<bool> recordRecurringTaskProgress(String recurringTaskId, DateTime date, {bool? isCompleted, List<RecurringTaskSubtask>? subtasks}) async => true;
-  @override
-  Future<Map<String, dynamic>> getRecurringTaskStats(String recurringTaskId) async => {};
-  @override
-  Future<Map<String, List<RecurringTask>>> getRecurringTasksForDateRange(DateTime startDate, DateTime endDate) async => {};
-  @override
-  Stream<List<RecurringTask>> getRecurringTasksStream() => Stream.value([]);
-  @override
-  Stream<List<RecurringTask>> getRecurringTasksDueTodayStream() => Stream.value([]);
-}
+@GenerateMocks([AuthService, HabitService, TaskService, NotificationService, User])
+import 'main_navigation_screen_test.mocks.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  group('MainNavigationScreen Tests', () {
+    late MockAuthService mockAuthService;
+    late MockHabitService mockHabitService;
+    late MockTaskService mockTaskService;
+    late MockNotificationService mockNotificationService;
+    late MockUser mockUser;
 
-  Widget createTestableWidget({required Widget child}) {
-    return ServiceProvider(
-      authService: MockAuthService(),
-      habitService: MockHabitService(),
-      taskService: MockTaskService(),
-      recurringTaskService: MockRecurringTaskService(),
-      aiService: MockAIService(),
-      notificationService: MockNotificationService(),
-      child: MaterialApp(home: child),
-    );
-  }
+    setUpAll(() async {
+      await setupTestEnvironment();
+    });
 
-  testWidgets('MainNavigationScreen initial UI and BottomNav test', (WidgetTester tester) async {
-    await tester.pumpWidget(createTestableWidget(child: const MainNavigationScreen()));
+    setUp(() {
+      mockAuthService = MockAuthService();
+      mockHabitService = MockHabitService();
+      mockTaskService = MockTaskService();
+      mockNotificationService = MockNotificationService();
+      mockUser = MockUser();
 
-    // Verifica AppBar
-    expect(find.widgetWithText(AppBar, 'HabitAI'), findsOneWidget);
+      // Setup default mock behaviors
+      when(mockUser.uid).thenReturn('test-user-id');
+      when(mockAuthService.currentUser).thenReturn(mockUser);
+      when(mockAuthService.isSignedIn).thenReturn(true);
+      when(mockHabitService.getHabits()).thenAnswer((_) async => []);
+      when(mockTaskService.getTasks()).thenAnswer((_) async => []);
+    });
 
-    // Verifica BottomNavigationBar
-    expect(find.byType(BottomNavigationBar), findsOneWidget);
-    // Inicialmente, apenas o label da BottomNavigationBar para "Hoje" e "Hábitos" deve ser encontrado.
-    // O Drawer está fechado.
-    expect(find.widgetWithText(BottomNavigationBar, 'Hoje'), findsOneWidget);
-    expect(find.widgetWithText(BottomNavigationBar, 'Hábitos'), findsOneWidget);
-    
-    // Verifica se a tela "Hoje" (HomeScreen) é exibida inicialmente
-    expect(find.text('Tela Principal (Hoje) - Em construção'), findsOneWidget);
+    Widget createTestableWidget({required Widget child}) {
+      return ServiceProvider(
+        authService: mockAuthService,
+        habitService: mockHabitService,
+        aiService: AIService(apiKey: 'test-key'),
+        notificationService: mockNotificationService,
+        child: MaterialApp(home: child),
+      );
+    }
 
-    // Toca no item "Hábitos" da BottomNavigationBar
-    // Encontra o Text widget "Hábitos" que é descendente de BottomNavigationBar
-    await tester.tap(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Hábitos')));
-    await tester.pumpAndSettle(); // Aguarda a transição
+    testWidgets('MainNavigationScreen initial UI and BottomNav test', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestableWidget(child: const MainNavigationScreen()));
+      await tester.pumpAndSettle();
 
-    // Verifica se a tela "Hábitos" é exibida
-    expect(find.text('Tela de Hábitos - Em construção'), findsOneWidget);
-    expect(find.text('Tela Principal (Hoje) - Em construção'), findsNothing);
+      // Verifica AppBar com título inicial "Hoje"
+      expect(find.widgetWithText(AppBar, 'Hoje'), findsOneWidget);
 
-    // Toca no item "Tarefas"
-    await tester.tap(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Tarefas')));
-    await tester.pumpAndSettle();
-    expect(find.text('Tela de Tarefas - Em construção'), findsOneWidget);
+      // Verifica BottomNavigationBar
+      expect(find.byType(BottomNavigationBar), findsOneWidget);
+      
+      // Verifica os itens da BottomNavigationBar
+      expect(find.text('Hoje'), findsWidgets); // Pode aparecer em AppBar e BottomNav
+      expect(find.text('Hábitos'), findsOneWidget);
+      expect(find.text('Tarefas'), findsOneWidget);
+      expect(find.text('Timer'), findsOneWidget);
+      expect(find.text('Categorias'), findsOneWidget);
 
-    // Toca no item "Coach AI"
-    await tester.tap(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Coach AI')));
-    await tester.pumpAndSettle();
-    expect(find.text('Tela do Coach AI - Em construção'), findsOneWidget);
-    
-    // Toca no item "Mais"
-    await tester.tap(find.descendant(of: find.byType(BottomNavigationBar), matching: find.text('Mais')));
-    await tester.pumpAndSettle();
-    expect(find.text('Tela Mais (Configurações, etc.) - Em construção'), findsOneWidget);
-  });
+      // Verifica FAB
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
 
-  testWidgets('MainNavigationScreen Drawer navigation test', (WidgetTester tester) async {
-    await tester.pumpWidget(createTestableWidget(child: const MainNavigationScreen()));
+      // Toca no item "Hábitos" da BottomNavigationBar
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar), 
+        matching: find.text('Hábitos')
+      ));
+      await tester.pumpAndSettle();
 
-    // Abre o Drawer
-    await tester.tap(find.byTooltip('Open navigation menu')); // Tooltip padrão do ícone do AppBar para Drawer
-    await tester.pumpAndSettle();
+      // Verifica se o título mudou para "Hábitos"
+      expect(find.widgetWithText(AppBar, 'Hábitos'), findsOneWidget);
 
-    // Verifica se o Drawer está aberto (procurando por um item do Drawer)
-    expect(find.text('Menu HabitAI'), findsOneWidget);
+      // Toca no item "Tarefas"
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar), 
+        matching: find.text('Tarefas')
+      ));
+      await tester.pumpAndSettle();
 
-    // Toca no item "Hábitos" do Drawer
-    await tester.tap(find.widgetWithText(ListTile, 'Hábitos'));
-    await tester.pumpAndSettle(); // Aguarda a navegação e o fechamento do Drawer
+      // Verifica se o título mudou para "Tarefas" e se tem TabBar
+      expect(find.widgetWithText(AppBar, 'Tarefas'), findsOneWidget);
+      expect(find.byType(TabBar), findsOneWidget);
+      expect(find.text('Tarefas simples'), findsOneWidget);
+      expect(find.text('Tarefas recorrentes'), findsOneWidget);
 
-    // Verifica se a tela "Hábitos" é exibida
-    expect(find.text('Tela de Hábitos - Em construção'), findsOneWidget);
-    expect(find.text('Tela Principal (Hoje) - Em construção'), findsNothing);
-    
-    // Abre o Drawer novamente
-    await tester.tap(find.byTooltip('Open navigation menu'));
-    await tester.pumpAndSettle();
-    
-    // Toca no item "Hoje" do Drawer
-    await tester.tap(find.widgetWithText(ListTile, 'Hoje'));
-    await tester.pumpAndSettle();
-    
-    // Verifica se a tela "Hoje" é exibida
-    expect(find.text('Tela Principal (Hoje) - Em construção'), findsOneWidget);
+      // Toca no item "Timer"
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar), 
+        matching: find.text('Timer')
+      ));
+      await tester.pumpAndSettle();
+      
+      expect(find.widgetWithText(AppBar, 'Timer'), findsOneWidget);
+      // FAB não deve aparecer na tela Timer
+      expect(find.byType(FloatingActionButton), findsNothing);
+
+      // Toca no item "Categorias"
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar), 
+        matching: find.text('Categorias')
+      ));
+      await tester.pumpAndSettle();
+      
+      expect(find.widgetWithText(AppBar, 'Categorias'), findsOneWidget);
+    });
+
+    testWidgets('MainNavigationScreen FAB shows add options', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestableWidget(child: const MainNavigationScreen()));
+      await tester.pumpAndSettle();
+
+      // Toca no FAB
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      // Verifica se o bottom sheet apareceu com as opções
+      expect(find.text('Adicionar'), findsOneWidget);
+      expect(find.text('Hábito'), findsOneWidget);
+      expect(find.text('Tarefa'), findsOneWidget);
+      expect(find.text('Tarefa Recorrente'), findsOneWidget);
+    });
+
+    testWidgets('MainNavigationScreen AppBar actions', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestableWidget(child: const MainNavigationScreen()));
+      await tester.pumpAndSettle();
+
+      // Na tela inicial "Hoje", deve ter ações de busca, filtro, estatísticas, calendário e ajuda
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byIcon(Icons.filter_list), findsOneWidget);
+      expect(find.byIcon(Icons.bar_chart), findsOneWidget);
+      expect(find.byIcon(Icons.calendar_today), findsOneWidget);
+      expect(find.byIcon(Icons.help_outline), findsOneWidget);
+
+      // Navega para Hábitos
+      await tester.tap(find.descendant(
+        of: find.byType(BottomNavigationBar), 
+        matching: find.text('Hábitos')
+      ));
+      await tester.pumpAndSettle();
+
+      // Em Hábitos, deve ter busca, filtro e download
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byIcon(Icons.filter_list), findsOneWidget);
+      expect(find.byIcon(Icons.file_download_outlined), findsOneWidget);
+    });
+
+    testWidgets('MainNavigationScreen Drawer test', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestableWidget(child: const MainNavigationScreen()));
+      await tester.pumpAndSettle();
+
+      // Abre o Drawer
+      final ScaffoldState scaffold = tester.firstState(find.byType(Scaffold));
+      scaffold.openDrawer();
+      await tester.pumpAndSettle();
+
+      // Verifica se o Drawer está aberto
+      expect(find.byType(Drawer), findsOneWidget);
+    });
   });
 }

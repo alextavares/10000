@@ -45,9 +45,10 @@ class _HabitTrackingTypeScreenState extends State<HabitTrackingTypeScreen> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView( // Added SingleChildScrollView for smaller screens
@@ -87,16 +88,19 @@ class _HabitTrackingTypeScreenState extends State<HabitTrackingTypeScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16.0), // Added padding for bottom buttons
+              padding: const EdgeInsets.all(16.0), // Padding padronizado
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
                     child: const Text(
                       'ANTERIOR',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.white70,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -126,6 +130,7 @@ class _HabitTrackingTypeScreenState extends State<HabitTrackingTypeScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -157,8 +162,8 @@ class _HabitTrackingTypeScreenState extends State<HabitTrackingTypeScreen> {
           color: isSelected ? AppTheme.primaryColor : AppTheme.cardColor,
           borderRadius: BorderRadius.circular(12),
           border: isSelected 
-              ? Border.all(color: AppTheme.primaryColor.withOpacity(0.5), width: 2) // Softer border for selected
-              : Border.all(color: AppTheme.cardColor.withOpacity(0.5)), // Default border
+              ? Border.all(color: AppTheme.primaryColor.withValues(alpha: 0.5), width: 2) // Softer border for selected
+              : Border.all(color: AppTheme.cardColor.withValues(alpha: 0.5)), // Default border
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +202,7 @@ class _HabitTrackingTypeScreenState extends State<HabitTrackingTypeScreen> {
             Text(
               description,
               style: TextStyle(
-                color: isSelected ? Colors.white.withOpacity(0.9) : AppTheme.subtitleColor,
+                color: isSelected ? Colors.white.withValues(alpha: 0.9) : AppTheme.subtitleColor,
                 fontSize: 14,
               ),
             ),

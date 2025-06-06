@@ -60,10 +60,10 @@ class ServiceProvider extends InheritedWidget {
         ChangeNotifierProvider<HabitService>(
           create: (_) => HabitService(),
         ),
-        Provider<TaskService>(
+        ChangeNotifierProvider<TaskService>(
           create: (_) => TaskService(),
         ),
-        Provider<RecurringTaskService>(
+        ChangeNotifierProvider<RecurringTaskService>(
           create: (_) => RecurringTaskService(),
         ),
         Provider<AIService>(

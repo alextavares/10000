@@ -299,7 +299,7 @@ class _FilterScreenState extends State<FilterScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFE91E63).withOpacity(0.2) : Colors.grey[850],
+            color: isSelected ? const Color(0xFFE91E63).withValues(alpha: 0.2) : Colors.grey[850],
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? const Color(0xFFE91E63) : Colors.transparent,

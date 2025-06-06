@@ -35,8 +35,12 @@ ios/Flutter/Generated.xcconfig
 .swiftpm/
 migrate_working_dir/
 
-# Firebase
+# Firebase e Configurações
 # lib/firebase_options.dart # Descomente esta linha se você NÃO quer versionar o firebase_options.dart
+.env
+.env.local
+.env.production
+*.env
 
 # Backups e arquivos compactados (se estiverem na pasta do projeto)
 *.tar.gz
@@ -57,3 +61,21 @@ ehthumbs.db
 # IMPORTANTE: NÃO adicione pubspec.lock ou package-lock.json para serem ignorados.
 # Eles DEVEM ser versionados.
 service-account-key.json
+
+# Added by Task Master AI
+# Logs
+logs
+# Dependency directories
+# Environment variables
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+# Task files
+tasks.json
+tasks/ 

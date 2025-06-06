@@ -20,7 +20,7 @@ class TaskCard extends StatelessWidget {
     final isCompletedToday = task.isCompletedToday();
     return Card(
       elevation: 2,
-      margin: const EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 12.0), // Reduzindo de 16 para 12
       color: Colors.grey[850], // Use dark gray for card background
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), 
       child: Padding(

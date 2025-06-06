@@ -87,7 +87,7 @@ class RecurringTaskCard extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: recurringTask.getPriorityColor().withOpacity(0.2),
+                                  color: recurringTask.getPriorityColor().withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
@@ -106,7 +106,7 @@ class RecurringTaskCard extends StatelessWidget {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFE91E63).withOpacity(0.2),
+                                  color: const Color(0xFFE91E63).withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(

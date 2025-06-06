@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:myapp/utils/logger.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,7 +35,7 @@ class AuthService {
         password: password,
       );
     } catch (e) {
-      print('Error signing in: $e');
+      Logger.error('Error signing in: $e');
       rethrow;
     }
   }
@@ -48,7 +49,7 @@ class AuthService {
     UserCredential? userCredential;
     
     try {
-      print('Tentando criar usuário com email: $email');
+      Logger.debug('Tentando criar usuário com email: $email');
       
       // Create the user in Firebase Auth
       userCredential = await _auth.createUserWithEmailAndPassword(
@@ -56,38 +57,38 @@ class AuthService {
         password: password,
       );
       
-      print('Usuário criado com sucesso no Firebase Auth. UID: ${userCredential.user?.uid}');
+      Logger.info('Usuário criado com sucesso no Firebase Auth. UID: ${userCredential.user?.uid}');
 
       // Update the user's display name
       if (userCredential.user != null) {
         try {
           await userCredential.user!.updateDisplayName(name);
-          print('Nome de exibição do usuário atualizado: $name');
+          Logger.debug('Nome de exibição do usuário atualizado: $name');
         } catch (displayNameError) {
           // Não falhe se não conseguir atualizar o nome de exibição
-          print('Erro ao atualizar nome de exibição: $displayNameError');
+          Logger.error('Erro ao atualizar nome de exibição: $displayNameError');
         }
 
         // Create a user document in Firestore - continuará mesmo se falhar
         try {
           await _createUserDocument(userCredential.user!, name);
         } catch (firestoreError) {
-          print('Erro no Firestore não impediu a criação da conta: $firestoreError');
+          Logger.error('Erro no Firestore não impediu a criação da conta: $firestoreError');
         }
       }
 
       return userCredential;
     } catch (e) {
-      print('Erro ao criar usuário: $e');
+      Logger.error('Erro ao criar usuário: $e');
       
       // Se a autenticação foi criada mas ocorreu erro posteriormente, tente limpar
       if (userCredential?.user != null) {
         try {
-          print('Tentando limpar usuário criado parcialmente: ${userCredential!.user!.uid}');
+          Logger.debug('Tentando limpar usuário criado parcialmente: ${userCredential!.user!.uid}');
           await userCredential.user!.delete();
-          print('Usuário criado parcialmente foi excluído após erro');
+          Logger.error('Usuário criado parcialmente foi excluído após erro');
         } catch (cleanupError) {
-          print('Erro ao limpar usuário: $cleanupError');
+          Logger.error('Erro ao limpar usuário: $cleanupError');
         }
       }
       
@@ -98,20 +99,20 @@ class AuthService {
   /// Creates a user document in Firestore.
   Future<void> _createUserDocument(User user, String name) async {
     try {
-      print('Tentando criar documento do usuário no Firestore. UID: ${user.uid}');
+      Logger.debug('Tentando criar documento do usuário no Firestore. UID: ${user.uid}');
       
       // Verifica se já existe um documento para este usuário
       final docRef = _firestore.collection('users').doc(user.uid);
       final docSnapshot = await docRef.get().timeout(
         const Duration(seconds: 10),
         onTimeout: () {
-          print('Timeout ao verificar documento existente');
+          Logger.debug('Timeout ao verificar documento existente');
           throw TimeoutException('Firestore operation timed out');
         },
       );
       
       if (docSnapshot.exists) {
-        print('Documento já existe, atualizando');
+        Logger.debug('Documento já existe, atualizando');
         await docRef.update({
           'name': name,
           'email': user.email,
@@ -120,12 +121,12 @@ class AuthService {
         }).timeout(
           const Duration(seconds: 10),
           onTimeout: () {
-            print('Timeout ao atualizar documento');
+            Logger.debug('Timeout ao atualizar documento');
             throw TimeoutException('Firestore update operation timed out');
           },
         );
       } else {
-        print('Criando novo documento');
+        Logger.debug('Criando novo documento');
         await docRef.set({
           'name': name,
           'email': user.email,
@@ -135,30 +136,30 @@ class AuthService {
         }).timeout(
           const Duration(seconds: 10),
           onTimeout: () {
-            print('Timeout ao criar documento');
+            Logger.debug('Timeout ao criar documento');
             throw TimeoutException('Firestore set operation timed out');
           },
         );
       }
       
-      print('Documento do usuário criado/atualizado com sucesso no Firestore');
+      Logger.info('Documento do usuário criado/atualizado com sucesso no Firestore');
     } catch (e) {
       // Não rethrow aqui para evitar falha na criação da conta se o Firestore falhar
-      print('Erro ao criar documento do usuário: $e');
+      Logger.error('Erro ao criar documento do usuário: $e');
       // Logue detalhes específicos que podem ser úteis
-      print('User UID: ${user.uid}, Name: $name, Email: ${user.email}');
+      Logger.debug('User UID: ${user.uid}, Name: $name, Email: ${user.email}');
       
       // Tentativa alternativa de criar um documento mínimo
       if (e.toString().contains('permission-denied') || e.toString().contains('PERMISSION_DENIED')) {
-        print('Tentando método alternativo devido a erro de permissão');
+        Logger.error('Tentando método alternativo devido a erro de permissão');
         try {
           // Tente uma operação mais simples
           await _firestore.collection('users').doc(user.uid).set({
             'email': user.email,
           }, SetOptions(merge: true));
-          print('Documento mínimo criado com sucesso');
+          Logger.info('Documento mínimo criado com sucesso');
         } catch (fallbackError) {
-          print('Método alternativo também falhou: $fallbackError');
+          Logger.error('Método alternativo também falhou: $fallbackError');
         }
       }
     }
@@ -169,7 +170,7 @@ class AuthService {
     try {
       await _auth.signOut();
     } catch (e) {
-      print('Error signing out: $e');
+      Logger.error('Error signing out: $e');
       rethrow;
     }
   }
@@ -179,7 +180,7 @@ class AuthService {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } catch (e) {
-      print('Error sending password reset email: $e');
+      Logger.error('Error sending password reset email: $e');
       rethrow;
     }
   }
@@ -200,7 +201,7 @@ class AuthService {
         }
       }
     } catch (e) {
-      print('Error updating profile: $e');
+      Logger.error('Error updating profile: $e');
       rethrow;
     }
   }
@@ -218,7 +219,7 @@ class AuthService {
         });
       }
     } catch (e) {
-      print('Error updating email: $e');
+      Logger.error('Error updating email: $e');
       rethrow;
     }
   }
@@ -231,7 +232,7 @@ class AuthService {
         await user.updatePassword(password);
       }
     } catch (e) {
-      print('Error updating password: $e');
+      Logger.error('Error updating password: $e');
       rethrow;
     }
   }
@@ -248,7 +249,7 @@ class AuthService {
         await user.delete();
       }
     } catch (e) {
-      print('Error deleting account: $e');
+      Logger.error('Error deleting account: $e');
       rethrow;
     }
   }
@@ -263,7 +264,7 @@ class AuthService {
       }
       return null;
     } catch (e) {
-      print('Error getting user profile: $e');
+      Logger.error('Error getting user profile: $e');
       return null;
     }
   }
@@ -278,7 +279,7 @@ class AuthService {
         });
       }
     } catch (e) {
-      print('Error updating last login: $e');
+      Logger.error('Error updating last login: $e');
     }
   }
 }

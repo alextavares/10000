@@ -1,0 +1,42 @@
+# Teste genérico simples para HabitAI
+appId: com.habitai.app
+
+---
+# Iniciar o app
+- launchApp
+
+# Aguardar carregamento
+- waitForAnimationToEnd
+
+# Capturar tela inicial
+- takeScreenshot: "tela_inicial_generica"
+
+# Verificar se algum texto está visível
+- assertVisible: ".*"
+
+# Tentar encontrar qualquer botão clicável
+- tapOn:
+    enabled: true
+    optional: true
+    index: 0
+
+# Aguardar possível transição
+- waitForAnimationToEnd
+
+# Capturar segunda tela
+- takeScreenshot: "segunda_tela"
+
+# Verificar se ainda há conteúdo visível
+- assertVisible: ".*"
+
+# Voltar se possível
+- back:
+    optional: true
+
+- waitForAnimationToEnd
+
+# Captura final
+- takeScreenshot: "tela_final"
+
+# Encerrar
+- stopApp

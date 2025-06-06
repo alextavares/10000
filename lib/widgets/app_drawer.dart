@@ -83,7 +83,7 @@ class _AppDrawerState extends State<AppDrawer> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.pinkAccent.withOpacity(0.8) : Colors.transparent,
+        color: isSelected ? Colors.pinkAccent.withValues(alpha: 0.8) : Colors.transparent,
         borderRadius: BorderRadius.circular(25.0),
       ),
       child: ListTile(

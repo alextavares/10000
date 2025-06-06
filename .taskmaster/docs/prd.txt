@@ -1,0 +1,92 @@
+# HabitAI - Product Requirements Document
+
+## Visão Geral
+HabitAI é um aplicativo Flutter para gerenciamento de hábitos pessoais. O objetivo é criar um MVP simples e funcional, similar ao app concorrente analisado, com foco em usabilidade e simplicidade.
+
+## Estado Atual
+- App Flutter com funcionalidades básicas implementadas
+- Erro na edição de hábitos que precisa ser corrigido
+- Interface complexa que precisa ser simplificada
+- Dois fluxos de criação de hábitos (manual e sugestões)
+
+## Objetivo do MVP
+Criar um app de hábitos simples e funcional com:
+- Criação rápida de hábitos
+- Rastreamento diário (sim/não)
+- Visualização de progresso básica
+- Interface limpa e intuitiva
+
+## Fases de Desenvolvimento
+
+### Fase 1: Correções Essenciais
+- Corrigir erro "Failed to load habit" na edição
+- Remover temporariamente o fluxo de sugestões de hábitos
+- Simplificar o modelo Habit removendo campos complexos
+- Garantir que CRUD básico funcione corretamente
+
+### Fase 2: Simplificar Criação
+- Implementar fluxo único de criação de hábito
+- Manter apenas campos essenciais: nome, categoria, frequência
+- Remover tipos de rastreamento avançados (manter só sim/não)
+- Simplificar tela de criação/edição
+
+### Fase 3: Melhorar UI/UX
+- Redesenhar tela principal (Today) para mostrar hábitos do dia
+- Melhorar visual dos cards de hábitos
+- Adicionar animações de feedback ao completar hábito
+- Padronizar cores e ícones com o design system
+
+### Fase 4: Estatísticas Básicas
+- Implementar contador de sequência (streak)
+- Calcular e mostrar porcentagem de conclusão
+- Adicionar calendário visual com dias completados
+- Criar gráfico simples de progresso semanal/mensal
+
+### Fase 5: Features Futuras (Pós-MVP)
+- Reintegrar sugestões de hábitos como feature opcional
+- Adicionar tipos de rastreamento (quantia, tempo, lista)
+- Implementar sistema de lembretes/notificações
+- Adicionar sincronização com Firebase
+- Criar plano Premium com features avançadas
+
+## Requisitos Técnicos
+
+### Tecnologias
+- Flutter/Dart
+- Provider para gerenciamento de estado
+- Armazenamento local (SharedPreferences/Hive)
+- Firebase (futuramente)
+
+### Estrutura de Dados Simplificada
+```
+Habit:
+- id: String
+- name: String
+- category: String
+- icon: IconData
+- color: Color
+- frequency: enum (daily, weekly)
+- daysOfWeek: List<int> (se weekly)
+- createdAt: DateTime
+- completedDates: List<DateTime>
+- isActive: bool
+```
+
+### Telas Principais
+1. Today - Lista de hábitos do dia
+2. Habits - Todos os hábitos com progresso
+3. Add/Edit Habit - Formulário simples
+4. Statistics - Visualização de progresso
+
+## Critérios de Sucesso
+- App funcional sem erros críticos
+- Fluxo intuitivo de criação e marcação de hábitos
+- Performance fluida
+- Design limpo e moderno
+- Código organizado e manutenível
+
+## Notas de Implementação
+- Manter código modular para facilitar adição de features
+- Documentar principais decisões de arquitetura
+- Criar testes para funcionalidades críticas
+- Preparar estrutura para internacionalização

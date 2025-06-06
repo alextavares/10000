@@ -31,13 +31,8 @@ class _AddRecurringTaskCategoryScreenState extends State<AddRecurringTaskCategor
       'color': const Color(0xFFE91E63),
     },
     {
-      'name': 'Tarefa',
-      'icon': Icons.access_time,
-      'color': const Color(0xFFE91E63),
-    },
-    {
       'name': 'Nova categoria',
-      'icon': Icons.apps,
+      'icon': Icons.category,
       'color': const Color(0xFFE91E63),
     },
     {
@@ -105,10 +100,15 @@ class _AddRecurringTaskCategoryScreenState extends State<AddRecurringTaskCategor
       'icon': Icons.apps,
       'color': const Color(0xFFE53E3E),
     },
+    {
+      'name': 'Criar categoria',
+      'icon': Icons.add_circle_outline,
+      'color': Colors.grey[600]!,
+    },
   ];
 
   void _selectCategory(String categoryName) {
-    if (categoryName == 'Nova categoria') {
+    if (categoryName == 'Nova categoria' || categoryName == 'Criar categoria') {
       _showCreateCategoryDialog();
     } else {
       setState(() {
@@ -195,48 +195,81 @@ class _AddRecurringTaskCategoryScreenState extends State<AddRecurringTaskCategor
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3.5,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 3.2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    return _buildCategoryItem(
+                      name: category['name'],
+                      icon: category['icon'],
+                      color: category['color'],
+                    );
+                  },
                 ),
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  final category = categories[index];
-                  return _buildCategoryItem(
-                    name: category['name'],
-                    icon: category['icon'],
-                    color: category['color'],
-                  );
-                },
               ),
             ),
-            const SizedBox(height: 16),
             Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'CANCELAR',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        ),
+                        child: const Text(
+                          'CANCELAR',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: selectedCategory != null && selectedCategory != 'Criar categoria' && selectedCategory != 'Nova categoria'
+                            ? () => _navigateToNextStep()
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: selectedCategory != null && selectedCategory != 'Criar categoria' && selectedCategory != 'Nova categoria'
+                              ? const Color(0xFFE91E63)
+                              : Colors.grey[600],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          disabledBackgroundColor: Colors.grey[600],
+                        ),
+                        child: const Text(
+                          'PRÓXIMA',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Indicadores de progresso
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                         width: 8,
@@ -294,40 +327,40 @@ class _AddRecurringTaskCategoryScreenState extends State<AddRecurringTaskCategor
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: isSelected 
-          ? Border.all(color: const Color(0xFFE91E63), width: 2)
+          ? Border.all(color: const Color(0xFFE91E63), width: 1.5)
           : null,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _selectCategory(name),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               children: [
                 Container(
-                  width: 32,
-                  height: 32,
+                  width: 28,
+                  height: 28,
                   decoration: BoxDecoration(
                     color: color,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   child: Icon(
                     icon,
                     color: Colors.white,
-                    size: 20,
+                    size: 18,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     name,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,

@@ -1,5 +1,6 @@
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:myapp/models/habit.dart';
+import 'package:myapp/utils/logger.dart';
 
 /// Service for handling AI-related functionality.
 class AIService {
@@ -45,7 +46,7 @@ Format each suggestion as a single sentence without numbering.
 
       return suggestions.take(5).toList();
     } catch (e) {
-      print('Error generating habit suggestions: $e');
+      Logger.error('Error generating habit suggestions: $e');
       return _getFallbackSuggestions(category);
     }
   }
@@ -145,7 +146,7 @@ Keep the response concise, supportive, and actionable. Focus on 2-3 key insights
       
       return response.text ?? "Unable to generate insights at this time.";
     } catch (e) {
-      print('Error generating habit insights: $e');
+      Logger.error('Error generating habit insights: $e');
       return "Unable to generate insights at this time. Please try again later.";
     }
   }
@@ -182,7 +183,7 @@ Keep the tone supportive and motivational.
       
       return response.text ?? "Unable to generate a habit plan at this time.";
     } catch (e) {
-      print('Error generating habit plan: $e');
+      Logger.error('Error generating habit plan: $e');
       return "Unable to generate a habit plan at this time. Please try again later.";
     }
   }
@@ -246,7 +247,7 @@ Format the response in a clear, structured way.
       
       return response.text ?? "Unable to generate a weekly summary at this time.";
     } catch (e) {
-      print('Error generating weekly summary: $e');
+      Logger.error('Error generating weekly summary: $e');
       return "Unable to generate a weekly summary at this time. Please try again later.";
     }
   }

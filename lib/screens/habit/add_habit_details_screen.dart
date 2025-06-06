@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/habit.dart' show HabitFrequency, HabitTrackingType; // Importar enums corretos
 import 'package:myapp/services/service_provider.dart'; 
+import 'package:myapp/utils/logger.dart';
 
 class AddHabitDetailsScreen extends StatefulWidget {
   final String selectedCategoryName;
@@ -100,7 +101,7 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
         }
       } catch (e) {
         if (kDebugMode) {
-          print('Error saving habit: $e');
+          Logger.error('Error saving habit: $e');
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

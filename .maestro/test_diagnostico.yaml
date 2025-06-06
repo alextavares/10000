@@ -1,0 +1,36 @@
+# Teste de diagnóstico - descobrir elementos da tela
+appId: com.habitai.app
+
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Capturar várias screenshots para análise
+- takeScreenshot: "1_tela_inicial"
+
+# Aguardar um pouco mais caso haja animação
+- waitForAnimationToEnd
+- waitForAnimationToEnd
+
+- takeScreenshot: "2_apos_espera"
+
+# Tentar tocar em qualquer lugar para passar tela de splash se houver
+- tapOn:
+    point: "50%,50%"
+    optional: true
+
+- waitForAnimationToEnd
+- takeScreenshot: "3_apos_toque"
+
+# Listar elementos visíveis (para debug)
+- assertVisible: ".*"
+
+# Tentar identificar textos comuns em apps
+- assertVisible:
+    text: ".*[Hh]abit.*|.*[Ll]ogin.*|.*[Bb]em.*vindo.*|.*[Ee]ntrar.*|.*[Cc]omeçar.*"
+    optional: true
+
+# Captura final
+- takeScreenshot: "4_tela_final"
+
+- stopApp

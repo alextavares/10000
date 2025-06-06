@@ -290,226 +290,238 @@ class _AddHabitScheduleScreenState extends State<AddHabitScheduleScreen> {
           ? const Center(
               child: CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent)))
-          : Form(
-              key: _formKey,
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: <Widget>[
-                  ListTile(
-                    leading: const Icon(Icons.info_outline,
-                        color: Colors.grey, size: 20),
-                    title: Text('Hábito: ${widget.habitTitle}',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16)),
-                    subtitle: Text(
-                        'Frequência: ${widget.selectedFrequency.toString().split('.').last}${widget.selectedDaysOfWeek != null && widget.selectedDaysOfWeek!.isNotEmpty ? ' (Dias: ${widget.selectedDaysOfWeek!.join(', ')})' : ''}${widget.selectedDaysOfMonth != null && widget.selectedDaysOfMonth!.isNotEmpty ? ' (Dias do Mês: ${widget.selectedDaysOfMonth!.join(', ')})' : ''}${widget.selectedYearDates != null && widget.selectedYearDates!.isNotEmpty ? ' (Datas: ${widget.selectedYearDates!.map((d) => DateFormat('dd/MM/yy').format(d)).join(', ')})' : ''}${widget.timesPerPeriod != null && widget.periodType != null ? ' (${widget.timesPerPeriod} vezes por ${widget.periodType!.toLowerCase()})' : ''}${widget.repeatEveryDays != null ? ' (A cada ${widget.repeatEveryDays} dias)' : ''}${widget.isFlexible == true ? ' (Flexível)' : ''}${widget.alternateDays == true ? ' (Alternar dias)' : ''}',
-                        style:
-                            TextStyle(color: Colors.grey[400], fontSize: 12)),
-                    tileColor: Colors.grey[850],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)), 
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Start Date
-                  ListTile(
-                    leading: const Icon(Icons.calendar_today,
-                        color: Colors.pinkAccent),
-                    title: const Text('Data de Início',
-                        style: TextStyle(color: Colors.white)),
-                    subtitle: Text(
-                        DateFormat('dd/MM/yyyy').format(_startDate),
-                        style: TextStyle(color: Colors.grey[400])),
-                    onTap: () => _selectDate(context, false),
-                  ),
-
-                  // Target Date
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.flag_outlined, color: Colors.pinkAccent),
-                          title: const Text('Data Alvo', style: TextStyle(color: Colors.white)),
-                          trailing: Switch(
-                            value: _isTargetDateEnabled,
-                            onChanged: (value) {
-                              setState(() {
-                                _isTargetDateEnabled = value;
-                                if (_isTargetDateEnabled) {
-                                  if (_targetDate == null || !_targetDate!.isAfter(_startDate)) {
-                                    _targetDurationDays = 30; 
-                                    _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
-                                    _daysController.text = _targetDurationDays.toString();
-                                  } else {
-                                    _targetDurationDays = _targetDate!.difference(_startDate).inDays;
-                                    if(_targetDurationDays! <= 0) { 
-                                        _targetDurationDays = 30;
-                                        _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
-                                    }
-                                    _daysController.text = _targetDurationDays.toString();
-                                  }
-                                } else {
-                                }
-                              });
-                            },
-                            activeColor: Colors.pinkAccent,
-                            inactiveThumbColor: Colors.grey[700],
-                            inactiveTrackColor: Colors.grey[800]?.withAlpha(178), 
+          : SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Form(
+                      key: _formKey,
+                      child: ListView(
+                        padding: const EdgeInsets.all(16.0),
+                        children: <Widget>[
+                          ListTile(
+                            leading: const Icon(Icons.info_outline,
+                                color: Colors.grey, size: 20),
+                            title: Text('Hábito: ${widget.habitTitle}',
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16)),
+                            subtitle: Text(
+                                'Frequência: ${widget.selectedFrequency.toString().split('.').last}${widget.selectedDaysOfWeek != null && widget.selectedDaysOfWeek!.isNotEmpty ? ' (Dias: ${widget.selectedDaysOfWeek!.join(', ')})' : ''}${widget.selectedDaysOfMonth != null && widget.selectedDaysOfMonth!.isNotEmpty ? ' (Dias do Mês: ${widget.selectedDaysOfMonth!.join(', ')})' : ''}${widget.selectedYearDates != null && widget.selectedYearDates!.isNotEmpty ? ' (Datas: ${widget.selectedYearDates!.map((d) => DateFormat('dd/MM/yy').format(d)).join(', ')})' : ''}${widget.timesPerPeriod != null && widget.periodType != null ? ' (${widget.timesPerPeriod} vezes por ${widget.periodType!.toLowerCase()})' : ''}${widget.repeatEveryDays != null ? ' (A cada ${widget.repeatEveryDays} dias)' : ''}${widget.isFlexible == true ? ' (Flexível)' : ''}${widget.alternateDays == true ? ' (Alternar dias)' : ''}',
+                                style:
+                                    TextStyle(color: Colors.grey[400], fontSize: 12)),
+                            tileColor: Colors.grey[850],
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)), 
                           ),
-                        ),
-                        if (_isTargetDateEnabled)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 70.0, right: 16.0, bottom: 16.0, top: 0), 
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                          const SizedBox(height: 20),
+
+                          // Start Date
+                          ListTile(
+                            leading: const Icon(Icons.calendar_today,
+                                color: Colors.pinkAccent),
+                            title: const Text('Data de Início',
+                                style: TextStyle(color: Colors.white)),
+                            subtitle: Text(
+                                DateFormat('dd/MM/yyyy').format(_startDate),
+                                style: TextStyle(color: Colors.grey[400])),
+                            onTap: () => _selectDate(context, false),
+                          ),
+
+                          // Target Date
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: InkWell(
-                                    onTap: () => _selectDate(context, true),
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[800],
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: Colors.grey[700]!)
-                                      ),
-                                      child: Text(
-                                        _targetDate == null
-                                            ? 'Selecionar data'
-                                            : DateFormat('dd/MM/yyyy').format(_targetDate!),
-                                        style: TextStyle(color: _targetDate == null ? Colors.grey[400] : Colors.white, fontSize: 15),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
+                                ListTile(
+                                  leading: const Icon(Icons.flag_outlined, color: Colors.pinkAccent),
+                                  title: const Text('Data Alvo', style: TextStyle(color: Colors.white)),
+                                  trailing: Switch(
+                                    value: _isTargetDateEnabled,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _isTargetDateEnabled = value;
+                                        if (_isTargetDateEnabled) {
+                                          if (_targetDate == null || !_targetDate!.isAfter(_startDate)) {
+                                            _targetDurationDays = 30; 
+                                            _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
+                                            _daysController.text = _targetDurationDays.toString();
+                                          } else {
+                                            _targetDurationDays = _targetDate!.difference(_startDate).inDays;
+                                            if(_targetDurationDays! <= 0) { 
+                                                _targetDurationDays = 30;
+                                                _targetDate = _startDate.add(Duration(days: _targetDurationDays!));
+                                            }
+                                            _daysController.text = _targetDurationDays.toString();
+                                          }
+                                        } else {
+                                        }
+                                      });
+                                    },
+                                    activeColor: Colors.pinkAccent,
+                                    inactiveThumbColor: Colors.grey[700],
+                                    inactiveTrackColor: Colors.grey[800]?.withAlpha(178), 
                                   ),
                                 ),
-                                const SizedBox(width: 10),
-                                SizedBox(
-                                  width: 70, 
-                                  child: TextField(
-                                    controller: _daysController,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)],
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                                    decoration: InputDecoration(
-                                      hintText: 'dias',
-                                      hintStyle: TextStyle(color: Colors.grey[500]),
-                                      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.grey[700]!),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(color: Colors.pinkAccent),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      filled: true,
-                                      fillColor: Colors.grey[800],
+                                if (_isTargetDateEnabled)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 70.0, right: 16.0, bottom: 16.0, top: 0), 
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          flex: 2,
+                                          child: InkWell(
+                                            onTap: () => _selectDate(context, true),
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[800],
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(color: Colors.grey[700]!)
+                                              ),
+                                              child: Text(
+                                                _targetDate == null
+                                                    ? 'Selecionar data'
+                                                    : DateFormat('dd/MM/yyyy').format(_targetDate!),
+                                                style: TextStyle(color: _targetDate == null ? Colors.grey[400] : Colors.white, fontSize: 15),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        SizedBox(
+                                          width: 70, 
+                                          child: TextField(
+                                            controller: _daysController,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)],
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(color: Colors.white, fontSize: 16),
+                                            decoration: InputDecoration(
+                                              hintText: 'dias',
+                                              hintStyle: TextStyle(color: Colors.grey[500]),
+                                              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(color: Colors.grey[700]!),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: const BorderSide(color: Colors.pinkAccent),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              filled: true,
+                                              fillColor: Colors.grey[800],
+                                            ),
+                                          ),
+                                        ),
+                                         const Padding(
+                                          padding: EdgeInsets.only(left: 8.0),
+                                          child: Text("dias.", style: TextStyle(color: Colors.white, fontSize: 16)),
+                                        )
+                                      ],
                                     ),
                                   ),
-                                ),
-                                 const Padding(
-                                  padding: EdgeInsets.only(left: 8.0),
-                                  child: Text("dias.", style: TextStyle(color: Colors.white, fontSize: 16)),
-                                )
                               ],
                             ),
+
+                          const Divider(color: Colors.grey),
+
+                          ListTile(
+                            leading: const Icon(Icons.alarm, color: Colors.pinkAccent),
+                            title: const Text('Lembrete (Opcional)',
+                                style: TextStyle(color: Colors.white)),
+                            subtitle: Text(
+                                _reminderTime == null
+                                    ? 'Não definido'
+                                    : _reminderTime!.format(context),
+                                style: TextStyle(color: Colors.grey[400])),
+                            trailing: _reminderTime != null
+                                ? IconButton(
+                                    icon: Icon(Icons.clear, color: Colors.grey[600]),
+                                    onPressed: () => setState(() {
+                                          _reminderTime = null;
+                                          _notificationsEnabled = false;
+                                        }))
+                                : null, 
+                            onTap: () async {
+                              await _selectTime(context);
+                            },
                           ),
+
+                          if (_reminderTime != null)
+                            SwitchListTile(
+                              title: const Text('Ativar notificações',
+                                  style: TextStyle(color: Colors.white)),
+                              subtitle: Text('Requer permissões do sistema',
+                                  style:
+                                      TextStyle(color: Colors.grey[500], fontSize: 12)),
+                              value: _notificationsEnabled,
+                              onChanged: (bool value) {
+                                setState(() {
+                                  _notificationsEnabled = value;
+                                });
+                              },
+                              activeColor: Colors.pinkAccent,
+                              inactiveThumbColor: Colors.grey[700],
+                              inactiveTrackColor: Colors.grey[800],
+                              tileColor: Colors.grey[850]?.withAlpha(128), 
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Botões padronizados
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          onPressed: _isSaving
+                              ? null
+                              : () => Navigator.of(context).pop(),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          child: Text('ANTERIOR',
+                              style: TextStyle(
+                                  color: _isSaving ? Colors.grey[700] : Colors.white70,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                        ElevatedButton.icon(
+                          icon: _isSaving
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: Colors.white))
+                              : const Icon(Icons.check_circle_outline, color: Colors.white),
+                          label: Text(_isSaving ? 'SALVANDO...' : 'FINALIZAR',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          onPressed: _isSaving ? null : _saveHabit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.pinkAccent,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            textStyle:
+                                const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            disabledBackgroundColor: Colors.grey[600],
+                          ),
+                        ),
                       ],
                     ),
-
-                  const Divider(color: Colors.grey),
-
-                  ListTile(
-                    leading: const Icon(Icons.alarm, color: Colors.pinkAccent),
-                    title: const Text('Lembrete (Opcional)',
-                        style: TextStyle(color: Colors.white)),
-                    subtitle: Text(
-                        _reminderTime == null
-                            ? 'Não definido'
-                            : _reminderTime!.format(context),
-                        style: TextStyle(color: Colors.grey[400])),
-                    trailing: _reminderTime != null
-                        ? IconButton(
-                            icon: Icon(Icons.clear, color: Colors.grey[600]),
-                            onPressed: () => setState(() {
-                                  _reminderTime = null;
-                                  _notificationsEnabled = false;
-                                }))
-                        : null, 
-                    onTap: () async {
-                      await _selectTime(context);
-                    },
                   ),
-
-                  if (_reminderTime != null)
-                    SwitchListTile(
-                      title: const Text('Ativar notificações',
-                          style: TextStyle(color: Colors.white)),
-                      subtitle: Text('Requer permissões do sistema',
-                          style:
-                              TextStyle(color: Colors.grey[500], fontSize: 12)),
-                      value: _notificationsEnabled,
-                      onChanged: (bool value) {
-                        setState(() {
-                          _notificationsEnabled = value;
-                        });
-                      },
-                      activeColor: Colors.pinkAccent,
-                      inactiveThumbColor: Colors.grey[700],
-                      inactiveTrackColor: Colors.grey[800],
-                      tileColor: Colors.grey[850]?.withAlpha(128), 
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                    ),
                 ],
               ),
             ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            16.0, 16.0, 16.0, 24.0), 
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(
-              onPressed: _isSaving
-                  ? null
-                  : () => Navigator.of(context).pop(),
-              child: Text('ANTERIOR',
-                  style: TextStyle(
-                      color: _isSaving ? Colors.grey[700] : Colors.white70,
-                      fontSize: 16)),
-            ),
-            ElevatedButton.icon(
-              icon: _isSaving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white))
-                  : const Icon(Icons.check_circle_outline, color: Colors.white),
-              label: Text(_isSaving ? 'SALVANDO...' : 'FINALIZAR',
-                  style: const TextStyle(color: Colors.white)),
-              onPressed: _isSaving ? null : _saveHabit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pinkAccent,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                textStyle:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                disabledBackgroundColor: Colors.grey[600],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

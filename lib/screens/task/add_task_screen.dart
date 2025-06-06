@@ -303,7 +303,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       style: const TextStyle(color: Colors.white, fontSize: 20),
                       decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.pinkAccent.withOpacity(0.5)),
+                          borderSide: BorderSide(color: Colors.pinkAccent.withValues(alpha: 0.5)),
                         ),
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.pinkAccent, width: 2),
@@ -385,7 +385,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       trailing: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.pinkAccent.withOpacity(0.2),
+                          color: Colors.pinkAccent.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
@@ -407,7 +407,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       trailing: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.pinkAccent.withOpacity(0.2),
+                          color: Colors.pinkAccent.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(

@@ -83,9 +83,9 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 12.0,
-            mainAxisSpacing: 12.0,
-            childAspectRatio: 2.5, 
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 10.0,
+            childAspectRatio: 3.2, 
           ),
           itemCount: _categories.length,
           itemBuilder: (context, index) {
@@ -107,11 +107,11 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: isSelected ? (category['color'] as Color).withOpacity(0.8) : Colors.grey[850],
-                  borderRadius: BorderRadius.circular(12.0),
+                  color: isSelected ? (category['color'] as Color).withValues(alpha: 0.8) : Colors.grey[850],
+                  borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(
                     color: isSelected ? (category['color'] as Color) : (Colors.grey[700]!),
-                    width: 2,
+                    width: 1.5,
                   ),
                 ),
                 child: Row(
@@ -119,8 +119,8 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                   children: [
                     Icon(category['icon'] as IconData? ?? Icons.help_outline, 
                          color: isSelected ? Colors.white : (category['color'] as Color?) ?? Colors.white70, 
-                         size: 20),
-                    const SizedBox(width: 8),
+                         size: 18),
+                    const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         category['name'] as String,
@@ -128,6 +128,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                         style: TextStyle(
                           color: isSelected ? Colors.white : Colors.white70,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontSize: 13,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -139,46 +140,48 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
           },
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'CANCELAR',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) ? () {
-                if (_selectedCategoryData != null) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => HabitTrackingTypeScreen(
-                      categoryName: _selectedCategoryData!['name'] as String,
-                      categoryIcon: _selectedCategoryData!['icon'] as IconData,
-                      categoryColor: _selectedCategoryData!['color'] as Color,
-                      // habitToEdit: widget.habitToEdit, // Removed as it's not a parameter of HabitTrackingTypeScreen
-                    ),
-                  ));
-                }
-              } : null, 
-              style: ElevatedButton.styleFrom(
-                backgroundColor: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) 
-                                 ? Colors.pinkAccent 
-                                 : Colors.grey, 
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'CANCELAR',
+                  style: TextStyle(color: Colors.white70, fontSize: 16),
                 ),
               ),
-              child: Text(widget.habitToEdit == null ? 'PRÓXIMA' : 'SALVAR', style: const TextStyle(color: Colors.white)),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) ? () {
+                  if (_selectedCategoryData != null) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => HabitTrackingTypeScreen(
+                        categoryName: _selectedCategoryData!['name'] as String,
+                        categoryIcon: _selectedCategoryData!['icon'] as IconData,
+                        categoryColor: _selectedCategoryData!['color'] as Color,
+                        // habitToEdit: widget.habitToEdit, // Removed as it's not a parameter of HabitTrackingTypeScreen
+                      ),
+                    ));
+                  }
+                } : null, 
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) 
+                                   ? Colors.pinkAccent 
+                                   : Colors.grey, 
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(widget.habitToEdit == null ? 'PRÓXIMA' : 'SALVAR', style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
         ),
       ),
     );

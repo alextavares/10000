@@ -1,0 +1,53 @@
+# Teste de criação de novo hábito
+appId: com.habitai.app
+
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Procurar botão de adicionar (pode estar como FAB ou botão)
+- tapOn:
+    text: ".*[Aa]dicionar.*|.*[Nn]ovo.*|\\+"
+    optional: true
+    
+# Se não encontrou, tentar pelo ícone de +
+- tapOn:
+    id: ".*add.*|.*fab.*"
+    optional: true
+
+# Aguardar tela de novo hábito
+- waitForAnimationToEnd
+
+# Preencher nome do hábito
+- tapOn:
+    text: ".*[Nn]ome.*|.*[Tt]ítulo.*"
+    optional: true
+    
+- inputText: "Beber 2L de água por dia"
+
+# Selecionar categoria se disponível
+- tapOn:
+    text: ".*[Cc]ategoria.*"
+    optional: true
+    
+- tapOn:
+    text: ".*[Ss]aúde.*"
+    optional: true
+
+# Definir frequência
+- tapOn:
+    text: ".*[Ff]requência.*|.*[Dd]iário.*"
+    optional: true
+
+# Salvar hábito
+- tapOn:
+    text: ".*[Ss]alvar.*|.*[Cc]riar.*|.*[Cc]onfirmar.*"
+
+# Verificar se voltou para lista
+- waitForAnimationToEnd
+- assertVisible: "Beber 2L de água por dia"
+
+# Screenshot do resultado
+- takeScreenshot: "novo_habito_criado"
+
+- stopApp

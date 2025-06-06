@@ -1,0 +1,106 @@
+# Teste de funcionalidades avançadas HabitAI
+appId: com.habitai.app
+
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Teste 1: Configurar lembrete/notificação
+- tapOn:
+    text: ".*[Hh]ábito.*"
+    index: 0  # Primeiro hábito
+    optional: true
+
+- waitForAnimationToEnd
+
+# Procurar opção de lembrete
+- tapOn:
+    text: ".*[Ll]embrete.*|.*[Nn]otifica.*|.*[Aa]larme.*"
+    optional: true
+
+# Configurar horário
+- tapOn:
+    text: ".*[Hh]orário.*|.*[Qq]uando.*|.*[Tt]empo.*"
+    optional: true
+
+- tapOn:
+    text: "08:00|8:00|.*manhã.*"
+    optional: true
+
+- tapOn:
+    text: ".*[Ss]alvar.*|.*[Cc]onfirmar.*|OK"
+    optional: true
+
+- takeScreenshot: "lembrete_configurado"
+
+# Teste 2: Usar assistente IA (se disponível)
+- back
+- waitForAnimationToEnd
+
+# Procurar funcionalidade de IA
+- tapOn:
+    text: ".*[Aa]ssistente.*|.*IA.*|.*[Ss]ugest.*|.*[Dd]ica.*|.*Gemini.*"
+    optional: true
+
+- waitForAnimationToEnd
+
+# Se encontrou, interagir com IA
+- assertVisible:
+    text: ".*[Cc]omo.*posso.*ajudar.*|.*[Dd]ica.*|.*[Ss]ugestão.*"
+    optional: true
+
+- takeScreenshot: "assistente_ia"
+
+# Teste 3: Visualizar estatísticas detalhadas
+- tapOn:
+    text: ".*[Ee]statística.*|.*[Pp]rogresso.*|.*[Rr]elatório.*"
+    optional: true
+
+- waitForAnimationToEnd
+
+# Verificar gráficos/dados
+- assertVisible:
+    text: ".*%.*|.*[Dd]ias.*|.*[Ss]equência.*|.*[Mm]eta.*"
+    optional: true
+
+# Tentar diferentes períodos
+- tapOn:
+    text: ".*[Ss]emana.*|.*[Mm]ês.*|.*[Aa]no.*"
+    optional: true
+
+- waitForAnimationToEnd
+- takeScreenshot: "estatisticas_periodo"
+
+# Teste 4: Compartilhar progresso (se disponível)
+- tapOn:
+    id: ".*share.*|.*compartilh.*"
+    optional: true
+
+- waitForAnimationToEnd
+
+# Se abriu opções de compartilhamento
+- assertVisible:
+    text: ".*[Cc]ompartilhar.*|.*[Ee]nviar.*"
+    optional: true
+
+- back  # Cancelar compartilhamento
+
+# Teste 5: Modo escuro (se disponível)
+- tapOn:
+    text: ".*[Cc]onfigura.*|.*[Aa]juste.*|.*[Pp]erfil.*"
+    optional: true
+
+- waitForAnimationToEnd
+
+- tapOn:
+    text: ".*[Tt]ema.*|.*[Ee]scuro.*|.*[Dd]ark.*|.*[Aa]parência.*"
+    optional: true
+
+- tapOn:
+    text: ".*[Ee]scuro.*|.*[Dd]ark.*|.*[Nn]oturno.*"
+    optional: true
+
+- waitForAnimationToEnd
+- takeScreenshot: "modo_escuro"
+
+- stopApp

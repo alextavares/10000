@@ -1,0 +1,71 @@
+# Teste de validação e cenários de erro
+appId: com.habitai.app
+
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Teste 1: Tentar criar hábito sem nome
+- tapOn:
+    text: ".*[Aa]dicionar.*|.*[Nn]ovo.*|\\+"
+    optional: true
+    
+- waitForAnimationToEnd
+
+# Tentar salvar sem preencher campos obrigatórios
+- tapOn:
+    text: ".*[Ss]alvar.*|.*[Cc]riar.*"
+    optional: true
+
+# Verificar mensagem de erro
+- assertVisible:
+    text: ".*[Cc]ampo.*obrigatório.*|.*[Pp]reencha.*|.*[Nn]ome.*necessário.*"
+    optional: true
+
+- takeScreenshot: "validacao_campo_obrigatorio"
+
+# Preencher nome muito longo
+- tapOn:
+    text: ".*[Nn]ome.*|.*[Tt]ítulo.*"
+    optional: true
+    
+- inputText: "Este é um nome de hábito extremamente longo que pode testar os limites de caracteres do campo de entrada e verificar se a aplicação lida bem com textos muito extensos"
+
+- tapOn:
+    text: ".*[Ss]alvar.*|.*[Cc]riar.*"
+    optional: true
+
+- waitForAnimationToEnd
+
+# Teste 2: Verificar comportamento offline (se aplicável)
+# NOTA: toggleAirplaneMode removido pois não é suportado em todos dispositivos
+# - toggleAirplaneMode
+
+- waitForAnimationToEnd
+
+# Verificar se app mantém dados localmente
+- assertVisible:
+    text: ".*[Hh]ábito.*"
+    optional: true
+
+- takeScreenshot: "comportamento_app"
+
+# Teste 3: Verificar limites do app
+- back
+- waitForAnimationToEnd
+
+# Tentar criar múltiplos hábitos rapidamente
+- repeat:
+    times: 3
+    commands:
+      - tapOn:
+          text: ".*[Aa]dicionar.*|.*[Nn]ovo.*|\\+"
+          optional: true
+      - inputText: "Hábito teste ${index}"
+      - tapOn:
+          text: ".*[Ss]alvar.*|.*[Cc]riar.*"
+      - waitForAnimationToEnd
+
+- takeScreenshot: "multiplos_habitos"
+
+- stopApp

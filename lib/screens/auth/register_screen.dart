@@ -3,6 +3,7 @@ import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/screens/auth/login_screen.dart';
+import 'package:myapp/utils/logger.dart';
 
 /// Register screen for user registration.
 class RegisterScreen extends StatefulWidget {
@@ -72,7 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   /// Gets a user-friendly error message from the exception.
   String _getErrorMessage(dynamic e) {
     final message = e.toString();
-    print('Erro completo: $message');
+    Logger.error('Erro completo: $message');
 
     if (message.contains('email-already-in-use')) {
       return 'An account already exists with this email address.';
@@ -99,7 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return 'Too many attempts. Please try again later.';
     } else {
       // Log detalhado para fins de depuração
-      print('Erro não categorizado na criação da conta: $e');
+      Logger.error('Erro não categorizado na criação da conta: $e');
       return 'An error occurred. Please try again.';
     }
   }
@@ -161,10 +162,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.errorColor.withOpacity(0.1),
+                        color: AppTheme.errorColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppTheme.errorColor.withOpacity(0.3),
+                          color: AppTheme.errorColor.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Text(
@@ -223,6 +224,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       hintText: 'Create a password',
@@ -256,6 +259,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _confirmPasswordController,
                     obscureText: _obscureConfirmPassword,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     decoration: InputDecoration(
                       labelText: 'Confirm Password',
                       hintText: 'Confirm your password',

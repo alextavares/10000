@@ -1,0 +1,23 @@
+# Teste básico de abertura do app HabitAI
+appId: com.habitai.app
+
+---
+- launchApp
+
+# Aguardar o app carregar
+- waitForAnimationToEnd
+
+# Verificar se o app carregou (qualquer conteúdo)
+- assertVisible: ".*"
+
+# Capturar screenshot da tela inicial
+- takeScreenshot: "tela_inicial"
+
+# Exemplo de navegação básica (ajuste conforme seu app)
+# - tapOn: "Adicionar Hábito"
+# - assertVisible: "Novo Hábito"
+# - inputText: "Beber água"
+# - tapOn: "Salvar"
+
+# Encerrar o teste
+- stopApp

@@ -1,7 +1,6 @@
 #!/usr/bin/env dart
 
 import 'dart:io';
-import 'dart:convert';
 
 /// Script para corrigir automaticamente os problemas críticos do projeto
 /// Execute com: dart run scripts/fix_critical_issues.dart

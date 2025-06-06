@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/models/habit.dart'; 
 import 'add_habit_schedule_screen.dart'; 
 import 'package:table_calendar/table_calendar.dart';
+import 'package:myapp/utils/logger.dart';
 
 class AddHabitFrequencyScreen extends StatefulWidget {
   final String selectedCategoryName;
@@ -100,14 +101,14 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
               final isSelected = _selectedMonthDays.contains(day);
               return GestureDetector(
                 onTap: () {
-                  print('Day $day tapped, currently selected: $isSelected');
+                  Logger.debug('Day $day tapped, currently selected: $isSelected');
                   setState(() {
                     if (isSelected) {
                       _selectedMonthDays.remove(day);
-                      print('Removed day $day, now selected: $_selectedMonthDays');
+                      Logger.debug('Removed day $day, now selected: $_selectedMonthDays');
                     } else {
                       _selectedMonthDays.add(day);
-                      print('Added day $day, now selected: $_selectedMonthDays');
+                      Logger.debug('Added day $day, now selected: $_selectedMonthDays');
                     }
                     _selectedMonthDays.sort();
                   });
@@ -138,14 +139,14 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
               final isSelected = _selectedMonthDays.contains(0);
               return GestureDetector(
                 onTap: () {
-                  print('Last day tapped, currently selected: $isSelected');
+                  Logger.debug('Last day tapped, currently selected: $isSelected');
                   setState(() {
                     if (isSelected) {
                       _selectedMonthDays.remove(0);
-                      print('Removed last day, now selected: $_selectedMonthDays');
+                      Logger.debug('Removed last day, now selected: $_selectedMonthDays');
                     } else {
                       _selectedMonthDays.add(0);
-                      print('Added last day, now selected: $_selectedMonthDays');
+                      Logger.debug('Added last day, now selected: $_selectedMonthDays');
                     }
                     _selectedMonthDays.sort();
                   });
@@ -182,9 +183,9 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.redAccent.withOpacity(0.1),
+              color: Colors.redAccent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+              border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -203,9 +204,9 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.green.withOpacity(0.3)),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -244,9 +245,9 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.redAccent.withOpacity(0.1),
+              color: Colors.redAccent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+              border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -265,9 +266,9 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1),
+              color: Colors.green.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.green.withOpacity(0.3)),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -319,14 +320,14 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
             },
             calendarStyle: CalendarStyle(
               defaultTextStyle: const TextStyle(color: Colors.white),
-              weekendTextStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-              outsideTextStyle: TextStyle(color: Colors.white.withOpacity(0.4)),
+              weekendTextStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+              outsideTextStyle: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
               selectedDecoration: const BoxDecoration(
                 color: Colors.pinkAccent,
                 shape: BoxShape.circle,
               ),
               todayDecoration: BoxDecoration(
-                color: Colors.pinkAccent.withOpacity(0.5),
+                color: Colors.pinkAccent.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
             ),
@@ -703,9 +704,9 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                                child: Container(
                                  padding: const EdgeInsets.all(12),
                                  decoration: BoxDecoration(
-                                   color: Colors.redAccent.withOpacity(0.1),
+                                   color: Colors.redAccent.withValues(alpha: 0.1),
                                    borderRadius: BorderRadius.circular(8),
-                                   border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                                   border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
                                  ),
                                  child: Row(
                                    children: [
@@ -740,65 +741,69 @@ class _AddHabitFrequencyScreenState extends State<AddHabitFrequencyScreen> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 10.0, bottom: 20.0), 
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text(
-                      'ANTERIOR',
-                      style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: _canProceed()
-                    ? () {
-                        
-                        
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => AddHabitScheduleScreen(
-                            selectedCategoryName: widget.selectedCategoryName,
-                            selectedCategoryIcon: widget.selectedCategoryIcon,
-                            selectedCategoryColor: widget.selectedCategoryColor,
-                            habitTitle: widget.habitTitle,
-                            habitDescription: widget.habitDescription,
-                            selectedTrackingType: widget.selectedTrackingType,
-                            selectedFrequency: _selectedFrequency,
-                            selectedDaysOfWeek: _selectedFrequency == HabitFrequency.weekly ? _selectedWeekDays : null,
-                            selectedDaysOfMonth: _selectedFrequency == HabitFrequency.monthly ? _selectedMonthDays : null,
-                            selectedYearDates: _selectedFrequency == HabitFrequency.specificDaysOfYear ? _selectedYearDates : null,
-                            timesPerPeriod: _selectedFrequency == HabitFrequency.someTimesPerPeriod ? _timesPerPeriod : null,
-                            periodType: _selectedFrequency == HabitFrequency.someTimesPerPeriod ? _selectedPeriodType : null,
-                            repeatEveryDays: _selectedFrequency == HabitFrequency.repeat ? _repeatEveryDays : null,
-                            isFlexible: _selectedFrequency == HabitFrequency.repeat ? _isFlexible : null,
-                            alternateDays: _selectedFrequency == HabitFrequency.repeat ? _alternateDays : null,
-                          ),
-                        ));
-                      } : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _canProceed() ? Colors.pinkAccent : Colors.grey[700],
-                      foregroundColor: _canProceed() ? Colors.white : Colors.grey[400],
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0), 
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
-                      disabledBackgroundColor: Colors.grey[700],
-                      disabledForegroundColor: Colors.grey[400],
-                    ),
-                    child: Text(
-                      'PRÓXIMA',
-                      style: TextStyle(
-                        color: _canProceed() ? Colors.white : Colors.grey[400],
-                        fontWeight: FontWeight.bold,
+                      child: const Text(
+                        'ANTERIOR',
+                        style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
-                  ),
-                ],
+                    ElevatedButton(
+                      onPressed: _canProceed()
+                      ? () {
+                          
+                          
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => AddHabitScheduleScreen(
+                              selectedCategoryName: widget.selectedCategoryName,
+                              selectedCategoryIcon: widget.selectedCategoryIcon,
+                              selectedCategoryColor: widget.selectedCategoryColor,
+                              habitTitle: widget.habitTitle,
+                              habitDescription: widget.habitDescription,
+                              selectedTrackingType: widget.selectedTrackingType,
+                              selectedFrequency: _selectedFrequency,
+                              selectedDaysOfWeek: _selectedFrequency == HabitFrequency.weekly ? _selectedWeekDays : null,
+                              selectedDaysOfMonth: _selectedFrequency == HabitFrequency.monthly ? _selectedMonthDays : null,
+                              selectedYearDates: _selectedFrequency == HabitFrequency.specificDaysOfYear ? _selectedYearDates : null,
+                              timesPerPeriod: _selectedFrequency == HabitFrequency.someTimesPerPeriod ? _timesPerPeriod : null,
+                              periodType: _selectedFrequency == HabitFrequency.someTimesPerPeriod ? _selectedPeriodType : null,
+                              repeatEveryDays: _selectedFrequency == HabitFrequency.repeat ? _repeatEveryDays : null,
+                              isFlexible: _selectedFrequency == HabitFrequency.repeat ? _isFlexible : null,
+                              alternateDays: _selectedFrequency == HabitFrequency.repeat ? _alternateDays : null,
+                            ),
+                          ));
+                        } : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _canProceed() ? Colors.pinkAccent : Colors.grey[700],
+                        foregroundColor: _canProceed() ? Colors.white : Colors.grey[400],
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        disabledBackgroundColor: Colors.grey[700],
+                        disabledForegroundColor: Colors.grey[400],
+                      ),
+                      child: const Text(
+                        'PRÓXIMA',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

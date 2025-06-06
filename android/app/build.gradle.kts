@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.myapp"
+    namespace = "com.habitai.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973" // Versão exigida pelos plugins
 
@@ -23,9 +23,33 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    // Configurações de packaging para resolver problemas de biblioteca nativa
+    packagingOptions {
+        jniLibs {
+            pickFirsts += listOf("**/libpenguin.so", "**/libc++_shared.so")
+        }
+        resources {
+            excludes += listOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            )
+        }
+    }
+
+    // Configurações AAPT para resolver problemas de recursos
+    androidResources {
+        additionalParameters += listOf(
+            "--allow-reserved-package-id",
+            "--package-id", "0x7f"
+        )
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.myapp"
+        applicationId = "com.habitai.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23 // Requerido pela versão mais recente do Firebase Auth
@@ -35,10 +59,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }

@@ -1,0 +1,26 @@
+INSTRUÇÕES RÁPIDAS - HABITAI
+============================
+
+1. INICIAR O SERVIDOR:
+   - Dê duplo clique em: INICIAR_SERVIDOR.bat
+   - OU use o PowerShell: iniciar_habitai.ps1
+
+2. APÓS INICIAR:
+   - Aguarde mensagem: "Application running at http://localhost:5004"
+   - Abra o navegador em: http://localhost:5004
+
+3. COMANDOS IMPORTANTES:
+   - R = Hot Reload (aplicar mudanças do código)
+   - r = Hot Restart (reiniciar aplicação)
+   - q = Quit (parar servidor)
+   - h = Help (mais comandos)
+
+4. FIREBASE:
+   - Se já publicou as regras, teste criar uma conta!
+   - Email: teste@exemplo.com
+   - Senha: senha123
+
+PROBLEMAS?
+- Verifique se o Flutter está no PATH
+- Certifique-se que a porta 5004 está livre
+- Tente fechar e abrir novamente

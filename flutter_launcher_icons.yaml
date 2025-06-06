@@ -1,0 +1,15 @@
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
+  
+  # Configurações específicas para Android
+  android_min_sdk: 23
+  
+  # Remover ícone padrão do Flutter
+  remove_alpha_ios: true

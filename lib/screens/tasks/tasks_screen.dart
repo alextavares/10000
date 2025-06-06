@@ -1,13 +1,17 @@
 import 'package:flutter/foundation.dart'; // Import for kDebugMode
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/models/task.dart';
 import 'package:myapp/screens/task/add_task_screen.dart'; // Import AddTaskScreen
 import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart'; // Import AddRecurringTaskScreen
 import 'package:myapp/services/service_provider.dart';
+import 'package:myapp/services/task_service.dart';
+import 'package:myapp/services/recurring_task_service.dart';
 import 'package:myapp/widgets/task_card.dart'; // Import the new TaskCard
 import 'package:myapp/widgets/recurring_task_card.dart'; // Import the new RecurringTaskCard
 import 'package:myapp/screens/habit/add_habit_screen.dart'; // Added import
 import 'package:myapp/models/recurring_task.dart';
+import 'package:myapp/utils/logger.dart';
 
 class TasksScreen extends StatefulWidget {
   final TabController tabController; // Accept TabController
@@ -19,84 +23,22 @@ class TasksScreen extends StatefulWidget {
 }
 
 class TasksScreenState extends State<TasksScreen> { // Made public
-  late Future<List<Task>> _tasksFuture;
-  late Future<List<RecurringTask>> _recurringTasksFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _tasksFuture = Future.value([]);
-    _recurringTasksFuture = Future.value([]);
-    if (kDebugMode) {
-      print('[TasksScreen] initState: Initialized.');
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (kDebugMode) {
-      print('[TasksScreen] didChangeDependencies: Fetching tasks.');
-    }
-    _tasksFuture = _fetchTasks();
-    _recurringTasksFuture = _fetchRecurringTasks();
-  }
-
-  Future<List<Task>> _fetchTasks() async {
-    if (kDebugMode) {
-      print('[TasksScreen] _fetchTasks: Attempting to fetch tasks.');
-    }
-    // Ensure context is valid and mounted before accessing ServiceProvider
-    if (!mounted) return [];
-    final taskService = ServiceProvider.of(context).taskService;
-    final tasks = await taskService.getTasks();
-    if (kDebugMode) {
-      print('[TasksScreen] _fetchTasks: Fetched ${tasks.length} tasks.');
-    }
-    return tasks;
-  }
-
-  Future<List<RecurringTask>> _fetchRecurringTasks() async {
-    if (kDebugMode) {
-      print('[TasksScreen] _fetchRecurringTasks: Attempting to fetch recurring tasks.');
-    }
-    // Ensure context is valid and mounted before accessing ServiceProvider
-    if (!mounted) return [];
-    final recurringTaskService = ServiceProvider.of(context).recurringTaskService;
-    final recurringTasks = await recurringTaskService.getRecurringTasks();
-    if (kDebugMode) {
-      print('[TasksScreen] _fetchRecurringTasks: Fetched ${recurringTasks.length} recurring tasks.');
-    }
-    return recurringTasks;
-  }
-
-  void refreshTasks() {
-    if (kDebugMode) {
-      print('[TasksScreen] refreshTasks: Refreshing tasks.');
-    }
-    setState(() {
-      _tasksFuture = _fetchTasks();
-      _recurringTasksFuture = _fetchRecurringTasks();
-    });
-  }
 
   void _handleEditTask(Task task) async {
     if (kDebugMode) {
-      print('[TasksScreen] _handleEditTask: Editing task ID: ${task.id}');
+      Logger.debug('[TasksScreen] _handleEditTask: Editing task ID: ${task.id}');
     }
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => AddTaskScreen(taskToEdit: task),
       ),
     );
-    if (result == true) {
-      refreshTasks();
-    }
+    // TaskService will notify listeners automatically
   }
 
   void _handleDeleteTask(String taskId) async {
     if (kDebugMode) {
-      print('[TasksScreen] _handleDeleteTask: Deleting task ID: $taskId');
+      Logger.debug('[TasksScreen] _handleDeleteTask: Deleting task ID: $taskId');
     }
     // Ensure context is valid and mounted
     if (!mounted) return;
@@ -127,7 +69,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
       // Ensure context is valid and mounted for ScaffoldMessenger
       if (!mounted) return;
       if (success) {
-        refreshTasks();
+        // TaskService will notify listeners automatically
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Task deleted successfully')),
         );
@@ -141,21 +83,19 @@ class TasksScreenState extends State<TasksScreen> { // Made public
 
   void _handleEditRecurringTask(RecurringTask recurringTask) async {
     if (kDebugMode) {
-      print('[TasksScreen] _handleEditRecurringTask: Editing recurring task ID: ${recurringTask.id}');
+      Logger.debug('[TasksScreen] _handleEditRecurringTask: Editing recurring task ID: ${recurringTask.id}');
     }
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => AddRecurringTaskScreen(recurringTaskToEdit: recurringTask),
       ),
     );
-    if (result == true) {
-      refreshTasks();
-    }
+    // RecurringTaskService will notify listeners automatically
   }
 
   void _handleDeleteRecurringTask(String recurringTaskId) async {
     if (kDebugMode) {
-      print('[TasksScreen] _handleDeleteRecurringTask: Deleting recurring task ID: $recurringTaskId');
+      Logger.debug('[TasksScreen] _handleDeleteRecurringTask: Deleting recurring task ID: $recurringTaskId');
     }
     // Ensure context is valid and mounted
     if (!mounted) return;
@@ -186,7 +126,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
       // Ensure context is valid and mounted for ScaffoldMessenger
       if (!mounted) return;
       if (success) {
-        refreshTasks();
+        // RecurringTaskService will notify listeners automatically
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Tarefa recorrente excluída com sucesso')),
         );
@@ -216,7 +156,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                 onTap: () {
                   Navigator.of(context).pop(); // Close the modal
                   if (kDebugMode) {
-                    print('[TasksScreen] _showAddTaskOptions: Navigating to AddHabitScreen.');
+                    Logger.debug('[TasksScreen] _showAddTaskOptions: Navigating to AddHabitScreen.');
                   }
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddHabitScreen())); // Navigate to AddHabitScreen
                 },
@@ -228,14 +168,12 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                 onTap: () async {
                   Navigator.of(context).pop();
                   if (kDebugMode) {
-                    print('[TasksScreen] _showAddTaskOptions: Navigating to AddRecurringTaskScreen.');
+                    Logger.debug('[TasksScreen] _showAddTaskOptions: Navigating to AddRecurringTaskScreen.');
                   }
-                  final result = await Navigator.of(context).push(
+                  await Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const AddRecurringTaskScreen()),
                   );
-                  if (result == true) {
-                    refreshTasks();
-                  }
+                  // RecurringTaskService will notify listeners automatically
                 },
               ),
               ListTile(
@@ -245,14 +183,12 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                 onTap: () async {
                   Navigator.of(context).pop();
                   if (kDebugMode) {
-                    print('[TasksScreen] _showAddTaskOptions: Navigating to AddTaskScreen.');
+                    Logger.debug('[TasksScreen] _showAddTaskOptions: Navigating to AddTaskScreen.');
                   }
-                  final result = await Navigator.of(context).push(
+                  await Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const AddTaskScreen()),
                   );
-                  if (result == true) {
-                    refreshTasks();
-                  }
+                  // TaskService will notify listeners automatically
                 },
               ),
             ],
@@ -265,9 +201,11 @@ class TasksScreenState extends State<TasksScreen> { // Made public
   @override
   Widget build(BuildContext context) {
     if (kDebugMode) {
-      print('[TasksScreen] build: Building TasksScreen.');
+      Logger.debug('[TasksScreen] build: Building TasksScreen.');
     }
-    return Container(
+    return Consumer<TaskService>(
+      builder: (context, taskService, child) {
+        return Container(
       color: Colors.black, 
       child: Stack(
         children: [
@@ -287,40 +225,31 @@ class TasksScreenState extends State<TasksScreen> { // Made public
         ],
       ),
     );
+      },
+    );
   }
 
   Widget _buildSimpleTasksView() {
     if (kDebugMode) {
-      print('[TasksScreen] _buildSimpleTasksView: Building simple tasks view.');
+      Logger.debug('[TasksScreen] _buildSimpleTasksView: Building simple tasks view.');
     }
-    return FutureBuilder<List<Task>>(
-      future: _tasksFuture,
-      builder: (context, snapshot) {
+    return Consumer<TaskService>(
+      builder: (context, taskService, child) {
+        final tasks = taskService.getTasksSync();
         if (kDebugMode) {
-          print('[TasksScreen] FutureBuilder: Connection state: ${snapshot.connectionState}');
-          if (snapshot.hasData) {
-            print('[TasksScreen] FutureBuilder: Has data: ${snapshot.data!.length} tasks.');
-          }
-          if (snapshot.hasError) {
-            print('[TasksScreen] FutureBuilder: Has error: ${snapshot.error}');
-          }
+          Logger.debug('[TasksScreen] Tasks count: ${tasks.length}');
         }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        if (tasks.isEmpty) {
           if (kDebugMode) {
-            print('[TasksScreen] FutureBuilder: No tasks found or data is empty for simple tasks.');
+            Logger.debug('[TasksScreen] No tasks found.');
           }
           return _buildEmptyState(
             message: 'Sem tarefas simples pendentes',
             subMessage: 'Adicione algumas tarefas para começar!',
           );
         } else {
-          final tasks = snapshot.data!;
           if (kDebugMode) {
-            print('[TasksScreen] FutureBuilder: Displaying ${tasks.length} tasks.');
+            Logger.debug('[TasksScreen] Displaying ${tasks.length} tasks.');
           }
           return ListView.builder(
             padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 150.0), // Increased bottom padding to prevent overlap
@@ -331,10 +260,10 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                 task: task,
                 onToggleCompletion: (taskId, completed) {
                   if (kDebugMode) {
-                    print('[TasksScreen] TaskCard: Toggling completion for task ID: $taskId to $completed');
+                    Logger.info('[TasksScreen] TaskCard: Toggling completion for task ID: $taskId to $completed');
                   }
                   ServiceProvider.of(context).taskService.markTaskCompletion(taskId, DateTime.now(), completed);
-                  refreshTasks(); 
+                  // TaskService will notify listeners automatically 
                 },
                 onEdit: () => _handleEditTask(task),
                 onDelete: () => _handleDeleteTask(task.id),
@@ -346,39 +275,37 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     );
   }
   
+  // Public method to refresh screen data
+  void refreshScreenData() {
+    if (kDebugMode) {
+      Logger.debug('[TasksScreen] refreshScreenData: Refreshing screen data.');
+    }
+    // Both Tasks and RecurringTasks will be updated automatically via Consumer
+    // Nothing to do here anymore
+  }
+  
   // Dedicated view for recurring tasks
   Widget _buildRecurringTasksView() {
     if (kDebugMode) {
-      print('[TasksScreen] _buildRecurringTasksView: Building recurring tasks view.');
+      Logger.debug('[TasksScreen] _buildRecurringTasksView: Building recurring tasks view.');
     }
-    return FutureBuilder<List<RecurringTask>>(
-      future: _recurringTasksFuture,
-      builder: (context, snapshot) {
+    return Consumer<RecurringTaskService>(
+      builder: (context, recurringTaskService, child) {
+        final recurringTasks = recurringTaskService.getRecurringTasksSync();
         if (kDebugMode) {
-          print('[TasksScreen] FutureBuilder (Recurring): Connection state: ${snapshot.connectionState}');
-          if (snapshot.hasData) {
-            print('[TasksScreen] FutureBuilder (Recurring): Has data: ${snapshot.data!.length} recurring tasks.');
-          }
-          if (snapshot.hasError) {
-            print('[TasksScreen] FutureBuilder (Recurring): Has error: ${snapshot.error}');
-          }
+          Logger.debug('[TasksScreen] Recurring tasks count: ${recurringTasks.length}');
         }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        if (recurringTasks.isEmpty) {
           if (kDebugMode) {
-            print('[TasksScreen] FutureBuilder (Recurring): No recurring tasks found or data is empty.');
+            Logger.debug('[TasksScreen] No recurring tasks found.');
           }
           return _buildEmptyState(
             message: 'Sem tarefas recorrentes pendentes',
             subMessage: 'Adicione suas tarefas recorrentes aqui.',
           );
         } else {
-          final recurringTasks = snapshot.data!;
           if (kDebugMode) {
-            print('[TasksScreen] FutureBuilder (Recurring): Displaying ${recurringTasks.length} recurring tasks.');
+            Logger.debug('[TasksScreen] Displaying ${recurringTasks.length} recurring tasks.');
           }
           return ListView.builder(
             padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 150.0),
@@ -389,10 +316,10 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                 recurringTask: recurringTask,
                 onToggleCompletion: (recurringTaskId, completed) {
                   if (kDebugMode) {
-                    print('[TasksScreen] RecurringTaskCard: Toggling completion for recurring task ID: $recurringTaskId to $completed');
+                    Logger.info('[TasksScreen] RecurringTaskCard: Toggling completion for recurring task ID: $recurringTaskId to $completed');
                   }
                   ServiceProvider.of(context).recurringTaskService.markRecurringTaskCompletion(recurringTaskId, DateTime.now(), completed);
-                  refreshTasks();
+                  // RecurringTaskService will notify listeners automatically
                 },
                 onEdit: () => _handleEditRecurringTask(recurringTask),
                 onDelete: () => _handleDeleteRecurringTask(recurringTask.id),
@@ -406,7 +333,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
 
   Widget _buildEmptyState({required String message, required String subMessage}) {
     if (kDebugMode) {
-      print('[TasksScreen] _buildEmptyState: Building empty state: $message');
+      Logger.debug('[TasksScreen] _buildEmptyState: Building empty state: $message');
     }
     return Center( // Ensures the content is centered
       child: Column(
@@ -419,7 +346,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
             width: 100,
             errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
               if (kDebugMode) {
-                print('[TasksScreen] _buildEmptyState: Error loading calendar icon: $error');
+                Logger.error('[TasksScreen] _buildEmptyState: Error loading calendar icon: $error');
               }
               return const Icon(Icons.error_outline, color: Colors.red, size: 50);
             },
@@ -443,7 +370,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
   Widget _buildPremiumButton() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFE91E63).withOpacity(0.8), // Pink color
+        color: const Color(0xFFE91E63).withValues(alpha: 0.8), // Pink color
         borderRadius: BorderRadius.circular(20),
       ),
       child: Material(
@@ -451,7 +378,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
         child: InkWell(
           onTap: () {
             if (kDebugMode) {
-              print('[TasksScreen] Premium button pressed.');
+              Logger.debug('[TasksScreen] Premium button pressed.');
             }
             // TODO: Implement premium functionality or navigation
           },

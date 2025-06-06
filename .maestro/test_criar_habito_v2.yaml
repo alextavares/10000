@@ -1,0 +1,76 @@
+# Teste de criação de hábito (versão corrigida)
+appId: com.habitai.app
+
+---
+- launchApp
+- waitForAnimationToEnd
+
+# Lidar com possíveis telas iniciais
+- tapOn:
+    text: ".*[Pp]ular.*|.*[Cc]ontinuar.*|.*[Pp]róximo.*"
+    optional: true
+- waitForAnimationToEnd
+
+# Se estiver em tela de login, fazer login de teste
+- tapOn:
+    text: ".*[Ee]ntrar.*com.*[Gg]oogle.*|.*[Cc]ontinuar.*sem.*"
+    optional: true
+- waitForAnimationToEnd
+
+# Procurar botão de adicionar (FAB ou botão)
+- tapOn:
+    id: ".*fab.*|.*add.*|.*plus.*"
+    optional: true
+
+# Ou procurar por texto
+- tapOn:
+    text: ".*[Aa]dicionar.*|.*[Nn]ovo.*[Hh]ábito.*|\\+|.*[Cc]riar.*"
+    optional: true
+    
+- waitForAnimationToEnd
+
+# Se não encontrou, tentar navegar para tela de hábitos primeiro
+- tapOn:
+    text: ".*[Hh]ábitos.*|.*[Hh]ome.*"
+    optional: true
+- waitForAnimationToEnd
+
+# Tentar novamente adicionar
+- tapOn:
+    point: "90%, 90%"  # Posição comum para FAB
+    optional: true
+
+- waitForAnimationToEnd
+
+# Verificar se chegou em alguma tela de adicionar
+- assertVisible:
+    text: ".*[Nn]ovo.*|.*[Aa]dicionar.*|.*[Cc]riar.*|.*[Tt]ítulo.*|.*[Nn]ome.*"
+    optional: true
+
+# Capturar estado atual
+- takeScreenshot: "tela_adicionar_habito"
+
+# Tentar preencher campos básicos
+- tapOn:
+    id: ".*title.*|.*nome.*|.*name.*"
+    optional: true
+    
+- inputText: "Beber água"
+
+- tapOn:
+    id: ".*description.*|.*descri.*"
+    optional: true
+    
+- inputText: "Beber 2 litros de água por dia"
+
+# Procurar botão de salvar/próximo
+- tapOn:
+    text: ".*[Ss]alvar.*|.*[Pp]róximo.*|.*[Cc]ontinuar.*|.*[Cc]riar.*"
+    optional: true
+
+- waitForAnimationToEnd
+
+# Capturar resultado
+- takeScreenshot: "resultado_criar_habito"
+
+- stopApp

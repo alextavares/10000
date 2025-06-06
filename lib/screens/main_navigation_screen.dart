@@ -12,6 +12,9 @@ import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart';
 import 'package:myapp/screens/search/search_screen.dart';
 import 'package:myapp/screens/filter/filter_screen.dart';
 import 'package:myapp/screens/stats/stats_screen.dart';
+import 'package:myapp/screens/calendar/calendar_screen.dart';
+import 'package:myapp/utils/logger.dart';
+import 'package:myapp/utils/responsive/responsive.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -35,10 +38,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     'Tarefas',
     'Timer',
     'Categorias',
-    // Add titles for new screens if they become part of this navigation
-    // 'Personalizar', 
-    // 'Configurações', 
-    // 'Backup'
   ];
 
   late final List<Widget> _widgetOptions;
@@ -53,10 +52,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       TasksScreen(key: _tasksScreenKey, tabController: _tabController),
       const TimerScreen(),
       const CategoriesScreen(),
-      // Add new screens here if they are managed by this bottom navigation
-      // const PersonalizarScreen(), 
-      // const ConfiguracoesScreen(), 
-      // const BackupScreen(),
     ];
     _tabController.addListener(() {
       if (_selectedIndex == 2 && _tabController.indexIsChanging) {
@@ -77,17 +72,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     });
   }
 
-  // Callback for AppDrawer to change screen
   void _onDrawerItemSelected(int index) {
-    // Ensure index is within bounds of _widgetOptions
     if (index >= 0 && index < _widgetOptions.length) {
       setState(() {
         _selectedIndex = index;
       });
     }
-    // For items like 'Personalizar', 'Configurações', 'Backup' that might open new routes
-    // an index outside the bounds of _widgetOptions can be used, or specific string identifiers.
-    // For now, this handles only the main bottom navigation screens.
   }
 
   void _showAddItemBottomSheet(BuildContext context) {
@@ -114,7 +104,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                     )
                     .then((result) {
                       if (result == true || result == null) { 
-                        if (_selectedIndex == 0) { // Hoje screen
+                        if (_selectedIndex == 0) {
                           _homeScreenKey.currentState?.refreshScreenData();
                         }
                       }
@@ -129,9 +119,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                     )
                     .then((result) {
                       if (result == true) {
-                        if (_selectedIndex == 2) { // Tarefas screen
-                          _tasksScreenKey.currentState?.refreshTasks();
-                        } else if (_selectedIndex == 0) { // Hoje screen
+                        if (_selectedIndex == 2) {
+                          _tasksScreenKey.currentState?.refreshScreenData();
+                        } else if (_selectedIndex == 0) {
                           _homeScreenKey.currentState?.refreshScreenData();
                         }
                       }
@@ -146,9 +136,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                     )
                     .then((result) {
                       if (result == true) {
-                        if (_selectedIndex == 2) { // Tarefas screen
-                          _tasksScreenKey.currentState?.refreshTasks();
-                        } else if (_selectedIndex == 0) { // Hoje screen
+                        if (_selectedIndex == 2) {
+                          _tasksScreenKey.currentState?.refreshScreenData();
+                        } else if (_selectedIndex == 0) {
                           _homeScreenKey.currentState?.refreshScreenData(); 
                         }
                       }
@@ -161,133 +151,135 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildDesktopLayout() {
     bool isTasksScreenSelected = _selectedIndex == 2;
-    bool showFab =
-        _selectedIndex == 0 || // Hoje
-        _selectedIndex == 1 || // Hábitos
-        _selectedIndex == 2;   // Tarefas
-
+    bool showFab = _selectedIndex == 0 || _selectedIndex == 1 || _selectedIndex == 2;
+    
     return Scaffold(
-      appBar: AppBar(
+      body: Row(
+        children: [
+          // Navigation Rail
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _onItemTapped,
+            backgroundColor: Colors.black,
+            labelType: NavigationRailLabelType.all,
+            leading: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: showFab
+                  ? FloatingActionButton(
+                      onPressed: () => _showAddItemBottomSheet(context),
+                      backgroundColor: const Color(0xFFE91E63),
+                      heroTag: 'mainFab',
+                      child: const Icon(Icons.add, color: Colors.white),
+                    )
+                  : const SizedBox(height: 56),
+            ),
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text('Hoje'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.star_border_outlined),
+                selectedIcon: Icon(Icons.star),
+                label: Text('Hábitos'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.check_circle_outline),
+                selectedIcon: Icon(Icons.check_circle),
+                label: Text('Tarefas'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.timer_outlined),
+                selectedIcon: Icon(Icons.timer),
+                label: Text('Timer'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.apps),
+                selectedIcon: Icon(Icons.apps),
+                label: Text('Categorias'),
+              ),
+            ],
+            selectedIconTheme: const IconThemeData(color: Color(0xFFE91E63)),
+            selectedLabelTextStyle: const TextStyle(color: Color(0xFFE91E63)),
+            unselectedIconTheme: const IconThemeData(color: Colors.grey),
+            unselectedLabelTextStyle: const TextStyle(color: Colors.grey),
+          ),
+          const VerticalDivider(thickness: 1, width: 1),
+          // Content
+          Expanded(
+            child: Column(
+              children: [
+                AppBar(
+                  title: Text(
+                    _widgetTitles[_selectedIndex],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  backgroundColor: Colors.black,
+                  elevation: 0,
+                  iconTheme: const IconThemeData(color: Colors.white),
+                  actions: _buildAppBarActions(),
+                  bottom: isTasksScreenSelected
+                      ? TabBar(
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(text: 'Tarefas simples'),
+                            Tab(text: 'Tarefas recorrentes'),
+                          ],
+                          indicatorColor: const Color(0xFFE91E63),
+                          labelColor: const Color(0xFFE91E63),
+                          unselectedLabelColor: Colors.grey,
+                        )
+                      : null,
+                ),
+                Expanded(
+                  child: _widgetOptions.elementAt(_selectedIndex),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    bool isTasksScreenSelected = _selectedIndex == 2;
+    bool showFab = _selectedIndex == 0 || _selectedIndex == 1 || _selectedIndex == 2;
+    
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
         title: Text(
           _widgetTitles[_selectedIndex],
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: 24,
+            fontSize: 20,
           ),
         ),
         backgroundColor: Colors.black,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          if (_selectedIndex == 0 || // Hoje
-              _selectedIndex == 1 || // Hábitos
-              _selectedIndex == 2) ...[ // Tarefas
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const SearchScreen()),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.filter_list, color: Colors.white),
-              onPressed: () {
-                Navigator.of(context)
-                    .push(
-                      MaterialPageRoute(
-                        builder:
-                            (context) => FilterScreen(
-                              initialOptions:
-                                  FilterOptions(), 
-                            ),
-                      ),
-                    )
-                    .then((filterOptions) {
-                      if (filterOptions != null) {
-                        print('Filter options applied: $filterOptions');
-                      }
-                    });
-              },
-            ),
-            if (_selectedIndex == 1 || _selectedIndex == 2) // Hábitos or Tarefas
-              IconButton(
-                icon: const Icon(
-                  Icons.file_download_outlined,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  /* Archive/Download action */
-                },
-              ),
-            if (_selectedIndex == 0) ...[ // Hoje
-              IconButton(
-                icon: const Icon(Icons.bar_chart, color: Colors.white),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const StatsScreen()),
-                  );
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.calendar_today, color: Colors.white),
-                onPressed: () {
-                  /* Open calendar */
-                },
-              ),
-              IconButton(
-                icon: const Icon(Icons.help_outline, color: Colors.white),
-                onPressed: () {
-                  /* Open help */
-                },
-              ),
-            ],
-          ],
-          if (_selectedIndex == 3) ...[ // Timer
-            IconButton(
-              icon: const Icon(Icons.info_outline, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.wifi_tethering_outlined,
-                color: Colors.white,
-              ),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.volume_up_outlined, color: Colors.white),
-              onPressed: () {},
-            ),
-          ],
-          if (_selectedIndex == 4) ...[ // Categorias
-            IconButton(
-              icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.info_outline, color: Colors.white),
-              onPressed: () {},
-            ),
-          ],
-        ],
-        bottom:
-            isTasksScreenSelected
-                ? TabBar(
-                  controller: _tabController,
-                  tabs: const [
-                    Tab(text: 'Tarefas simples'),
-                    Tab(text: 'Tarefas recorrentes'),
-                  ],
-                  indicatorColor: const Color(0xFFE91E63),
-                  labelColor: const Color(0xFFE91E63),
-                  unselectedLabelColor: Colors.grey,
-                )
-                : null,
+        actions: _buildAppBarActions(),
+        bottom: isTasksScreenSelected
+            ? TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Tarefas simples'),
+                  Tab(text: 'Tarefas recorrentes'),
+                ],
+                indicatorColor: const Color(0xFFE91E63),
+                labelColor: const Color(0xFFE91E63),
+                unselectedLabelColor: Colors.grey,
+              )
+            : null,
       ),
       body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
       bottomNavigationBar: BottomNavigationBar(
@@ -314,7 +306,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         selectedItemColor: const Color(0xFFE91E63),
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.black,
-        onTap: _onItemTapped, // For BottomNavigationBar taps
+        onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
         showUnselectedLabels: true,
         selectedLabelStyle: const TextStyle(
@@ -323,19 +315,146 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         ),
         unselectedLabelStyle: const TextStyle(fontSize: 12, color: Colors.grey),
       ),
-      drawer: AppDrawer( // Updated AppDrawer instantiation
+      drawer: AppDrawer(
         currentSelectedIndex: _selectedIndex,
         onItemSelected: _onDrawerItemSelected, 
       ),
-      floatingActionButton:
-          showFab
-              ? FloatingActionButton(
-                onPressed: () => _showAddItemBottomSheet(context),
-                backgroundColor: const Color(0xFFE91E63),
-                heroTag: 'mainFab', 
-                child: const Icon(Icons.add, color: Colors.white),
-              )
-              : null,
+      floatingActionButton: showFab
+          ? FloatingActionButton(
+              onPressed: () => _showAddItemBottomSheet(context),
+              backgroundColor: const Color(0xFFE91E63),
+              heroTag: 'mainFab', 
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
+      ),
+    );
+  }
+
+  List<Widget> _buildAppBarActions() {
+    List<Widget> actions = [];
+    
+    // BOTÃO TEMPORÁRIO PARA TESTE DE NOTIFICAÇÕES
+    actions.add(
+      IconButton(
+        icon: const Icon(Icons.notifications_active, color: Colors.amber),
+        tooltip: 'Testar Notificações',
+        onPressed: () {
+          Navigator.pushNamed(context, '/test-notifications');
+        },
+      ),
+    );
+    
+    if (_selectedIndex == 0 || _selectedIndex == 1 || _selectedIndex == 2) {
+      actions.addAll([
+        IconButton(
+          icon: const Icon(Icons.search, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const SearchScreen()),
+            );
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.filter_list, color: Colors.white),
+          onPressed: () {
+            Navigator.of(context)
+                .push(
+                  MaterialPageRoute(
+                    builder: (context) => FilterScreen(
+                      initialOptions: FilterOptions(),
+                    ),
+                  ),
+                )
+                .then((filterOptions) {
+                  if (filterOptions != null) {
+                    Logger.debug('Filter options applied: $filterOptions');
+                  }
+                });
+          },
+        ),
+      ]);
+      
+      if (_selectedIndex == 1 || _selectedIndex == 2) {
+        actions.add(
+          IconButton(
+            icon: const Icon(
+              Icons.file_download_outlined,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              /* Archive/Download action */
+            },
+          ),
+        );
+      }
+      
+      if (_selectedIndex == 0) {
+        actions.addAll([
+          IconButton(
+            icon: const Icon(Icons.bar_chart, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const StatsScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const CalendarScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.help_outline, color: Colors.white),
+            onPressed: () {
+              /* Open help */
+            },
+          ),
+        ]);
+      }
+    }
+    
+    if (_selectedIndex == 3) {
+      actions.addAll([
+        IconButton(
+          icon: const Icon(Icons.vibration_outlined, color: Colors.white),
+          onPressed: () {
+            // Vibration toggle will be handled by timer screen
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.volume_up_outlined, color: Colors.white),
+          onPressed: () {
+            // Sound toggle will be handled by timer screen
+          },
+        ),
+      ]);
+    }
+    
+    if (_selectedIndex == 4) {
+      actions.addAll([
+        IconButton(
+          icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+          onPressed: () {},
+        ),
+        IconButton(
+          icon: const Icon(Icons.info_outline, color: Colors.white),
+          onPressed: () {},
+        ),
+      ]);
+    }
+    
+    return actions;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobile: _buildMobileLayout(),
+      desktop: _buildDesktopLayout(),
     );
   }
 }

@@ -1,235 +1,255 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/models/habit.dart';
+import 'package:myapp/screens/habit/habit_details_screen.dart';
+import 'package:myapp/utils/responsive/responsive.dart';
 
-/// A card widget that displays a habit.
 class HabitCard extends StatelessWidget {
-  /// The habit to display.
   final Habit habit;
+  final Function()? onTap;
+  final Function(bool completed)? onToggleCompletion;
+  final Function()? onDelete;
 
-  /// Callback when the card is tapped.
-  final VoidCallback onTap;
-
-  /// Callback when the completion status is toggled.
-  final Function(bool completed) onToggleCompletion;
-
-  /// Callback when the delete action is triggered.
-  final VoidCallback onDelete;
-
-  /// Constructor for HabitCard.
   const HabitCard({
     super.key,
     required this.habit,
-    required this.onTap,
-    required this.onToggleCompletion,
-    required this.onDelete,
+    this.onTap,
+    this.onToggleCompletion,
+    this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isCompletedToday = habit.isCompletedToday();
-    final streak = habit.streak;
-    final cardColor = Theme.of(context).cardColor; // Use theme color
-    final textColor = AppTheme.adaptiveTextColor(cardColor); // Adaptive text color
-    final subtitleColor = textColor.withOpacity(0.7); // Lighter subtitle
-
-    return Card(
-      color: cardColor, // Use theme card color
-      elevation: 0, // Adjusted to match reference image (flatter look)
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Adjusted margin for better spacing
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12), // Consistent with AppTheme
+    final cardMargin = EdgeInsets.symmetric(
+      horizontal: Responsive.value<double>(
+        context: context,
+        mobile: 0, // Removendo margem horizontal pois já tem padding no ListView
+        tablet: 20,
+        desktop: 0,
       ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min, // Make card height content-dependent
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center, // Center align icon and text vertically
+      vertical: 6, // Reduzindo espaço vertical de 8 para 6
+    );
+
+    final cardPadding = EdgeInsets.all(
+      Responsive.value<double>(
+        context: context,
+        mobile: 12, // Reduzindo de 16 para 12
+        tablet: 20,
+        desktop: 24,
+      ),
+    );
+
+    return Padding(
+      padding: cardMargin,
+      child: Container(
+        decoration: BoxDecoration(
+          color: habit.color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: habit.color.withValues(alpha: 0.3),
+            width: 1,
+          ),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => HabitDetailsScreen(habitId: habit.id),
+                ),
+              );
+            },
+            child: Padding(
+              padding: cardPadding,
+              child: Row(
                 children: [
-                  // Category icon
                   Container(
-                    width: 40, // Slightly smaller icon container
-                    height: 40,
+                    width: Responsive.value<double>(
+                      context: context,
+                      mobile: 48,
+                      tablet: 56,
+                      desktop: 64,
+                    ),
+                    height: Responsive.value<double>(
+                      context: context,
+                      mobile: 48,
+                      tablet: 56,
+                      desktop: 64,
+                    ),
                     decoration: BoxDecoration(
-                      color: habit.color.withOpacity(0.2), // Use habit color
-                      borderRadius: BorderRadius.circular(8),
+                      color: habit.color.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Center(
-                      child: Icon(
-                        habit.icon, // Use habit icon
-                        color: habit.color, // Use habit color
-                        size: 20,
+                    child: Icon(
+                      habit.icon,
+                      color: habit.color,
+                      size: Responsive.value<double>(
+                        context: context,
+                        mobile: 24,
+                        tablet: 28,
+                        desktop: 32,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-
-                  // Habit details
+                  SizedBox(width: Responsive.value<double>(
+                    context: context,
+                    mobile: 16,
+                    tablet: 20,
+                    desktop: 24,
+                  )),
                   Expanded(
-                    child: Text(
-                      habit.title,
-                      style: TextStyle(
-                        fontSize: 16, // Adjusted font size
-                        fontWeight: FontWeight.w600, // Adjusted font weight
-                        color: textColor,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Completion checkbox
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Checkbox(
-                      value: isCompletedToday,
-                      onChanged: (value) {
-                        onToggleCompletion(value ?? false);
-                      },
-                      activeColor: AppTheme.primaryColor,
-                      checkColor: cardColor, // Make check mark contrast with activeColor
-                      side: BorderSide(color: subtitleColor, width: 1.5),
-                      visualDensity: VisualDensity.compact, // Reduce checkbox size
-                    ),
-                  ),
-                ],
-              ),
-              // Only show divider and bottom row if there's content for it
-              if (habit.description != null && habit.description!.isNotEmpty || streak > 0 || habit.reminderTime != null)
-                const SizedBox(height: 8),
-              if (habit.description != null && habit.description!.isNotEmpty || streak > 0 || habit.reminderTime != null)
-                Divider(color: subtitleColor.withOpacity(0.5)),
-              if (habit.description != null && habit.description!.isNotEmpty || streak > 0 || habit.reminderTime != null)
-                const SizedBox(height: 8),
-
-              // Bottom row with time, streak, and delete icon
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Time or Frequency
-                  Expanded(
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          habit.reminderTime != null ? Icons.access_time_outlined : Icons.event_repeat_outlined,
-                          size: 16,
-                          color: subtitleColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            _getTimeOrFrequencyText(context),
-                            style: TextStyle(
-                              fontSize: 13, // Adjusted font size
-                              color: subtitleColor,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                habit.title,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: Responsive.value<double>(
+                                    context: context,
+                                    mobile: 16,
+                                    tablet: 18,
+                                    desktop: 20,
+                                  ),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
+                            if (habit.streak > 0) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: habit.color.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: habit.color.withValues(alpha: 0.4),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.local_fire_department,
+                                      size: 14,
+                                      color: habit.color,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${habit.streak}',
+                                      style: TextStyle(
+                                        color: habit.color,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        if (habit.description != null && habit.description!.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            habit.description!,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              fontSize: Responsive.value<double>(
+                                context: context,
+                                mobile: 14,
+                                tablet: 15,
+                                desktop: 16,
+                              ),
+                            ),
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Streak
-                  if (streak > 0)
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.local_fire_department_outlined,
-                          size: 16,
-                          color: Colors.orange[700],
-                        ),
-                        const SizedBox(width: 4),
+                        ],
+                        // Adicionar frequência
+                        if (habit.description == null || habit.description!.isEmpty)
+                          const SizedBox(height: 2)
+                        else
+                          const SizedBox(height: 4),
                         Text(
-                          '$streak day${streak == 1 ? '' : 's'}',
+                          _getFrequencyText(habit),
                           style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.orange[700],
-                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[400],
+                            fontSize: 12,
                           ),
                         ),
-                        const SizedBox(width: 8), // Space before delete icon
                       ],
                     ),
-
-                  // Delete Button
-                  InkWell(
-                    onTap: onDelete,
-                    borderRadius: BorderRadius.circular(24),
-                    child: Icon(Icons.delete_outline, color: Colors.red[700], size: 20),
                   ),
+                  if (onToggleCompletion != null)
+                    Transform.scale(
+                      scale: Responsive.value<double>(
+                        context: context,
+                        mobile: 1.0,
+                        tablet: 1.1,
+                        desktop: 1.2,
+                      ),
+                      child: Checkbox(
+                        value: habit.isCompletedToday(),
+                        onChanged: (bool? value) {
+                          if (value != null) {
+                            onToggleCompletion!(value);
+                          }
+                        },
+                        activeColor: habit.color,
+                        checkColor: Colors.white,
+                        side: BorderSide(
+                          color: habit.color,
+                          width: 2,
+                        ),
+                      ),
+                    ),
                 ],
               ),
-              if (habit.description != null && habit.description!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0), // Add some space if description exists
-                  child: Text(
-                    habit.description!,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: subtitleColor,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
-
-  String _getTimeOrFrequencyText(BuildContext context) {
-    if (habit.reminderTime != null) {
-      final localizations = MaterialLocalizations.of(context);
-      return localizations.formatTimeOfDay(habit.reminderTime!, alwaysUse24HourFormat: MediaQuery.of(context).alwaysUse24HourFormat);
-    } else {
-      switch(habit.frequency) {
-        case HabitFrequency.daily:
-          return 'Todos os dias'; // Changed to Portuguese
-        case HabitFrequency.weekly:
-          if (habit.daysOfWeek != null && habit.daysOfWeek!.isNotEmpty) {
-            List<String> dayAbbreviations = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']; // Portuguese
-            String selectedDays = habit.daysOfWeek!.map((d) => dayAbbreviations[d-1]).join(', ');
-            return selectedDays; // Simplified to show only days
-          }
-          return 'Semanalmente'; // Changed to Portuguese
-        case HabitFrequency.monthly:
-           return 'Mensalmente (Dia ${habit.createdAt.day})'; // Changed to Portuguese
-        case HabitFrequency.specificDaysOfYear:
-          return 'Datas específicas do ano';
-        case HabitFrequency.someTimesPerPeriod:
-          if (habit.timesPerPeriod != null && habit.periodType != null) {
-            return '${habit.timesPerPeriod}x por ${habit.periodType!.toLowerCase()}';
-          }
-          return 'Algumas vezes por período';
-        case HabitFrequency.repeat:
-          if (habit.isFlexible == true) {
-            return 'Flexível';
-          } else if (habit.alternateDays == true) {
-            return 'Alternar dias';
-          } else if (habit.repeatEveryDays != null) {
-            return 'A cada ${habit.repeatEveryDays} dias';
-          }
-          return 'Repetir';
-        case HabitFrequency.custom:
-          if (habit.daysOfWeek != null && habit.daysOfWeek!.isNotEmpty) {
-            List<String> dayAbbreviations = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']; // Portuguese
-            String selectedDays = habit.daysOfWeek!.map((d) => dayAbbreviations[d-1]).join(', ');
-            return 'Personalizado ($selectedDays)'; // Changed to Portuguese
-          }
-          return 'Personalizado'; // Changed to Portuguese
-      }
+  
+  String _getFrequencyText(Habit habit) {
+    switch (habit.frequency) {
+      case HabitFrequency.daily:
+        return 'Diário';
+      case HabitFrequency.weekly:
+        if (habit.daysOfWeek != null && habit.daysOfWeek!.isNotEmpty) {
+          return '${habit.daysOfWeek!.length}x por semana';
+        }
+        return 'Semanal';
+      case HabitFrequency.monthly:
+        if (habit.daysOfMonth != null && habit.daysOfMonth!.isNotEmpty) {
+          return '${habit.daysOfMonth!.length}x por mês';
+        }
+        return 'Mensal';
+      case HabitFrequency.someTimesPerPeriod:
+        if (habit.timesPerPeriod != null && habit.periodType != null) {
+          final period = habit.periodType == 'SEMANA' ? 'semana' : 
+                         habit.periodType == 'MÊS' ? 'mês' : 'ano';
+          return '${habit.timesPerPeriod}x por $period';
+        }
+        return 'Personalizado';
+      case HabitFrequency.repeat:
+        if (habit.repeatEveryDays != null) {
+          return 'A cada ${habit.repeatEveryDays} dias';
+        }
+        if (habit.alternateDays == true) {
+          return 'Dias alternados';
+        }
+        return 'Repetir';
+      default:
+        return 'Personalizado';
     }
   }
-
-  // Removed _getCategoryIcon and _getCategoryColor as habit.icon and habit.color are used directly
 }

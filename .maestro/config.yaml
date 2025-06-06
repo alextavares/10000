@@ -1,0 +1,12 @@
+# Configuração do Maestro para HabitAI
+appId: com.habitai.app
+name: HabitAI Tests
+
+# Configurações de ambiente
+env:
+  APP_NAME: HabitAI
+  
+# Configurações de dispositivo (opcional)
+# device:
+#   locale: pt-BR
+#   location: -23.5505,-46.6333  # São Paulo

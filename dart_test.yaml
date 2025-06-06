@@ -1,0 +1,37 @@
+# Configuração de Testes - HabitAI
+
+# Configurações do test runner
+dart_test:
+  # Timeout padrão para testes
+  timeout: 2m
+  
+  # Tags para organizar testes
+  tags:
+    unit:
+      description: "Testes unitários"
+    widget:
+      description: "Testes de widget"
+    integration:
+      description: "Testes de integração"
+    slow:
+      description: "Testes que demoram mais tempo"
+      
+  # Configurações por plataforma
+  platforms:
+    - vm
+    - chrome
+    
+  # Presets de execução
+  presets:
+    # Execução rápida (apenas testes unitários)
+    quick:
+      include_tags: [unit]
+      exclude_tags: [slow]
+      
+    # Execução completa
+    full:
+      include_tags: [unit, widget, integration]
+      
+    # Apenas testes de UI
+    ui:
+      include_tags: [widget]

@@ -11,48 +11,87 @@ import 'package:myapp/screens/habit/habit_tracking_type_screen.dart';
 import 'package:myapp/screens/habit/habit_quantity_config_screen.dart';
 import 'package:myapp/screens/habit/habit_timer_config_screen.dart';
 import 'package:myapp/screens/habit/habit_subtasks_config_screen.dart';
-import 'package:myapp/screens/onboarding/onboarding_screen.dart'; // Importar a tela de onboarding
-import 'package:myapp/screens/home/home_screen.dart'; // Importar a HomeScreen
+import 'package:myapp/screens/onboarding/onboarding_screen.dart';
+import 'package:myapp/screens/home/home_screen.dart';
+import 'package:myapp/screens/notifications/notification_settings_screen.dart';
+import 'package:myapp/screens/test/notification_test_screen.dart';
 import 'package:myapp/services/service_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Importar shared_preferences
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
+// Novas importações para configuração e logging
+import 'package:myapp/config/app_config.dart';
+import 'package:myapp/config/firebase_options.dart';
+import 'package:myapp/utils/logger.dart';
+import 'package:myapp/utils/error_handler.dart';
+
+// Sistema de notificações inteligentes
+import 'package:myapp/services/notifications/smart_notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Inicializar configurações do aplicativo
+  await AppConfig.initialize();
+  
+  // Validar configurações
+  if (!AppConfig.validateConfiguration()) {
+    Logger.warning('Algumas configurações estão faltando no arquivo .env');
+  }
+  
   // Initialize date formatting for Portuguese
   await initializeDateFormatting('pt_BR', null);
   
+  // Inicializar timezone para notificações
+  tz.initializeTimeZones();
+  
   try {
-    // Inicializar Firebase com configurações específicas para plataforma
+    // Inicializar Firebase com configurações do arquivo de config
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     
-    print("Firebase inicializado com sucesso!");
+    Logger.info("Firebase inicializado com sucesso!");
+    
+    // Inicializar sistema de notificações inteligentes
+    await SmartNotificationService().initialize();
+    Logger.info("Sistema de notificações inicializado!");
     
     // Inicializar Analytics se estiver disponível
     if (kIsWeb) {
-      print("Executando na web - verificando Firebase Analytics");
+      Logger.debug("Executando na web - verificando Firebase Analytics");
       
-      // Na web, vamos verificar se o Analytics está disponível através do JS
-      // Este é um passo opcional, apenas para diagnóstico
       try {
-        await Future.delayed(const Duration(seconds: 1)); // Pequeno atraso para garantir que scripts sejam carregados
-        print("Firebase web está configurado corretamente");
-      } catch (e) {
-        print("Aviso: Firebase Analytics pode não estar disponível no web: $e");
-        // Não falhe aqui, apenas registre o erro
+        await Future.delayed(const Duration(seconds: 1));
+        Logger.info("Firebase web está configurado corretamente");
+      } catch (e, stackTrace) {
+        Logger.warning("Firebase Analytics pode não estar disponível no web");
+        ErrorHandler.handleError(e, stackTrace, 'Firebase Analytics Web');
       }
     }
-  } catch (e) {
-    print("Erro ao inicializar Firebase: $e");
+  } catch (e, stackTrace) {
+    Logger.error("Erro ao inicializar Firebase", e, stackTrace);
+    ErrorHandler.handleError(e, stackTrace, 'Firebase Initialization');
     // Continuamos com o app mesmo se o Firebase falhar
-    // O serviço AIService tem fallbacks para operar offline
   }
   
-  // Inicie o app de qualquer forma
+  // Configurar tratamento global de erros
+  FlutterError.onError = (FlutterErrorDetails details) {
+    Logger.critical(
+      'Flutter Error: ${details.exception}',
+      details.exception,
+      details.stack,
+    );
+    ErrorHandler.handleError(
+      details.exception,
+      details.stack ?? StackTrace.current,
+      'Flutter Error',
+    );
+  };
+  
+  // Inicie o app
   runApp(await _buildApp());
 }
 
@@ -61,32 +100,6 @@ Future<Widget> _buildApp() async {
   bool onboardingCompleted = prefs.getBool('onboardingCompleted') ?? false;
 
   return MyApp(onboardingCompleted: onboardingCompleted);
-}
-
-/// Configurações do Firebase para diferentes plataformas
-class DefaultFirebaseOptions {
-  static FirebaseOptions get currentPlatform {
-    if (kIsWeb) {
-      // Web options
-      return const FirebaseOptions(
-        apiKey: 'AIzaSyAayN2swkuxNZRV_htDIKc9CUjgcxQJK4M',
-        appId: '1:258006613617:web:97dd7ccb386841785465d0',
-        messagingSenderId: '258006613617',
-        projectId: 'android-habitai',
-        authDomain: 'android-habitai.firebaseapp.com',
-        storageBucket: 'android-habitai.firebasestorage.app',
-      );
-    } else {
-      // Android options - estas serão lidas do arquivo google-services.json
-      return const FirebaseOptions(
-        apiKey: 'AIzaSyAayN2swkuxNZRV_htDIKc9CUjgcxQJK4M',
-        appId: '1:258006613617:android:97dd7ccb386841785465d0',
-        messagingSenderId: '258006613617',
-        projectId: 'android-habitai',
-        storageBucket: 'android-habitai.firebasestorage.app',
-      );
-    }
-  }
 }
 
 /// The main app widget.
@@ -99,11 +112,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ServiceProvider.create(
-      aiApiKey: 'AIzaSyAayN2swkuxNZRV_htDIKc9CUjgcxQJK4M', // Usando a API key do Firebase
+      aiApiKey: AppConfig.googleApiKey, // Usando a API key do arquivo de config
       child: MaterialApp(
         title: 'HabitAI',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primaryColor: const Color(0xFFE91E63), // Pink color from screenshot
+          primaryColor: const Color(0xFFE91E63),
           scaffoldBackgroundColor: Colors.black,
           cardColor: const Color(0xFF1E1E1E),
           appBarTheme: const AppBarTheme(
@@ -135,22 +149,20 @@ class MyApp extends StatelessWidget {
           Locale('pt', 'BR'), // Portuguese
           Locale('en', 'US'), // English
         ],
-        // Define a tela inicial baseada no status do onboarding
         home: onboardingCompleted
-            ? const SplashScreen() // Se onboarding concluído, SplashScreen levará para AuthWrapper -> HomeScreen
-            : const OnboardingScreen(), // Caso contrário, iniciar com Onboarding
+            ? const SplashScreen()
+            : const OnboardingScreen(),
         routes: {
           '/login': (context) => const LoginScreen(),
-          // A rota '/home' agora pode ser a HomeScreen diretamente se o onboarding for pulado
-          // ou a MainNavigationScreen se o usuário estiver logado.
-          // A SplashScreen e AuthWrapper cuidarão da lógica de para onde ir após o login/onboarding.
-          '/home': (context) => const HomeScreen(), // Rota para pular onboarding
-          '/main': (context) => const MainNavigationScreen(), // Rota principal após login
+          '/home': (context) => const HomeScreen(),
+          '/main': (context) => const MainNavigationScreen(),
           '/add-habit': (context) => const AddHabitScreen(),
           '/onboarding': (context) => const OnboardingScreen(),
-          '/categories': (context) => const Scaffold(body: Center(child: Text('Categories Screen'))), // Placeholder
-          '/timer': (context) => const Scaffold(body: Center(child: Text('Timer Screen'))), // Placeholder
-          '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen'))), // Placeholder
+          '/categories': (context) => const Scaffold(body: Center(child: Text('Categories Screen'))),
+          '/timer': (context) => const Scaffold(body: Center(child: Text('Timer Screen'))),
+          '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen'))),
+          '/notification-settings': (context) => const NotificationSettingsScreen(),
+          '/test-notifications': (context) => const NotificationTestScreen(),
         },
         onGenerateRoute: (settings) {
           switch (settings.name) {
@@ -231,29 +243,11 @@ class AuthWrapper extends StatelessWidget {
         }
         
         if (snapshot.hasData && snapshot.data != null) {
-          // Se o usuário estiver logado, vá para MainNavigationScreen
-          // A MainNavigationScreen será a tela principal após o login
           return const MainNavigationScreen(); 
         }
         
-        // Se não estiver logado, vá para LoginScreen
         return const LoginScreen();
       },
     );
   }
 }
-
-// Modificar SplashScreen para verificar onboarding após a lógica de autenticação
-// Se o onboarding não foi concluído, e o usuário não está logado,
-// o fluxo normal levará para LoginScreen, que pode então levar para Onboarding.
-// Se o onboarding foi concluído, e o usuário está logado, vai para MainNavigationScreen.
-// Se o onboarding não foi concluído, mas o usuário se loga, o LoginScreen deveria
-// redirecionar para o OnboardingBenefitsScreen.
-// Esta lógica de redirecionamento pós-login para onboarding precisará ser
-// implementada na LoginScreen ou no AuthWrapper.
-
-// Por agora, a lógica em main() decide a tela inicial absoluta.
-// A SplashScreen ainda levará para AuthWrapper, que então decide entre Login ou MainNavigation.
-// Se o onboarding não foi feito, o usuário verá OnboardingBenefitsScreen primeiro.
-// Se ele pular, vai para HomeScreen (que pode ser a mesma que MainNavigationScreen ou uma versão simplificada).
-// Se ele completar o onboarding, a flag será salva, e na próxima vez, SplashScreen -> AuthWrapper -> MainNavigationScreen.

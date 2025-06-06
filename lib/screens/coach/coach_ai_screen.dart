@@ -4,6 +4,7 @@ import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/utils/logger.dart';
 
 /// Screen for the AI coach functionality.
 class CoachAIScreen extends StatefulWidget {
@@ -87,7 +88,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
         _errorMessage = 'Failed to load data. Please try again.';
         _isLoading = false;
       });
-      print('Error loading data: $e');
+      Logger.error('Error loading data: $e');
     }
   }
 
@@ -123,7 +124,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
         _weeklySummary = 'Unable to generate weekly summary at this time.';
         _isGeneratingSummary = false;
       });
-      print('Error generating weekly summary: $e');
+      Logger.error('Error generating weekly summary: $e');
     }
   }
 
@@ -159,7 +160,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
         _habitPlan = 'Unable to generate habit plan at this time.';
         _isGeneratingPlan = false;
       });
-      print('Error generating habit plan: $e');
+      Logger.error('Error generating habit plan: $e');
     }
   }
 
@@ -205,7 +206,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
         ));
         _isSendingMessage = false;
       });
-      print('Error sending message: $e');
+      Logger.error('Error sending message: $e');
     }
   }
 
@@ -336,7 +337,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
             color: AppTheme.surfaceColor,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, -5),
               ),
@@ -387,7 +388,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
           Icon(
             Icons.psychology_alt,
             size: 64,
-            color: AppTheme.aiPrimaryColor.withOpacity(0.7),
+            color: AppTheme.aiPrimaryColor.withValues(alpha: 0.7),
           ),
           const SizedBox(height: 24),
           Text(
@@ -485,8 +486,8 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
               ),
               decoration: BoxDecoration(
                 color: message.isUser
-                    ? AppTheme.aiPrimaryColor.withOpacity(0.1)
-                    : AppTheme.aiPrimaryColor.withOpacity(0.2),
+                    ? AppTheme.aiPrimaryColor.withValues(alpha: 0.1)
+                    : AppTheme.aiPrimaryColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -551,7 +552,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -627,7 +628,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -738,7 +739,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -788,7 +789,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
                         });
                       },
                       backgroundColor: AppTheme.surfaceColor,
-                      selectedColor: AppTheme.aiPrimaryColor.withOpacity(0.2),
+                      selectedColor: AppTheme.aiPrimaryColor.withValues(alpha: 0.2),
                       checkmarkColor: AppTheme.aiPrimaryColor,
                     );
                   }).toList(),
@@ -830,7 +831,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
