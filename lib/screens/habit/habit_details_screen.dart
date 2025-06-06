@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/models/habit.dart';
-import 'package:myapp/services/service_provider.dart';
+import 'package:myapp/services/habit_service.dart';
+import 'package:myapp/services/ai_service.dart';
+import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/widgets/habit_card.dart';
-import 'package:myapp/screens/habit/add_habit_screen.dart'; // Import AddHabitScreen
+import 'package:myapp/screens/habits/edit_habit_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:myapp/utils/logger.dart';
 
 /// Screen for viewing and managing a habit's details.
 class HabitDetailsScreen extends StatefulWidget {
   /// The ID of the habit to display.
   final String habitId;
+  
+  /// Whether to focus on statistics section
+  final bool focusOnStats;
 
   /// Constructor for HabitDetailsScreen.
   const HabitDetailsScreen({
     super.key,
     required this.habitId,
+    this.focusOnStats = false,
   });
 
   @override
@@ -29,11 +37,19 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
   DateTime _currentMonth = DateTime.now();
   String? _aiInsights;
   bool _isLoadingInsights = false;
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _statisticsKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _loadHabit();
+  }
+  
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadHabit() async {
@@ -44,13 +60,13 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     });
 
     try {
-      final habitService = ServiceProvider.of(context).habitService; // Use ServiceProvider
+      final habitService = context.read<HabitService>();
       final habit = await habitService.getHabitById(widget.habitId);
       
       if (!mounted) return;
       if (habit == null) {
         setState(() {
-          _errorMessage = 'Habit not found';
+          _errorMessage = 'Hábito não encontrado';
           _isLoading = false;
         });
         return;
@@ -62,13 +78,20 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
       });
       
       _loadAIInsights();
+      
+      // Scroll to statistics if requested
+      if (widget.focusOnStats && mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scrollToStatistics();
+        });
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Failed to load habit. Please try again.';
+        _errorMessage = 'Falha ao carregar o hábito. Por favor, tente novamente.';
         _isLoading = false;
       });
-      print('Error loading habit: $e');
+      Logger.error('Error loading habit: $e');
     }
   }
 
@@ -80,7 +103,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     });
 
     try {
-      final aiService = ServiceProvider.of(context).aiService; // Use ServiceProvider
+      final aiService = context.read<AIService>();
       final insights = await aiService.generateHabitInsights([_habit!]);
       
       if (!mounted) return;
@@ -94,7 +117,19 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
         _aiInsights = 'Unable to load insights at this time.';
         _isLoadingInsights = false;
       });
-      print('Error loading AI insights: $e');
+      Logger.error('Error loading AI insights: $e');
+    }
+  }
+  
+  void _scrollToStatistics() {
+    final RenderBox? renderBox = _statisticsKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null && _scrollController.hasClients) {
+      final position = renderBox.localToGlobal(Offset.zero, ancestor: _scrollController.position.context.storageContext.findRenderObject());
+      _scrollController.animateTo(
+        position.dy + _scrollController.offset - 100, // -100 for some padding from top
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -104,19 +139,19 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Habit'),
-        content: Text('Are you sure you want to delete "${_habit!.title}"?'),
+        title: const Text('Excluir Hábito'),
+        content: Text('Tem certeza que deseja excluir "${_habit!.title}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
               foregroundColor: AppTheme.errorColor,
             ),
-            child: const Text('Delete'),
+            child: const Text('Excluir'),
           ),
         ],
       ),
@@ -129,8 +164,8 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     });
 
     try {
-      final notificationService = ServiceProvider.of(context).notificationService;
-      final habitService = ServiceProvider.of(context).habitService;
+      final notificationService = context.read<NotificationService>();
+      final habitService = context.read<HabitService>();
 
       if (_habit!.notificationsEnabled && _habit!.reminderTime != null) {
         // It's better to pass the full habit object or at least its ID for cancellation.
@@ -149,7 +184,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
         _errorMessage = 'Failed to delete habit: $e';
         _isLoading = false;
       });
-      print('Error deleting habit: $e');
+      Logger.error('Error deleting habit: $e');
     }
   }
 
@@ -162,7 +197,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     // For simplicity, full reload via _loadHabit() is used after operation.
 
     try {
-      final habitService = ServiceProvider.of(context).habitService;
+      final habitService = context.read<HabitService>();
       // TODO: Verify if markHabitNotCompleted and markHabitCompleted exist and are used correctly.
       // Based on HabitService, it seems like there's a single markHabitCompletion(id, date, bool)
       // For now, assuming these methods exist or will be adapted in HabitService
@@ -178,7 +213,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
       setState(() {
         _errorMessage = 'Failed to update habit completion: $e';
       });
-      print('Error updating habit completion for date $date: $e');
+      Logger.error('Error updating habit completion for date $date: $e');
     }
   }
 
@@ -186,7 +221,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     if (_habit == null || !mounted) return;
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddHabitScreen(habitToEdit: _habit!))
+      MaterialPageRoute(builder: (context) => EditHabitScreen(habit: _habit!))
     ).then((result) {
       if (result == true && mounted) {
         _loadHabit(); // Refresh if changes were made
@@ -198,15 +233,15 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
   Widget build(BuildContext context) {
     if (_isLoading && _habit == null) { // Show loading only if habit is not yet loaded
       return Scaffold(
-        appBar: AppBar(title: const Text('Habit Details')), // Basic AppBar during load
-        body: const LoadingScreenWithMessage(message: 'Loading habit details...'),
+        appBar: AppBar(title: const Text('Detalhes do Hábito')), // Basic AppBar during load
+        body: const LoadingScreenWithMessage(message: 'Carregando detalhes do hábito...'),
       );
     }
 
     if (_habit == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Error'),
+          title: const Text('Erro'),
           backgroundColor: AppTheme.errorColor,
         ),
         body: Center(
@@ -217,10 +252,10 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
               children: [
                 Icon(Icons.error_outline, size: 64, color: AppTheme.errorColor),
                 const SizedBox(height: 16),
-                Text(_errorMessage ?? 'Habit not found or could not be loaded.',
+                Text(_errorMessage ?? 'Hábito não encontrado ou não pôde ser carregado.',
                   style: TextStyle(fontSize: 16, color: AppTheme.textColor), textAlign: TextAlign.center),
                 const SizedBox(height: 24),
-                ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Go Back')),
+                ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Voltar')),
               ],
             ),
           )
@@ -238,12 +273,12 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
           IconButton(
             icon: const Icon(Icons.edit_note),
             onPressed: _navigateToEditScreen, // Navigate to edit screen
-            tooltip: 'Edit Habit',
+            tooltip: 'Editar Hábito',
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: _deleteHabit,
-            tooltip: 'Delete Habit',
+            tooltip: 'Excluir Hábito',
           ),
         ],
       ),
@@ -251,6 +286,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
         onRefresh: _loadHabit,
         color: _habit!.color,
         child: SingleChildScrollView(
+          controller: _scrollController,
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,6 +314,8 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
               _buildCalendarSection(),
               const SizedBox(height: 24),
               _buildAIInsightsSection(),
+              const SizedBox(height: 24),
+              _buildActionsSection(),
             ],
           ),
         ),
@@ -287,10 +325,11 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
 
   Widget _buildStatisticsSection() { /* ... as before ... */ 
     return Column(
+      key: _statisticsKey,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Statistics',
+          'Estatísticas',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor),
         ),
         const SizedBox(height: 16),
@@ -302,25 +341,25 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
           physics: const NeverScrollableScrollPhysics(),
           children: [
             _buildStatCard(
-              title: 'Current Streak',
-              value: '${_habit!.streak} days',
+              title: 'Sequência Atual',
+              value: '${_habit!.streak} dias',
               icon: Icons.local_fire_department,
               color: Colors.orange,
             ),
             _buildStatCard(
-              title: 'Longest Streak',
-              value: '${_habit!.longestStreak} days',
+              title: 'Maior Sequência',
+              value: '${_habit!.longestStreak} dias',
               icon: Icons.emoji_events,
               color: Colors.amber,
             ),
             _buildStatCard(
-              title: 'Completion Rate',
+              title: 'Taxa de Conclusão',
               value: '${(_habit!.getCompletionRate() * 100).toStringAsFixed(1)}%',
               icon: Icons.pie_chart,
               color: Colors.green,
             ),
             _buildStatCard(
-              title: 'Total Completions',
+              title: 'Total de Conclusões',
               value: '${_habit!.completionHistory.values.where((v) => v).length}',
               icon: Icons.check_circle,
               color: _habit!.color,
@@ -341,7 +380,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color ?? AppTheme.surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [ BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
+        boxShadow: [ BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -363,7 +402,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Progress Calendar',
+          'Calendário de Progresso',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor),
         ),
         const SizedBox(height: 16),
@@ -371,7 +410,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
           decoration: BoxDecoration(
             color: Theme.of(context).cardTheme.color ?? AppTheme.surfaceColor,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [ BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
+            boxShadow: [ BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -443,14 +482,14 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: isCompleted ? _habit!.color.withOpacity(0.8) : Colors.transparent,
-              border: isTodayFlag ? Border.all(color: _habit!.color, width: 2) : Border.all(color: Colors.grey.withOpacity(0.3), width: 0.5),
+              color: isCompleted ? _habit!.color.withValues(alpha: 0.8) : Colors.transparent,
+              border: isTodayFlag ? Border.all(color: _habit!.color, width: 2) : Border.all(color: Colors.grey.withValues(alpha: 0.3), width: 0.5),
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(day.toString(),
                 style: TextStyle(
-                  color: isCompleted ? AppTheme.adaptiveTextColor(_habit!.color.withOpacity(0.8)) : AppTheme.textColor,
+                  color: isCompleted ? AppTheme.adaptiveTextColor(_habit!.color.withValues(alpha: 0.8)) : AppTheme.textColor,
                   fontWeight: isTodayFlag ? FontWeight.bold : FontWeight.normal,
                 )),
             ),
@@ -461,6 +500,8 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
 
     return GridView.count(
       crossAxisCount: 7,
+      crossAxisSpacing: 4,
+      mainAxisSpacing: 4,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: dayCells,
@@ -474,8 +515,8 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('AI Insights', style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor)),
-            IconButton(icon: const Icon(Icons.refresh), onPressed: _isLoadingInsights ? null : _loadAIInsights, tooltip: 'Refresh Insights'),
+            Text('Insights da IA', style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor)),
+            IconButton(icon: const Icon(Icons.refresh), onPressed: _isLoadingInsights ? null : _loadAIInsights, tooltip: 'Atualizar Insights'),
           ],
         ),
         const SizedBox(height: 16),
@@ -484,8 +525,8 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
           decoration: BoxDecoration(
             color: Theme.of(context).cardTheme.color ?? AppTheme.aiBackgroundColor, // Use card color or AI specific
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.aiPrimaryColor.withOpacity(0.3)),
-            boxShadow: [ BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
+            border: Border.all(color: AppTheme.aiPrimaryColor.withValues(alpha: 0.3)),
+            boxShadow: [ BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
           ),
           padding: const EdgeInsets.all(16),
           child: _isLoadingInsights
@@ -496,7 +537,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
                     Icon(Icons.lightbulb_outline, color: AppTheme.aiPrimaryColor, size: 28),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(_aiInsights ?? 'No insights available yet.',
+                      child: Text(_aiInsights ?? 'Nenhum insight disponível ainda.',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.textColor, height: 1.5)),
                     ),
                   ],
@@ -509,6 +550,106 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
   bool _isToday(DateTime date) {
     final now = DateTime.now();
     return date.year == now.year && date.month == now.month && date.day == now.day;
+  }
+  
+  Widget _buildActionsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Ações',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.textColor),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color ?? AppTheme.surfaceColor,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [ BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)) ],
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              ListTile(
+                leading: Icon(Icons.refresh, color: Colors.orange),
+                title: Text('Reiniciar o progresso do hábito', style: TextStyle(color: AppTheme.textColor)),
+                subtitle: Text('Remove todo o histórico e estatísticas', style: TextStyle(color: AppTheme.subtitleColor, fontSize: 12)),
+                trailing: Icon(Icons.chevron_right, color: AppTheme.subtitleColor),
+                onTap: _resetHabitProgress,
+                contentPadding: EdgeInsets.zero,
+              ),
+              Divider(color: AppTheme.subtitleColor.withValues(alpha: 0.2)),
+              ListTile(
+                leading: Icon(Icons.archive_outlined, color: AppTheme.primaryColor),
+                title: Text('Arquivar hábito', style: TextStyle(color: AppTheme.textColor)),
+                subtitle: Text('Move o hábito para o arquivo', style: TextStyle(color: AppTheme.subtitleColor, fontSize: 12)),
+                trailing: Icon(Icons.chevron_right, color: AppTheme.subtitleColor),
+                onTap: _archiveHabit,
+                contentPadding: EdgeInsets.zero,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Future<void> _resetHabitProgress() async {
+    if (_habit == null || !mounted) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reiniciar Progresso'),
+        content: Text('Tem certeza que deseja reiniciar todo o progresso de "${_habit!.title}"? Esta ação não pode ser desfeita.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.errorColor,
+            ),
+            child: const Text('Reiniciar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final habitService = context.read<HabitService>();
+      await habitService.resetHabitProgress(_habit!.id);
+      
+      if (mounted) {
+        await _loadHabit(); // Recarrega o hábito para mostrar as mudanças
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Progresso do hábito reiniciado com sucesso')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = 'Falha ao reiniciar progresso: $e';
+        _isLoading = false;
+      });
+      Logger.error('Error resetting habit progress: $e');
+    }
+  }
+  
+  Future<void> _archiveHabit() async {
+    // TODO: Implementar arquivamento de hábito
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Funcionalidade de arquivo em desenvolvimento')),
+    );
   }
 }
 
