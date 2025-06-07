@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/models/task.dart'; // Ensure Task and TaskType are correctly defined
+import 'package:flutter/services.dart';
+import 'package:myapp/models/task.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:intl/intl.dart'; // Added import for DateFormat
+import 'package:intl/intl.dart';
+
+enum TaskPriority { high, normal, low }
 
 class AddTaskScreen extends StatefulWidget {
   final Task? taskToEdit;
@@ -16,13 +19,16 @@ class AddTaskScreen extends StatefulWidget {
 class _AddTaskScreenState extends State<AddTaskScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
+  late TextEditingController _notesController;
   
   String? _selectedCategory;
   DateTime? _selectedDueDate;
   TimeOfDay? _selectedReminderTime;
   bool _notificationsEnabled = false;
+  TaskPriority _priority = TaskPriority.normal;
+  bool _isPending = false;
 
-  final List<String> _subitems = []; // Placeholder for subitems
+  final List<String> _subitems = [];
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -30,7 +36,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   bool get _isEditing => widget.taskToEdit != null;
   final Uuid uuid = const Uuid();
 
-  // Define some default categories
   final List<String> _taskCategories = [
     'Trabalho',
     'Pessoal',
@@ -38,9 +43,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     'Saúde',
     'Finanças',
     'Casa',
+    'Tarefa',
     'Outros'
   ];
-
 
   @override
   void initState() {
@@ -48,20 +53,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     if (_isEditing && widget.taskToEdit != null) {
       final task = widget.taskToEdit!;
       _titleController = TextEditingController(text: task.title);
-      _selectedCategory = task.category;
+      _notesController = TextEditingController(text: task.description ?? '');
+      _selectedCategory = task.category ?? 'Tarefa';
       _selectedDueDate = task.dueDate;
       _selectedReminderTime = task.reminderTime;
       _notificationsEnabled = task.notificationsEnabled;
-      // TODO: Initialize _subitems from task.subtasks if Task model supports it
+      _isPending = !task.isCompleted;
+      // TODO: Load priority from task when model supports it
     } else {
       _titleController = TextEditingController();
-      _selectedDueDate = DateTime.now(); // Default to today for new tasks
+      _notesController = TextEditingController();
+      _selectedDueDate = DateTime.now();
+      _selectedCategory = 'Tarefa';
+      _isPending = true;
     }
   }
 
   @override
   void dispose() {
     _titleController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -194,19 +205,44 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   }
 
   Future<void> _saveTask() async {
-    if (!_formKey.currentState!.validate()) {
+    // Verifica o formulário
+    if (_formKey.currentState == null || !_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, preencha todos os campos obrigatórios'),
+          backgroundColor: Colors.orange,
+        ),
+      );
       return;
     }
+    
+    // Validação adicional do título
+    if (_titleController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('O nome da tarefa não pode estar vazio'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+    
     if (!mounted) return;
+    
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
 
     try {
-      final taskService = ServiceProvider.of(context).taskService;
+      // Busca o ServiceProvider diretamente da árvore de widgets
+      final serviceProvider = context.dependOnInheritedWidgetOfExactType<ServiceProvider>();
+      if (serviceProvider == null) {
+        throw Exception('ServiceProvider não encontrado. Verifique se o app está configurado corretamente.');
+      }
+      
+      final taskService = serviceProvider.taskService;
       final now = DateTime.now();
-      // Removed taskIdForNotifications as it's not used
 
       if (_isEditing) {
         final updatedTask = widget.taskToEdit!.copyWith(
@@ -216,8 +252,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           reminderTime: _notificationsEnabled ? _selectedReminderTime : null,
           notificationsEnabled: _notificationsEnabled,
           updatedAt: now,
-          description: null,
-          type: TaskType.yesNo, 
+          description: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          type: TaskType.yesNo,
+          isCompleted: !_isPending,
         );
         final success = await taskService.updateTask(updatedTask);
         if (!success) {
@@ -233,10 +270,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           notificationsEnabled: _notificationsEnabled,
           createdAt: now,
           updatedAt: now,
-          isCompleted: false,
+          isCompleted: !_isPending,
           completionHistory: {},
-          description: null,
-          type: TaskType.yesNo, 
+          description: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+          type: TaskType.yesNo,
         );
         final String? firestoreDocId = await taskService.addTask(newTaskData);
         if (firestoreDocId == null) {
@@ -251,8 +288,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         Navigator.of(context).pop(true);
       }
     } catch (e, s) {
-      debugPrint('Error saving task: $e'); // Changed print to debugPrint
-      debugPrint('Stack trace: $s'); // Changed print to debugPrint
+      debugPrint('Error saving task: $e');
+      debugPrint('Stack trace: $s');
       if (mounted) {
         setState(() {
           _errorMessage = 'Falha ao salvar tarefa: $e';
@@ -262,187 +299,376 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     }
   }
 
+  Future<void> _deleteTask() async {
+    if (!_isEditing || widget.taskToEdit == null) return;
+    
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[850],
+        title: const Text('Excluir tarefa?', style: TextStyle(color: Colors.white)),
+        content: const Text(
+          'Esta ação não pode ser desfeita.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('CANCELAR', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('EXCLUIR', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true && mounted) {
+      setState(() => _isLoading = true);
+      try {
+        // Usar a extensão do ServiceProvider
+        final taskService = context.taskService;
+        final success = await taskService.deleteTask(widget.taskToEdit!.id);
+        if (success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Tarefa excluída!'), backgroundColor: Colors.red),
+          );
+          Navigator.of(context).pop(true);
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro ao excluir: $e')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, 
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Nova tarefa',
-            style: TextStyle(
-                color: Colors.pinkAccent,
-                fontSize: 18,
-                fontWeight: FontWeight.bold)),
+        title: Text(
+          _isEditing ? 'Editar tarefa' : 'Nova tarefa',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.black, 
+        backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), 
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent)))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    if (_errorMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          _errorMessage!,
-                          style: TextStyle(color: Colors.redAccent.shade100, fontWeight: FontWeight.bold),
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent),
+              ),
+            )
+          : Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                        // Task Title Input
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.edit, color: Colors.pinkAccent, size: 24),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: TextFormField(
+                                controller: _titleController,
+                                style: const TextStyle(color: Colors.white, fontSize: 18),
+                                decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Nome da tarefa',
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                ),
+                                autofocus: !_isEditing,
+                                // Configurações para permitir caracteres especiais
+                                enableSuggestions: true,
+                                autocorrect: true,
+                                textCapitalization: TextCapitalization.sentences,
+                                keyboardType: TextInputType.text,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'O nome da tarefa é obrigatório';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    // Task Title Input
-                    TextFormField(
-                      controller: _titleController,
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
-                      decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.pinkAccent.withValues(alpha: 0.5)),
-                        ),
-                        focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.pinkAccent, width: 2),
-                        ),
-                        labelText: 'Tarefa',
-                        labelStyle: TextStyle(color: Colors.grey[400]),
-                        floatingLabelStyle: const TextStyle(color: Colors.pinkAccent),
-                        suffixIcon: const Icon(Icons.edit, color: Colors.grey),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Por favor, insira um título para a tarefa';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
+                        Divider(color: Colors.grey[800], height: 1),
+                        const SizedBox(height: 8),
 
-                    // Category
-                    ListTile(
-                      leading: const Icon(Icons.grid_on, color: Colors.pinkAccent),
-                      title: const Text('Categoria', style: TextStyle(color: Colors.white)),
-                      subtitle: Text(
-                        _selectedCategory ?? 'Não definido',
-                        style: TextStyle(color: Colors.grey[400]),
-                      ),
-                      trailing: const Text(
-                        'Tarefa', 
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
-                      ),
-                      onTap: _showCategorySelectionDialog,
-                      tileColor: Colors.grey[850],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                    const SizedBox(height: 10),
+                        // Category
+                        _buildOptionTile(
+                          icon: Icons.category,
+                          iconColor: Colors.pinkAccent,
+                          title: 'Categoria',
+                          value: Row(
+                            children: [
+                              Text(
+                                _selectedCategory ?? 'Tarefa',
+                                style: const TextStyle(color: Colors.grey, fontSize: 14),
+                              ),
+                              const SizedBox(width: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.pinkAccent,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      'Tarefa',
+                                      style: TextStyle(color: Colors.white, fontSize: 14),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Icon(
+                                        Icons.access_time,
+                                        color: Colors.pinkAccent,
+                                        size: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: _showCategorySelectionDialog,
+                        ),
 
-                    // Date
-                    ListTile(
-                      leading: const Icon(Icons.calendar_month, color: Colors.pinkAccent),
-                      title: const Text('Data', style: TextStyle(color: Colors.white)),
-                      subtitle: Text(
-                        _selectedDueDate == null
-                            ? 'Não definida'
-                            : DateFormat('dd/MM/yyyy').format(_selectedDueDate!),
-                        style: TextStyle(color: Colors.grey[400]),
-                      ),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedDueDate = DateTime.now();
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[700],
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        // Date
+                        _buildOptionTile(
+                          icon: Icons.calendar_today,
+                          iconColor: Colors.pinkAccent,
+                          title: 'Data',
+                          value: Text(
+                            _selectedDueDate == null
+                                ? 'Hoje'
+                                : DateFormat('dd/MM/yyyy').format(_selectedDueDate!),
+                            style: const TextStyle(
+                              color: Colors.pinkAccent,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          onTap: () => _selectDueDate(context),
                         ),
-                        child: const Text('Hoje'),
-                      ),
-                      onTap: () => _selectDueDate(context), // Corrected: wrapped in an anonymous function
-                      tileColor: Colors.grey[850],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                    const SizedBox(height: 10),
 
-                    // Reminder
-                    ListTile(
-                      leading: const Icon(Icons.notifications_none, color: Colors.pinkAccent),
-                      title: const Text('Horário e lembretes', style: TextStyle(color: Colors.white)),
-                      subtitle: Text(
-                        _selectedReminderTime == null
-                            ? 'Não definido'
-                            : MaterialLocalizations.of(context).formatTimeOfDay(_selectedReminderTime!),
-                        style: TextStyle(color: Colors.grey[400]),
-                      ),
-                      trailing: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.pinkAccent.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(5),
+                        // Reminder
+                        _buildOptionTile(
+                          icon: Icons.notifications_outlined,
+                          iconColor: Colors.pinkAccent,
+                          title: 'Horário e lembretes',
+                          value: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _notificationsEnabled && _selectedReminderTime != null ? '1' : '0',
+                              style: const TextStyle(
+                                color: Colors.pinkAccent,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          onTap: () => _selectReminderTime(context),
                         ),
-                        child: Text(
-                          _notificationsEnabled && _selectedReminderTime != null ? '1' : '0',
-                          style: const TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      onTap: () => _selectReminderTime(context), // Corrected: wrapped in an anonymous function
-                      tileColor: Colors.grey[850],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                    const SizedBox(height: 10),
 
-                    // Subitems
-                    ListTile(
-                      leading: const Icon(Icons.checklist, color: Colors.pinkAccent),
-                      title: const Text('Subitens', style: TextStyle(color: Colors.white)),
-                      trailing: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.pinkAccent.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(5),
+                        // Subitems
+                        _buildOptionTile(
+                          icon: Icons.checklist,
+                          iconColor: Colors.pinkAccent,
+                          title: 'Subitens',
+                          subtitle: _isEditing ? 'Funcionalidade Premium' : null,
+                          value: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[800],
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              _subitems.length.toString(),
+                              style: const TextStyle(
+                                color: Colors.pinkAccent,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Funcionalidade Premium!'),
+                                backgroundColor: Colors.pinkAccent,
+                              ),
+                            );
+                          },
                         ),
-                        child: Text(
-                          _subitems.length.toString(),
-                          style: const TextStyle(color: Colors.pinkAccent, fontSize: 12, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      onTap: () {
-                        // TODO: Implement navigation to a subitem management screen
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Funcionalidade de subitens em desenvolvimento!')),
-                        );
-                      },
-                      tileColor: Colors.grey[850],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    ),
-                    const SizedBox(height: 32),
 
-                    // Bottom Buttons (CANCELAR and CONFIRME)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        // Only show these fields in edit mode
+                        if (_isEditing) ...[
+                          // Priority
+                          _buildOptionTile(
+                            icon: Icons.flag_outlined,
+                            iconColor: Colors.pinkAccent,
+                            title: 'Prioridade',
+                            value: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: _getPriorityColor().withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                _getPriorityText(),
+                                style: TextStyle(
+                                  color: _getPriorityColor(),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            onTap: _showPriorityDialog,
+                          ),
+
+                          // Notes
+                          _buildOptionTile(
+                            icon: Icons.comment_outlined,
+                            iconColor: Colors.pinkAccent,
+                            title: 'Anotação',
+                            value: _notesController.text.isNotEmpty
+                                ? const Icon(Icons.check, color: Colors.pinkAccent, size: 20)
+                                : null,
+                            onTap: _showNotesDialog,
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          // Pending Task Toggle
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check_box_outlined,
+                                      color: _isPending ? Colors.pinkAccent : Colors.grey,
+                                      size: 24,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    const Expanded(
+                                      child: Text(
+                                        'Tarefa pendente',
+                                        style: TextStyle(color: Colors.white, fontSize: 16),
+                                      ),
+                                    ),
+                                    Transform.scale(
+                                      scale: 0.8,
+                                      child: Switch(
+                                        value: _isPending,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _isPending = value;
+                                          });
+                                        },
+                                        activeColor: Colors.pinkAccent,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Será exibida todos os dias até ser concluída.',
+                                  style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Delete Button
+                          InkWell(
+                            onTap: _deleteTask,
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 16),
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete_outline, color: Colors.red[400], size: 24),
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    'Excluir',
+                                    style: TextStyle(color: Colors.red[400], fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                // Bottom Buttons (only for new task)
+                if (!_isEditing)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
                         Expanded(
                           child: TextButton(
                             onPressed: _isLoading
                                 ? null
-                                : () {
-                                    Navigator.of(context).pop(false); // Indicate cancellation
-                                  },
-                            child: const Text('CANCELAR',
-                                style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
+                                : () => Navigator.of(context).pop(false),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: const Text(
+                              'CANCELAR',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -452,28 +678,228 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.pinkAccent,
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              disabledBackgroundColor: Colors.grey[700],
-                              disabledForegroundColor: Colors.grey[400],
                             ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2, color: Colors.white))
-                                : const Text('CONFIRME', style: TextStyle(color: Colors.white)),
+                            child: const Text(
+                              'CONFIRME',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+      floatingActionButton: _isEditing
+          ? FloatingActionButton(
+              onPressed: _isLoading ? null : _saveTask,
+              backgroundColor: Colors.pinkAccent,
+              child: const Icon(Icons.check, color: Colors.white),
+            )
+          : null,
+    );
+  }
+
+  Widget _buildListTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    String? subtitle,
+    Color? subtitleColor,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            Icon(icon, color: iconColor, size: 28),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  if (subtitle != null)
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: subtitleColor ?? Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (trailing != null) trailing,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    String? subtitle,
+    Widget? value,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: iconColor, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  if (subtitle != null)
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.pinkAccent,
+                        fontSize: 13,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (value != null) value,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getPriorityColor() {
+    switch (_priority) {
+      case TaskPriority.high:
+        return Colors.red;
+      case TaskPriority.normal:
+        return Colors.orange;
+      case TaskPriority.low:
+        return Colors.green;
+    }
+  }
+
+  String _getPriorityText() {
+    switch (_priority) {
+      case TaskPriority.high:
+        return 'Alta';
+      case TaskPriority.normal:
+        return 'Normal';
+      case TaskPriority.low:
+        return 'Baixa';
+    }
+  }
+
+  void _showPriorityDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[850],
+        title: const Text('Prioridade', style: TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildPriorityOption(TaskPriority.high, 'Alta', Colors.red),
+            _buildPriorityOption(TaskPriority.normal, 'Normal', Colors.orange),
+            _buildPriorityOption(TaskPriority.low, 'Baixa', Colors.green),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('FECHAR', style: TextStyle(color: Colors.pinkAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriorityOption(TaskPriority priority, String label, Color color) {
+    return ListTile(
+      leading: Icon(Icons.flag, color: color),
+      title: Text(label, style: const TextStyle(color: Colors.white)),
+      trailing: _priority == priority
+          ? const Icon(Icons.check, color: Colors.pinkAccent)
+          : null,
+      onTap: () {
+        setState(() {
+          _priority = priority;
+        });
+        Navigator.of(context).pop();
+      },
+    );
+  }
+
+  void _showNotesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[850],
+        title: const Text('Anotação', style: TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: _notesController,
+          maxLines: 5,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintText: 'Digite suas anotações aqui...',
+            hintStyle: TextStyle(color: Colors.grey),
+            border: OutlineInputBorder(),
+          ),
+          keyboardType: TextInputType.multiline,
+          enableSuggestions: true,
+          autocorrect: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('CANCELAR', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {});
+              Navigator.of(context).pop();
+            },
+            child: const Text('SALVAR', style: TextStyle(color: Colors.pinkAccent)),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/models/habit.dart' show HabitFrequency, HabitTrackingType; // Importar enums corretos
 import 'package:myapp/services/service_provider.dart'; 
@@ -229,6 +230,9 @@ class _AddHabitDetailsScreenState extends State<AddHabitDetailsScreen> {
             TextFormField(
               controller: _habitNameController,
               style: const TextStyle(color: Colors.white),
+              enableSuggestions: true,
+              autocorrect: true,
+              textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 labelText: 'Nome do Hábito',
                 labelStyle: TextStyle(color: Colors.grey[400]),

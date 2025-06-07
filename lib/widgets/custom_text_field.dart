@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myapp/theme/app_theme.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -11,6 +12,10 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
+  final List<TextInputFormatter>? inputFormatters;
+  final bool enableSuggestions;
+  final bool autocorrect;
+  final TextCapitalization textCapitalization;
 
   const CustomTextField({
     super.key,
@@ -23,6 +28,10 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.validator,
     this.onChanged,
+    this.inputFormatters,
+    this.enableSuggestions = true,
+    this.autocorrect = true,
+    this.textCapitalization = TextCapitalization.sentences,
   });
 
   @override
@@ -47,6 +56,10 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           onChanged: onChanged,
           style: TextStyle(color: AppTheme.textColor),
+          inputFormatters: inputFormatters,
+          enableSuggestions: enableSuggestions,
+          autocorrect: autocorrect,
+          textCapitalization: textCapitalization,
           decoration: InputDecoration(
             hintText: placeholder,
             hintStyle: TextStyle(color: AppTheme.subtitleColor),

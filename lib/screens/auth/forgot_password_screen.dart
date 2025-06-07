@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/screens/loading_screen.dart';
@@ -170,6 +171,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
+            enableSuggestions: true,
+            autocorrect: true,
+            textCapitalization: TextCapitalization.none, // Email não precisa de capitalização
+            
             decoration: const InputDecoration(
               labelText: 'Email',
               hintText: 'Enter your email',

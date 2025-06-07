@@ -15,6 +15,7 @@ import 'package:myapp/screens/onboarding/onboarding_screen.dart';
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/notifications/notification_settings_screen.dart';
 import 'package:myapp/screens/test/notification_test_screen.dart';
+import 'package:myapp/screens/test/test_characters_screen.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

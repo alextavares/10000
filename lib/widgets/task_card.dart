@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/task.dart';
+import 'package:intl/intl.dart';
 
 class TaskCard extends StatelessWidget {
   final Task task;
   final Function(String, bool) onToggleCompletion;
-  final VoidCallback onEdit; // Callback for edit action
-  final VoidCallback onDelete; // Callback for delete action
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   const TaskCard({
     super.key,
@@ -18,13 +19,14 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCompletedToday = task.isCompletedToday();
+    
     return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 12.0), // Reduzindo de 16 para 12
-      color: Colors.grey[850], // Use dark gray for card background
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), 
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 12.0),
+      color: Colors.grey[900], // Cor de fundo mais escura
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0), 
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -32,20 +34,35 @@ class TaskCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
-                    task.title,
-                    style: TextStyle(
-                      color: Colors.white, // White text for title
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      decoration: isCompletedToday ? TextDecoration.lineThrough : null,
-                      decorationColor: Colors.white, 
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          decoration: isCompletedToday ? TextDecoration.lineThrough : null,
+                          decorationColor: Colors.white,
+                        ),
+                      ),
+                      if (task.dueDate != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            'Due: ${DateFormat('dd/MM/yy').format(task.dueDate!)}',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert, color: Colors.white), // White icon
+                  icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
                   onSelected: (value) {
                     if (value == 'edit') {
                       onEdit();
@@ -54,73 +71,40 @@ class TaskCard extends StatelessWidget {
                     }
                   },
                   itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(
+                    const PopupMenuItem<String>(
                       value: 'edit',
-                      child: Text('Edit', style: TextStyle(color: Colors.white)), // White text
+                      child: Text('Editar', style: TextStyle(color: Colors.white)),
                     ),
-                    PopupMenuItem<String>(
+                    const PopupMenuItem<String>(
                       value: 'delete',
-                      child: Text('Delete', style: TextStyle(color: Colors.redAccent)), // Red text for delete
+                      child: Text('Excluir', style: TextStyle(color: Colors.redAccent)),
                     ),
                   ],
-                  color: Colors.grey[800], // Dark background for popup menu
-                  tooltip: 'More options',
+                  color: Colors.grey[800],
                 ),
               ],
             ),
-            if (task.description != null && task.description!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  task.description!,
-                  style: TextStyle(color: Colors.grey[400], fontSize: 14), // Lighter gray for description
-                ),
-              ),
-            if (task.dueDate != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  children: [
-                    const Icon(Icons.calendar_today, color: Colors.grey, size: 16), // Gray icon
-                    const SizedBox(width: 4),
-                    Text(
-                      'Due: ${task.dueDate!.toLocal().toString().split(' ')[0]}',
-                      style: TextStyle(color: Colors.grey[400], fontSize: 12), // Lighter gray for date
-                    ),
-                  ],
-                ),
-              ),
-            if (task.reminderTime != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Row(
-                  children: [
-                    const Icon(Icons.access_time, color: Colors.grey, size: 16), // Gray icon
-                    const SizedBox(width: 4),
-                    Text(
-                      'Reminder: ${task.reminderTime!.format(context)}',
-                      style: TextStyle(color: Colors.grey[400], fontSize: 12), // Lighter gray for reminder
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 4), 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    onToggleCompletion(task.id, !isCompletedToday);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isCompletedToday ? Colors.pinkAccent : Colors.pinkAccent, // Use pink for button
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), 
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  onToggleCompletion(task.id, !isCompletedToday);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE91E63), // Rosa como no concorrente
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(isCompletedToday ? 'Marcar Incompleto' : 'Marcar Concluído', style: const TextStyle(fontSize: 12)), // Translated text
                 ),
-              ],
+                child: Text(
+                  isCompletedToday ? 'Marcar como Pendente' : 'Marcar Concluído',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
             ),
           ],
         ),

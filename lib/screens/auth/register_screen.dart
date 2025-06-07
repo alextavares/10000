@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/screens/loading_screen.dart';
@@ -185,6 +186,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     controller: _nameController,
                     keyboardType: TextInputType.name,
                     textCapitalization: TextCapitalization.words,
+                    enableSuggestions: true,
+                    autocorrect: true,
+                    
                     decoration: const InputDecoration(
                       labelText: 'Full Name',
                       hintText: 'Enter your full name',
@@ -203,6 +207,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
+                    enableSuggestions: true,
+                    autocorrect: true,
+                    textCapitalization: TextCapitalization.none,
+                    
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       hintText: 'Enter your email',
@@ -226,6 +234,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     obscureText: _obscurePassword,
                     autocorrect: false,
                     enableSuggestions: false,
+                    textCapitalization: TextCapitalization.none,
+                    
                     decoration: InputDecoration(
                       labelText: 'Password',
                       hintText: 'Create a password',
@@ -261,6 +271,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     obscureText: _obscureConfirmPassword,
                     autocorrect: false,
                     enableSuggestions: false,
+                    textCapitalization: TextCapitalization.none,
+                    
                     decoration: InputDecoration(
                       labelText: 'Confirm Password',
                       hintText: 'Confirm your password',

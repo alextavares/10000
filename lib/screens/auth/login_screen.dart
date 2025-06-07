@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/screens/loading_screen.dart';
@@ -197,13 +198,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Email field
                   TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      hintText: 'Enter your email',
-                      prefixIcon: Icon(Icons.email_outlined),
-                    ),
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  enableSuggestions: true,
+                  autocorrect: true,
+                  textCapitalization: TextCapitalization.none, // Email não precisa de capitalização
+                  
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              hintText: 'Enter your email',
+              prefixIcon: Icon(Icons.email_outlined),
+            ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
@@ -218,9 +223,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Password field
                   TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  enableSuggestions: false, // Desabilitar sugestões para senha
+            autocorrect: false, // Desabilitar autocorreção para senha
+            textCapitalization: TextCapitalization.none,
+            
+            decoration: InputDecoration(
                       labelText: 'Password',
                       hintText: 'Enter your password',
                       prefixIcon: const Icon(Icons.lock_outline),

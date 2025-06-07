@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\codigos\habit ai baixada windsurf\10000\flutter"
+export "FLUTTER_ROOT=C:\flutter"
 export "FLUTTER_APPLICATION_PATH=C:\codigos\HabitAiclaudedesktop\HabitAI"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib\main.dart"

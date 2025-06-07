@@ -1,4 +1,4 @@
-# Flutter ProGuard rules
+# Flutter Wrapper
 -keep class io.flutter.app.** { *; }
 -keep class io.flutter.plugin.**  { *; }
 -keep class io.flutter.util.**  { *; }
@@ -6,62 +6,52 @@
 -keep class io.flutter.**  { *; }
 -keep class io.flutter.plugins.**  { *; }
 
-# Firebase rules
+# Manter classes do sistema Android para evitar NullPointerException
+-keep class android.os.Looper { *; }
+-keep class com.android.internal.** { *; }
+-keep class android.app.LoadedApk { *; }
+-keep class android.app.Application { *; }
+
+# Firebase
 -keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
 -dontwarn com.google.firebase.**
+-keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**
-
-# HabitAI specific rules
--keep class com.habitai.app.** { *; }
--dontwarn com.habitai.app.**
-
-# Android support libraries
--keep class androidx.** { *; }
--dontwarn androidx.**
 
 # Kotlin
 -keep class kotlin.** { *; }
--dontwarn kotlin.**
-
-# Prevent obfuscation of accessibility classes to fix hidden API usage
--keep class android.view.accessibility.AccessibilityNodeInfo { *; }
--keep class android.view.accessibility.AccessibilityNodeInfo$* { *; }
-
-# Keep notification classes
--keep class android.app.AlarmManager { *; }
--keep class android.app.NotificationManager { *; }
-
-# Prevent optimization of classes that use reflection
--keepclassmembers class * {
-    @android.webkit.JavascriptInterface <methods>;
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
 }
 
-# Generic keep rules for Flutter plugins
--keep class * extends io.flutter.plugin.common.PluginRegistry$Registrar { *; }
--keep class * extends io.flutter.plugin.common.PluginRegistry$ViewDestroyListener { *; }
+# Prevenir ofuscação de anotações
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keepattributes Signature
+-keepattributes Exceptions
 
-# Keep native methods
--keepclasseswithmembernames class * {
-    native <methods>;
-}
+# Manter classes da aplicação
+-keep class com.habitai.app.** { *; }
 
-# Keep classes with custom constructors
--keepclasseswithmembers class * {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
+# Evitar warnings de bibliotecas
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn javax.annotation.**
+-dontwarn org.conscrypt.**
 
--keepclasseswithmembers class * {
-    public <init>(android.content.Context, android.util.AttributeSet, int);
-}
+# Regras para Gson (se usado)
+-keepattributes Signature
+-keepattributes *Annotation*
+-dontwarn sun.misc.**
+-keep class com.google.gson.examples.android.model.** { <fields>; }
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
 
-# Keep enums
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
-
-# Keep parcelable classes
--keep class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator *;
-}
+# Regras gerais de otimização segura
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+-optimizationpasses 5
+-allowaccessmodification
+-dontpreverify
+-verbose

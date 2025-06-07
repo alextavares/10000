@@ -51,6 +51,7 @@ dependencies:
   google_fonts: ^6.2.1
   table_calendar: ^3.1.2 # Added table_calendar
   flutter_slidable: ^4.0.0 # Added for swipe actions
+  flutter_colorpicker: ^1.1.0 # Added for color picker in categories
   
   # AI and ML
   google_generative_ai: ^0.4.7

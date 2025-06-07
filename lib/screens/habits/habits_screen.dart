@@ -4,7 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/habit.dart' as habit_model;
 import 'package:myapp/services/habit_service.dart';
-import 'package:myapp/widgets/improved_habit_card.dart';
+import 'package:myapp/widgets/habit_card_complete.dart';
 import 'package:myapp/screens/habit/habit_details_screen.dart';
 import 'package:myapp/screens/habits/add_habit_simple_screen.dart';
 import 'package:myapp/screens/habits/habit_selection_screen.dart';
@@ -72,10 +72,10 @@ class _HabitsScreenState extends State<HabitsScreen> {
     });
   }
   
-  Future<void> _toggleHabitCompletion(habit_model.Habit habit, bool completed) async {
+  Future<void> _toggleHabitCompletion(habit_model.Habit habit, bool completed, [DateTime? date]) async {
     if (!mounted) return;
     try {
-      final dateToMark = _selectedDate; 
+      final dateToMark = date ?? _selectedDate; 
       await _habitService.markHabitCompletion(habit.id, dateToMark, completed);
       // O Consumer vai atualizar automaticamente
     } catch (e) {
@@ -236,56 +236,15 @@ class _HabitsScreenState extends State<HabitsScreen> {
           body: ResponsiveContainer(
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: Responsive.value<double>(
-                    context: context,
-                    mobile: 16.0,
-                    tablet: 20.0,
-                    desktop: 24.0,
-                  )),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: Responsive.value<double>(
-                      context: context,
-                      mobile: 8.0,
-                      tablet: 12.0,
-                      desktop: 16.0,
-                    )),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor, 
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [BoxShadow(color:Colors.black.withValues(alpha: 0.1), blurRadius: 5)]
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (_weekDays.isNotEmpty)
-                          Center(
-                            child: ResponsiveLayout(
-                              mobile: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: Row(
-                                  children: List.generate(_weekDays.length, (index) {
-                                    return _buildDayWidget(context, index);
-                                  }),
-                                ),
-                              ),
-                              desktop: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: List.generate(_weekDays.length, (index) {
-                                  return _buildDayWidget(context, index);
-                                }),
-                              ),
-                            ),
-                          )
-                        else 
-                          const Center(child: Text("Carregando dias...", style: TextStyle(color: AppTheme.textColor))),
-                      ],
-                    ),
-                  ),
-                ),
                 Expanded(
-                  child: habits.isEmpty
+                  child: Padding(
+                    padding: EdgeInsets.only(top: Responsive.value<double>(
+                      context: context,
+                      mobile: 16.0,
+                      tablet: 20.0,
+                      desktop: 24.0,
+                    )),
+                    child: habits.isEmpty
                               ? Center(
                                   child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
@@ -337,6 +296,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                                     itemBuilder: (context, index) => _buildHabitItem(habits[index]),
                                   ),
                                 ),
+                  ),
                 ),
               ],
             ),
@@ -427,51 +387,14 @@ class _HabitsScreenState extends State<HabitsScreen> {
       return const SizedBox.shrink();
     }
     Logger.debug('  - RENDERING HabitCard for: ${habit.title}');
-    return ImprovedHabitCard(
+    return HabitCardComplete(
       habit: habit,
       selectedDate: _selectedDate,
-      onTap: () async {
-        Logger.debug("Habit details tapped: ${habit.title}");
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HabitDetailsScreen(habitId: habit.id),
-          ),
-        );
-        if (result == true && mounted) {
-          // Refresh if changes were made
-          setState(() {});
-        }
-      },
-      onToggleCompletion: (completed) {
-        _toggleHabitCompletion(habit, completed);
+      onToggleCompletion: (bool completed, DateTime date) async {
+        await _toggleHabitCompletion(habit, completed, date);
       },
       onDelete: () {
         _deleteHabit(habit.id);
-      },
-      onEdit: () async {
-        Logger.debug("Edit habit tapped: ${habit.title}");
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HabitDetailsScreen(habitId: habit.id),
-          ),
-        );
-        if (result == true && mounted) {
-          setState(() {});
-        }
-      },
-      onStats: () async {
-        Logger.debug("Stats tapped: ${habit.title}");
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HabitDetailsScreen(
-              habitId: habit.id,
-              focusOnStats: true,
-            ),
-          ),
-        );
       },
     );
   }

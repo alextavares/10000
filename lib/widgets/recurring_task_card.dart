@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/recurring_task.dart';
+import 'package:intl/intl.dart';
 
 class RecurringTaskCard extends StatelessWidget {
   final RecurringTask recurringTask;
@@ -18,234 +19,91 @@ class RecurringTaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isCompleted = recurringTask.isCompletedToday();
-    final completionPercentage = recurringTask.getTodaysCompletionPercentage();
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(12),
-        border: isCompleted 
-          ? Border.all(color: Colors.green, width: 1)
-          : null,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => onToggleCompletion(recurringTask.id, !isCompleted),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 12.0),
+      color: Colors.grey[900], // Cor de fundo mais escura
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    // Completion indicator
-                    Container(
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isCompleted ? Colors.green : Colors.grey,
-                          width: 2,
-                        ),
-                        color: isCompleted ? Colors.green : Colors.transparent,
-                      ),
-                      child: isCompleted
-                          ? const Icon(
-                              Icons.check,
-                              color: Colors.white,
-                              size: 16,
-                            )
-                          : null,
-                    ),
-                    const SizedBox(width: 12),
-                    // Task title and category
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            recurringTask.title,
-                            style: TextStyle(
-                              color: isCompleted ? Colors.grey : Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              decoration: isCompleted 
-                                ? TextDecoration.lineThrough 
-                                : null,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: recurringTask.getPriorityColor().withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  recurringTask.category,
-                                  style: TextStyle(
-                                    color: recurringTask.getPriorityColor(),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE91E63).withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  'Recorrente',
-                                  style: const TextStyle(
-                                    color: Color(0xFFE91E63),
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Priority indicator
-                    Container(
-                      width: 4,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: recurringTask.getPriorityColor(),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    // More options
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, color: Colors.grey),
-                      color: Colors.grey[800],
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'edit':
-                            onEdit?.call();
-                            break;
-                          case 'delete':
-                            onDelete?.call();
-                            break;
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem<String>(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, color: Colors.white, size: 20),
-                              SizedBox(width: 8),
-                              Text('Editar', style: TextStyle(color: Colors.white)),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: Colors.red, size: 20),
-                              SizedBox(width: 8),
-                              Text('Excluir', style: TextStyle(color: Colors.red)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                if (recurringTask.description != null && recurringTask.description!.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    recurringTask.description!,
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 12),
-                // Progress bar for tracking types that support it
-                if (recurringTask.trackingType == RecurringTaskTrackingType.listaAtividades) ...[
-                  Row(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: LinearProgressIndicator(
-                          value: completionPercentage,
-                          backgroundColor: Colors.grey[700],
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            completionPercentage == 1.0 ? Colors.green : const Color(0xFFE91E63),
-                          ),
+                      Text(
+                        recurringTask.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          decoration: isCompleted ? TextDecoration.lineThrough : null,
+                          decorationColor: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(height: 4),
                       Text(
-                        '${(completionPercentage * 100).toInt()}%',
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        _getFrequencyDisplayText(),
+                        style: TextStyle(
+                          color: Colors.grey[500],
                           fontSize: 12,
                         ),
                       ),
                     ],
                   ),
-                ],
-                // Frequency info
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.repeat,
-                      color: Colors.grey[400],
-                      size: 16,
+                ),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert, color: Colors.grey, size: 20),
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      onEdit?.call();
+                    } else if (value == 'delete') {
+                      onDelete?.call();
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    const PopupMenuItem<String>(
+                      value: 'edit',
+                      child: Text('Editar', style: TextStyle(color: Colors.white)),
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      _getFrequencyDisplayText(),
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 12,
-                      ),
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Text('Excluir', style: TextStyle(color: Colors.redAccent)),
                     ),
-                    const Spacer(),
-                    if (recurringTask.streak > 0) ...[
-                      Icon(
-                        Icons.local_fire_department,
-                        color: Colors.orange,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${recurringTask.streak}',
-                        style: const TextStyle(
-                          color: Colors.orange,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
                   ],
+                  color: Colors.grey[800],
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  onToggleCompletion(recurringTask.id, !isCompleted);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE91E63), // Rosa como no concorrente
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(
+                  isCompleted ? 'Marcar como Pendente' : 'Marcar Concluído',
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

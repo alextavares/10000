@@ -52,8 +52,27 @@ class _HabitEditTabState extends State<HabitEditTab> {
     super.initState();
     _titleController = TextEditingController(text: widget.habit.title);
     _descriptionController = TextEditingController(text: widget.habit.description ?? '');
-    _selectedCategory = widget.habit.category ?? 'Outro';
-    _selectedPriority = widget.habit.priority ?? 'Normal';
+    
+    // Ensure the category exists in the list, otherwise use 'Outro'
+    // Also handle null or empty category
+    final habitCategory = widget.habit.category;
+    if (habitCategory != null && habitCategory.isNotEmpty && _categories.containsKey(habitCategory)) {
+      _selectedCategory = habitCategory;
+    } else {
+      _selectedCategory = 'Outro';
+      Logger.debug('Category "${habitCategory}" not found in list, defaulting to "Outro"');
+    }
+    
+    // Ensure the priority exists in the list, otherwise use 'Normal'
+    // Also handle null or empty priority
+    final habitPriority = widget.habit.priority;
+    if (habitPriority != null && habitPriority.isNotEmpty && _priorities.contains(habitPriority)) {
+      _selectedPriority = habitPriority;
+    } else {
+      _selectedPriority = 'Normal';
+      Logger.debug('Priority "${habitPriority}" not found in list, defaulting to "Normal"');
+    }
+    
     _selectedFrequency = widget.habit.frequency;
     _startDate = widget.habit.startDate;
     _targetDate = widget.habit.targetDate;

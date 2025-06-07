@@ -210,10 +210,10 @@ class TasksScreenState extends State<TasksScreen> { // Made public
       child: Stack(
         children: [
           TabBarView(
-            controller: widget.tabController, 
+            controller: widget.tabController,
             children: [
               _buildSimpleTasksView(),
-              _buildRecurringTasksView(), // Changed to a dedicated view for recurring tasks
+              _buildRecurringTasksView(),
             ],
           ),
           Positioned(
@@ -335,34 +335,38 @@ class TasksScreenState extends State<TasksScreen> { // Made public
     if (kDebugMode) {
       Logger.debug('[TasksScreen] _buildEmptyState: Building empty state: $message');
     }
-    return Center( // Ensures the content is centered
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Image.asset(
-            'assets/images/calendar_icon.png', // Make sure this asset exists
-            height: 100,
-            width: 100,
-            errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-              if (kDebugMode) {
-                Logger.error('[TasksScreen] _buildEmptyState: Error loading calendar icon: $error');
-              }
-              return const Icon(Icons.error_outline, color: Colors.red, size: 50);
-            },
-          ),
-          const SizedBox(height: 20),
-          Text(
-            message,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            subMessage,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        ],
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.check_circle_outline,
+              size: 80,
+              color: Colors.grey[700],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[300],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subMessage,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[500],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

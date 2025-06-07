@@ -4,11 +4,14 @@ import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.StrictMode
 import android.provider.Settings
 import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import com.habitai.app.utils.ThreadUtils
+import com.habitai.app.BuildConfig
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.habitai.app/native"
@@ -17,29 +20,53 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         
-        // Configurar channel para comunicação com Flutter
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            when (call.method) {
-                "checkExactAlarmPermission" -> {
-                    result.success(checkExactAlarmPermission())
-                }
-                "requestExactAlarmPermission" -> {
-                    requestExactAlarmPermission()
-                    result.success(true)
-                }
-                "checkNativeLibrary" -> {
-                    val libraryName = call.argument<String>("libraryName") ?: "unknown"
-                    result.success(checkNativeLibrary(libraryName))
-                }
-                else -> {
-                    result.notImplemented()
-                }
-            }
+        // Configurar StrictMode apenas em debug para detectar problemas
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            )
         }
         
-        // Verificar permissões e bibliotecas ao inicializar
-        checkAndRequestPermissions()
-        checkNativeLibraries()
+        // Garantir que estamos na UI thread
+        ThreadUtils.runOnUiThread {
+            // Configurar channel para comunicação com Flutter
+            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "checkExactAlarmPermission" -> {
+                        ThreadUtils.runOnUiThread {
+                            result.success(checkExactAlarmPermission())
+                        }
+                    }
+                    "requestExactAlarmPermission" -> {
+                        ThreadUtils.runOnUiThread {
+                            requestExactAlarmPermission()
+                            result.success(true)
+                        }
+                    }
+                    "checkNativeLibrary" -> {
+                        val libraryName = call.argument<String>("libraryName") ?: "unknown"
+                        ThreadUtils.runOnBackgroundThread {
+                            val isLoaded = checkNativeLibrary(libraryName)
+                            ThreadUtils.runOnUiThread {
+                                result.success(isLoaded)
+                            }
+                        }
+                    }
+                    else -> {
+                        result.notImplemented()
+                    }
+                }
+            }
+            
+            // Verificar permissões e bibliotecas ao inicializar
+            ThreadUtils.runOnBackgroundThread {
+                checkAndRequestPermissions()
+                checkNativeLibraries()
+            }
+        }
     }
 
     private fun checkExactAlarmPermission(): Boolean {
