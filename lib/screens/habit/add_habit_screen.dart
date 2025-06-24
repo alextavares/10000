@@ -1,144 +1,193 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/models/habit.dart'; // Import Habit model
-// Will be replaced by HabitTrackingTypeScreen soon
-import 'habit_tracking_type_screen.dart'; // Import the target screen
-// For HabitTrackingType if needed here, though likely passed on
+import 'package:myapp/models/category.dart' as app_category;
+import 'package:myapp/models/habit.dart';
+import 'package:myapp/screens/categories/add_edit_category_screen.dart';
+import 'package:myapp/services/category_service.dart';
+import 'package:myapp/theme/app_theme.dart';
+import 'package:myapp/utils/logger.dart';
+import 'package:provider/provider.dart';
+import 'habit_tracking_type_screen.dart';
 
 class AddHabitScreen extends StatefulWidget {
-  final Habit? habitToEdit; // Add this parameter
+  // habitToEdit é mantido para o caso de reentrada no fluxo de criação,
+  // mas a lógica principal de edição de categoria de um hábito existente
+  // será feita na HabitDetailsScreen -> HabitEditTab.
+  final Habit? habitToEdit;
+  final String? preselectedCategoryId; // Para pré-selecionar após criar uma nova categoria
 
-  const AddHabitScreen({super.key, this.habitToEdit}); // Modify constructor
+  const AddHabitScreen({super.key, this.habitToEdit, this.preselectedCategoryId});
 
   @override
   State<AddHabitScreen> createState() => _AddHabitScreenState();
 }
 
 class _AddHabitScreenState extends State<AddHabitScreen> {
-  Map<String, dynamic>? _selectedCategoryData;
-
-  // TODO: Consider moving categories to a central place or making them more dynamic if needed.
-  final List<Map<String, dynamic>> _categories = [
-    {'name': 'Abandone um...', 'icon': Icons.do_not_disturb_on_outlined, 'color': Colors.red[400]!},
-    {'name': 'Arte', 'icon': Icons.palette_outlined, 'color': Colors.pink[300]!},
-    {'name': 'Meditação', 'icon': Icons.self_improvement_outlined, 'color': Colors.purple[300]!},
-    {'name': 'Estudos', 'icon': Icons.school_outlined, 'color': Colors.deepPurple[300]!},
-    {'name': 'Esportes', 'icon': Icons.directions_bike_outlined, 'color': Colors.blue[300]!},
-    {'name': 'Entretenimen...', 'icon': Icons.star_border_outlined, 'color': Colors.lightBlue[300]!},
-    {'name': 'Social', 'icon': Icons.people_outline, 'color': Colors.cyan[300]!},
-    {'name': 'Finança', 'icon': Icons.attach_money_outlined, 'color': Colors.teal[300]!},
-    {'name': 'Saúde', 'icon': Icons.favorite_border_outlined, 'color': Colors.green[300]!},
-    {'name': 'Trabalho', 'icon': Icons.work_outline_outlined, 'color': Colors.lightGreen[300]!},
-    {'name': 'Personalizado', 'icon': Icons.extension_outlined, 'color': Colors.lime[300]!},
-    {'name': 'Nutrição', 'icon': Icons.restaurant_menu_outlined, 'color': Colors.amber[300]!},
-    {'name': 'Casa', 'icon': Icons.home_outlined, 'color': Colors.orange[300]!},
-    {'name': 'Ar livre', 'icon': Icons.landscape_outlined, 'color': Colors.deepOrange[300]!},
-    {'name': 'Outros', 'icon': Icons.apps_outlined, 'color': Colors.brown[300]!},
-    {'name': 'Criar categoria', 'icon': Icons.add_circle_outline, 'color': Colors.grey[600]!, 'isSpecial': true},
-  ];
+  app_category.Category? _selectedCategory;
+  late Future<List<app_category.Category>> _categoriesFuture;
 
   @override
   void initState() {
     super.initState();
-    if (widget.habitToEdit != null) {
-      // Attempt to pre-select the category based on the habit being edited.
-      // This assumes that habitToEdit.category corresponds to one of the 'name' fields in _categories.
-      // You might need a more robust way to map habitToEdit.category to _selectedCategoryData,
-      // especially if category information is stored differently or needs to be fetched.
-      final existingCategory = _categories.firstWhere(
-        (cat) => cat['name'] == widget.habitToEdit!.category, // Assuming Habit has category
-        orElse: () => _categories.firstWhere((cat) => cat['name'] == 'Outros'), // Fallback to 'Outros' or null
-      );
-      // Ensure the found category is not the special 'Criar categoria' one.
-      if (existingCategory['isSpecial'] != true) {
-         _selectedCategoryData = existingCategory;
-      }
+    _loadCategoriesAndPreselect();
+  }
 
-      // If you have other fields in AddHabitScreen that need to be pre-filled from habitToEdit,
-      // initialize them here. For example, if this screen also handled title, description, etc.
-      // _titleController.text = widget.habitToEdit!.title;
+  void _loadCategoriesAndPreselect() {
+    final categoryService = Provider.of<CategoryService>(context, listen: false);
+    if (mounted) {
+      setState(() {
+        _categoriesFuture = categoryService.getCategories().then((categories) {
+          if (widget.preselectedCategoryId != null) {
+            _selectedCategory = categories.firstWhere(
+              (cat) => cat.id == widget.preselectedCategoryId,
+              orElse: () => categories.isNotEmpty ? categories.first : null, // Fallback
+            );
+          } else if (widget.habitToEdit?.category != null) {
+            // Tenta pré-selecionar baseado no nome da categoria do hábito a ser editado
+            _selectedCategory = categories.firstWhere(
+              (cat) => cat.name == widget.habitToEdit!.category,
+              orElse: () => categories.firstWhere(
+                (c) => c.name.toLowerCase() == 'outros', // Fallback para "Outros"
+                orElse: () => categories.isNotEmpty ? categories.first : null,
+              ),
+            );
+          }
+          return categories;
+        });
+      });
+    }
+  }
+
+  Future<void> _navigateToCreateCategory() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => const AddEditCategoryScreen()),
+    );
+    if (result == true && mounted) {
+      _loadCategoriesAndPreselect(); // Recarrega as categorias
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
-          widget.habitToEdit == null 
-              ? 'Selecione uma categoria para o seu hábito' 
-              : 'Editar categoria do hábito', // Change title if editing
-          style: const TextStyle(color: Colors.pinkAccent, fontSize: 18, fontWeight: FontWeight.bold),
+          widget.habitToEdit == null
+              ? 'Selecione uma Categoria'
+              : 'Alterar Categoria do Hábito',
+          style: AppTheme.textTheme.titleLarge,
         ),
-        backgroundColor: Colors.black,
+        backgroundColor: AppTheme.appBarColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10.0,
-            mainAxisSpacing: 10.0,
-            childAspectRatio: 3.2, 
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline, color: Colors.white),
+            tooltip: 'Criar Nova Categoria',
+            onPressed: _navigateToCreateCategory,
           ),
-          itemCount: _categories.length,
-          itemBuilder: (context, index) {
-            final category = _categories[index];
-            final bool isSelected = _selectedCategoryData?['name'] == category['name']; // Compare by name for safety
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  // Prevent selecting 'Criar categoria' as a valid selection for next step
-                  if (category['isSpecial'] == true) {
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       const SnackBar(content: Text('Funcionalidade "Criar categoria" pendente.')),
-                     );
-                    _selectedCategoryData = null; // Or keep previous valid selection
-                  } else {
-                    _selectedCategoryData = category;
-                  }
-                });
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isSelected ? (category['color'] as Color).withValues(alpha: 0.8) : Colors.grey[850],
-                  borderRadius: BorderRadius.circular(10.0),
-                  border: Border.all(
-                    color: isSelected ? (category['color'] as Color) : (Colors.grey[700]!),
-                    width: 1.5,
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(category['icon'] as IconData? ?? Icons.help_outline, 
-                         color: isSelected ? Colors.white : (category['color'] as Color?) ?? Colors.white70, 
-                         size: 18),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        category['name'] as String,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.white70,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          fontSize: 13,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
+        ],
+      ),
+      body: FutureBuilder<List<app_category.Category>>(
+        future: _categoriesFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor));
+          }
+          if (snapshot.hasError) {
+            Logger.error("Error loading categories in AddHabitScreen: ${snapshot.error}", snapshot.error, snapshot.stackTrace);
+            return Center(
+              child: Text(
+                'Erro ao carregar categorias: ${snapshot.error}',
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
               ),
             );
-          },
-        ),
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Nenhuma categoria encontrada.', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text('Criar Primeira Categoria'),
+                    style: AppTheme.primaryButton,
+                    onPressed: _navigateToCreateCategory,
+                  )
+                ],
+              ),
+            );
+          }
+
+          final categories = snapshot.data!;
+          // A categoria "Criar categoria" é tratada pelo botão no AppBar agora.
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(16.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // Mantendo 2 colunas para melhor visualização com nomes maiores
+              crossAxisSpacing: 12.0,
+              mainAxisSpacing: 12.0,
+              childAspectRatio: 2.8, // Ajustar para melhor fit do conteúdo
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              final bool isSelected = _selectedCategory?.id == category.id;
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedCategory = category;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? category.color.withOpacity(0.8) : AppTheme.surfaceColor,
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(
+                      color: isSelected ? category.color : (Colors.grey[700]!),
+                      width: 1.5,
+                    ),
+                    boxShadow: isSelected ? [
+                      BoxShadow(
+                        color: category.color.withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0,2)
+                      )
+                    ] : [],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(category.icon,
+                          color: isSelected ? Colors.white : category.color, size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          category.name,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.white70,
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
@@ -147,38 +196,37 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
                   'CANCELAR',
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                  style: TextStyle(color: Colors.grey[400], fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ),
               ElevatedButton(
-                onPressed: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) ? () {
-                  if (_selectedCategoryData != null) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => HabitTrackingTypeScreen(
-                        categoryName: _selectedCategoryData!['name'] as String,
-                        categoryIcon: _selectedCategoryData!['icon'] as IconData,
-                        categoryColor: _selectedCategoryData!['color'] as Color,
-                        // habitToEdit: widget.habitToEdit, // Removed as it's not a parameter of HabitTrackingTypeScreen
-                      ),
-                    ));
-                  }
-                } : null, 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: (_selectedCategoryData != null && _selectedCategoryData!['isSpecial'] != true) 
-                                   ? Colors.pinkAccent 
-                                   : Colors.grey, 
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                onPressed: _selectedCategory != null
+                    ? () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => HabitTrackingTypeScreen(
+                            categoryName: _selectedCategory!.name,
+                            categoryIcon: _selectedCategory!.icon,
+                            categoryColor: _selectedCategory!.color,
+                            // Se o fluxo de edição de hábito começar aqui,
+                            // precisaremos passar o habitToEdit para as próximas telas.
+                            // Por enquanto, o foco é na criação.
+                          ),
+                           settings: RouteSettings(
+                             arguments: widget.habitToEdit != null ? {'habitToEdit': widget.habitToEdit} : null,
+                           ),
+                        ));
+                      }
+                    : null,
+                style: AppTheme.primaryButton.copyWith(
+                  padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 30, vertical: 12)),
                 ),
-                child: Text(widget.habitToEdit == null ? 'PRÓXIMA' : 'SALVAR', style: const TextStyle(color: Colors.white)),
+                child: Text(
+                   'PRÓXIMA', // Simplificado, pois a edição de categoria de um hábito existente é melhor na HabitEditTab
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)
+                ),
               ),
             ],
           ),
@@ -187,3 +235,16 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
     );
   }
 }
+
+// Extension Color.withValues é útil, mas já está em habit_card.dart.
+// Se não estiver globalmente acessível, pode ser necessário duplicar ou mover para um utils.
+// extension ColorValues on Color {
+//   Color withValues({int? alpha, int? red, int? green, int? blue}) {
+//     return Color.fromARGB(
+//       alpha ?? this.alpha,
+//       red ?? this.red,
+//       green ?? this.green,
+//       blue ?? this.blue,
+//     );
+//   }
+// }

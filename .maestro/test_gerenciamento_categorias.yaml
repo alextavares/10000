@@ -1,0 +1,166 @@
+appId: com.habitai.app
+env:
+  TEST_USER_EMAIL: "test@example.com" # ATENÇÃO: Substituir pelo email de teste real
+  TEST_USER_PASSWORD: "password123" # ATENÇÃO: Substituir pela senha de teste real
+  PERFORM_SETUP_FLOWS: true
+  NEW_CATEGORY_NAME: "Leitura Diária"
+  EDITED_CATEGORY_NAME: "Leitura Semanal"
+---
+# --- Seção de Setup: Onboarding e Login ---
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*(Bem-vindo|Começar|Próximo|Pular).*')}"
+    file: ./shared_onboarding_flow.yaml
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*Log In.*')}"
+    file: ./shared_login_flow.yaml
+    env:
+      EMAIL: "${TEST_USER_EMAIL}"
+      PASSWORD: "${TEST_USER_PASSWORD}"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # Confirma que estamos na HomeScreen ou MainNavigationScreen
+
+# --- Navegar para a Tela de Gerenciamento de Categorias ---
+# Assumindo que a tela de categorias é acessível a partir de um menu "Mais" ou "Configurações"
+# na MainNavigationScreen (que geralmente tem um BottomNavigationBar)
+# Este seletor pode precisar de ajuste dependendo da UI real.
+- tapOn:
+    id: "more_tab_icon" # Exemplo de ID para a aba "Mais"
+    optional: true
+- tapOn: # Ou por texto, se houver
+    text: ".*Mais.*|.*Configurações.*"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: "tela_mais_ou_configuracoes"
+
+- assertVisible: ".*Gerenciar Categorias.*" # Supondo que haja um item de menu com este texto
+- tapOn: ".*Gerenciar Categorias.*"
+- waitForAnimationToEnd
+- assertVisible: "Minhas Categorias" # Verifica se chegou na CategoriesScreen
+- takeScreenshot: "tela_gerenciar_categorias_inicial"
+
+# --- Teste 1: Criar Nova Categoria ---
+- label: "Criar Nova Categoria"
+- tapOn: # Botão FAB "Nova Categoria"
+    id: ".*fab.*" # Se o FAB tiver um ID
+    optional: true
+- tapOn: # Ou por texto, se for um ElevatedButton.extended
+    text: ".*Nova Categoria.*"
+    optional: true
+- waitForAnimationToEnd
+- assertVisible: "Nova Categoria" # Título da AddEditCategoryScreen
+
+# Preencher dados da nova categoria
+- tapOn:
+    className: ".*TextField.*" # Primeiro TextField para o nome
+    index: 0
+- inputText: "${NEW_CATEGORY_NAME}"
+
+# Escolher um ícone (clica para abrir o picker, depois seleciona um ícone)
+- tapOn: "Alterar Ícone"
+- waitForAnimationToEnd
+- takeScreenshot: "picker_icone_aberto"
+- tapOn: # Exemplo: Tocar no segundo ícone disponível na grade (índice 1)
+    element:
+      below: "Escolher Ícone" # Label acima da grade
+      index: 1 # Ajustar índice conforme necessário
+    optional: true
+- assertNotVisible: "Escolher Ícone" # Picker deve fechar
+
+# Escolher uma cor (clica para abrir o picker, depois confirma)
+- tapOn: "Alterar Cor"
+- waitForAnimationToEnd
+- takeScreenshot: "picker_cor_aberto"
+- tapOn: "CONFIRMAR" # Botão de confirmar no diálogo do color picker
+- waitForAnimationToEnd
+- assertNotVisible: "Escolher Cor" # Picker deve fechar
+
+- takeScreenshot: "nova_categoria_preenchida"
+- tapOn: "Criar Categoria" # Botão de salvar
+- waitForAnimationToEnd
+
+# Verificar se a categoria aparece na lista em CategoriesScreen
+- assertVisible: "Minhas Categorias" # De volta à CategoriesScreen
+- assertVisible: "${NEW_CATEGORY_NAME}"
+- takeScreenshot: "nova_categoria_criada"
+
+# --- Teste 2: Editar Categoria Existente ---
+- label: "Editar Categoria Existente"
+# A categoria ${NEW_CATEGORY_NAME} deve estar visível
+- assertVisible: "${NEW_CATEGORY_NAME}"
+- tapOn: # Tocar no ícone de "mais opções" da categoria criada
+    element:
+      rightOf: "${NEW_CATEGORY_NAME}" # Encontra o ícone à direita do nome da categoria
+      icon: "more_vert" # Supondo que o ícone seja more_vert
+    optional: true # Se não encontrar, tenta tocar no item da lista
+- tapOn: # Fallback se o PopupMenuButton não for encontrado facilmente
+    text: "${NEW_CATEGORY_NAME}"
+    optional: true # Só executa se o anterior falhar em encontrar o ícone
+- waitForAnimationToEnd
+- takeScreenshot: "menu_categoria_aberto_ou_tela_edicao"
+
+# Se o tapOn no nome já levou para a edição, ok. Se abriu PopupMenu:
+- tapOn:
+    text: "Editar"
+    optional: true # Só se o PopupMenu existir
+- waitForAnimationToEnd
+- assertVisible: "Editar Categoria" # Título da AddEditCategoryScreen
+
+# Verificar se o nome atual está lá
+- assertVisible: "${NEW_CATEGORY_NAME}"
+
+# Editar o nome
+- tapOn:
+    className: ".*TextField.*"
+    index: 0
+- eraseText
+- inputText: "${EDITED_CATEGORY_NAME}"
+- takeScreenshot: "categoria_nome_editado"
+
+- tapOn: "Salvar Alterações"
+- waitForAnimationToEnd
+
+# Verificar se a categoria foi atualizada na lista
+- assertVisible: "Minhas Categorias"
+- assertNotVisible: "${NEW_CATEGORY_NAME}" # Nome antigo não deve mais existir
+- assertVisible: "${EDITED_CATEGORY_NAME}" # Novo nome deve estar visível
+- takeScreenshot: "categoria_editada_na_lista"
+
+# --- Teste 3: Excluir Categoria ---
+- label: "Excluir Categoria Existente"
+- assertVisible: "${EDITED_CATEGORY_NAME}"
+- tapOn: # Tocar no ícone de "mais opções" da categoria editada
+    element:
+      rightOf: "${EDITED_CATEGORY_NAME}"
+      icon: "more_vert"
+    optional: true
+- tapOn: # Fallback
+    text: "${EDITED_CATEGORY_NAME}"
+    optional: true
+- waitForAnimationToEnd
+
+- tapOn:
+    text: "Excluir"
+    optional: true # Só se o PopupMenu existir
+- waitForAnimationToEnd
+
+# Confirmar exclusão no diálogo
+- assertVisible: ".*Confirmar Exclusão.*"
+- assertVisible: ".*Tem certeza que deseja excluir a categoria.*"
+- takeScreenshot: "dialogo_excluir_categoria"
+- tapOn: "Excluir" # Botão de confirmação no diálogo
+- waitForAnimationToEnd
+
+# Verificar se a categoria foi removida da lista
+- assertVisible: "Minhas Categorias"
+- assertNotVisible: "${EDITED_CATEGORY_NAME}"
+- takeScreenshot: "categoria_excluida_da_lista"
+
+# Voltar para a HomeScreen
+- tapOn:
+    icon: "arrow_back" # Botão de voltar na AppBar da CategoriesScreen
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+
+- stopApp

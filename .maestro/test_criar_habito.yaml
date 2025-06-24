@@ -51,11 +51,15 @@ env:
 
 # Após tocar para adicionar, o app deve navegar para a tela de seleção de categoria ou similar.
 # (lib/screens/habit/add_habit_screen.dart)
-# Esta tela tem o título "Selecione uma categoria para o seu hábito"
+# Esta tela tem o título "Selecione uma Categoria"
 - waitForAnimationToEnd
-- assertVisible: ".*Selecione uma categoria.*"
+- assertVisible: ".*Selecione uma Categoria.*" # Título atualizado da AddHabitScreen
 
-# Selecionar uma categoria, por exemplo "Saúde"
+# Selecionar uma categoria. Vamos garantir que "Saúde" (padrão) seja selecionada.
+# A AddHabitScreen agora usa um FutureBuilder. Precisamos esperar que as categorias carreguem.
+- waitForAssertion: # Espera até que "Saúde" esteja visível antes de tentar tocar
+    visible: "Saúde"
+    timeout: 10000 # Espera até 10 segundos
 - tapOn: "Saúde"
 - waitForAnimationToEnd
 

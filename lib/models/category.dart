@@ -7,9 +7,10 @@ class Category {
   final IconData icon;
   final Color color;
   final bool isDefault;
-  final List<String> taskIds;
+  // final List<String> taskIds; // Removido - categorias serão referenciadas por hábitos/tarefas, não o contrário por enquanto.
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? userId;
 
   Category({
     required this.id,
@@ -17,9 +18,10 @@ class Category {
     required this.icon,
     required this.color,
     required this.isDefault,
-    required this.taskIds,
+    // required this.taskIds,
     required this.createdAt,
     required this.updatedAt,
+    this.userId,
   });
 
   factory Category.fromMap(Map<String, dynamic> map) {
@@ -29,9 +31,10 @@ class Category {
       icon: IconData(map['icon'] ?? Icons.dashboard_rounded.codePoint, fontFamily: 'MaterialIcons'),
       color: Color(map['color'] ?? 0xFFE91E63),
       isDefault: map['isDefault'] ?? false,
-      taskIds: List<String>.from(map['taskIds'] ?? []),
+      // taskIds: List<String>.from(map['taskIds'] ?? []),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      userId: map['userId'],
     );
   }
 
@@ -42,9 +45,10 @@ class Category {
       'icon': icon.codePoint,
       'color': color.value,
       'isDefault': isDefault,
-      'taskIds': taskIds,
+      // 'taskIds': taskIds,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'userId': userId,
     };
   }
 
@@ -54,9 +58,10 @@ class Category {
     IconData? icon,
     Color? color,
     bool? isDefault,
-    List<String>? taskIds,
+    // List<String>? taskIds, // Removido
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? userId,
   }) {
     return Category(
       id: id ?? this.id,
@@ -64,9 +69,10 @@ class Category {
       icon: icon ?? this.icon,
       color: color ?? this.color,
       isDefault: isDefault ?? this.isDefault,
-      taskIds: taskIds ?? this.taskIds,
+      // taskIds: taskIds ?? this.taskIds,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      userId: userId ?? this.userId,
     );
   }
 
