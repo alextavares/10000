@@ -6,11 +6,12 @@ import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/screens/auth/login_screen.dart';
 import 'package:myapp/screens/main_navigation_screen.dart';
-import 'package:myapp/screens/habit/add_habit_screen.dart';
-import 'package:myapp/screens/habit/habit_tracking_type_screen.dart';
-import 'package:myapp/screens/habit/habit_quantity_config_screen.dart';
-import 'package:myapp/screens/habit/habit_timer_config_screen.dart';
-import 'package:myapp/screens/habit/habit_subtasks_config_screen.dart';
+// import 'package:myapp/screens/habit/add_habit_screen.dart'; // Removida - substituída por UpsertHabitScreen
+import 'package:myapp/screens/habit/upsert_habit_screen.dart'; // Adicionada
+// import 'package:myapp/screens/habit/habit_tracking_type_screen.dart'; // Removida
+// import 'package:myapp/screens/habit/habit_quantity_config_screen.dart'; // Removida
+// import 'package:myapp/screens/habit/habit_timer_config_screen.dart'; // Removida
+// import 'package:myapp/screens/habit/habit_subtasks_config_screen.dart'; // Removida
 import 'package:myapp/screens/onboarding/onboarding_screen.dart';
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/notifications/notification_settings_screen.dart';
@@ -155,72 +156,31 @@ class MyApp extends StatelessWidget {
             : const OnboardingScreen(),
         routes: {
           '/login': (context) => const LoginScreen(),
-          '/home': (context) => const HomeScreen(),
+          '/home': (context) => const HomeScreen(), // Pode ser redundante se MainNavigationScreen for o padrão
           '/main': (context) => const MainNavigationScreen(),
-          '/add-habit': (context) => const AddHabitScreen(),
+          '/add-habit': (context) => const UpsertHabitScreen(), // Rota principal para adicionar/editar hábito
           '/onboarding': (context) => const OnboardingScreen(),
-          '/categories': (context) => const Scaffold(body: Center(child: Text('Categories Screen'))),
-          '/timer': (context) => const Scaffold(body: Center(child: Text('Timer Screen'))),
-          '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen'))),
+          // '/categories': (context) => const CategoriesScreen(), // CategoriesScreen é uma aba em MainNavigationScreen
+          // '/timer': (context) => const TimerScreen(), // TimerScreen é uma aba em MainNavigationScreen
+          '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen Placeholder'))), // Exemplo
           '/notification-settings': (context) => const NotificationSettingsScreen(),
           '/test-notifications': (context) => const NotificationTestScreen(),
+          // TestCharactersScreen não parece ser uma rota principal
         },
         onGenerateRoute: (settings) {
-          switch (settings.name) {
-            case '/habit-tracking-type':
-              final args = settings.arguments as Map<String, dynamic>;
-              return MaterialPageRoute(
-                builder: (context) => HabitTrackingTypeScreen(
-                  categoryName: args['categoryName'],
-                  categoryIcon: args['categoryIcon'],
-                  categoryColor: args['categoryColor'],
-                ),
-              );
-            case '/add-habit-quantity-config':
-              final args = settings.arguments as Map<String, dynamic>;
-              return MaterialPageRoute(
-                builder: (context) => HabitQuantityConfigScreen(
-                  habitTitle: args['title'],
-                  habitDescription: args['description'],
-                  category: args['category'],
-                  icon: args['icon'],
-                  color: args['color'],
-                  frequency: args['frequency'],
-                  daysOfWeek: args['daysOfWeek'],
-                  trackingType: args['trackingType'],
-                ),
-              );
-            case '/add-habit-timer-config':
-              final args = settings.arguments as Map<String, dynamic>;
-              return MaterialPageRoute(
-                builder: (context) => HabitTimerConfigScreen(
-                  habitTitle: args['title'],
-                  habitDescription: args['description'],
-                  category: args['category'],
-                  icon: args['icon'],
-                  color: args['color'],
-                  frequency: args['frequency'],
-                  daysOfWeek: args['daysOfWeek'],
-                  trackingType: args['trackingType'],
-                ),
-              );
-            case '/add-habit-subtasks-config':
-              final args = settings.arguments as Map<String, dynamic>;
-              return MaterialPageRoute(
-                builder: (context) => HabitSubtasksConfigScreen(
-                  habitTitle: args['title'],
-                  habitDescription: args['description'],
-                  category: args['category'],
-                  icon: args['icon'],
-                  color: args['color'],
-                  frequency: args['frequency'],
-                  daysOfWeek: args['daysOfWeek'],
-                  trackingType: args['trackingType'],
-                ),
-              );
-            default:
-              return null;
+          // Remover rotas para as telas de criação de hábito que foram excluídas
+          // Ex: '/habit-tracking-type', '/add-habit-quantity-config', etc.
+          // Se UpsertHabitScreen precisar de argumentos para edição, tratar aqui.
+          if (settings.name == UpsertHabitScreen.routeName) { // Supondo que UpsertHabitScreen tenha um routeName estático
+            final args = settings.arguments as Habit?; // Argumento é um Hábito opcional para edição
+            return MaterialPageRoute(
+              builder: (context) {
+                return UpsertHabitScreen(habitToEdit: args);
+              },
+            );
           }
+          // Manter outras rotas onGenerateRoute se existirem e forem necessárias
+          return null; // Retornar null para rotas não tratadas
         },
       ),
     );

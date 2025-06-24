@@ -355,14 +355,13 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void _handleEditHabit(habit_model.Habit habit) async {
-    // Navegar para HabitDetailsScreen, instruindo-a a abrir na aba de edição.
-    // O resultado é esperado para ser true se o hábito foi salvo, para podermos atualizar a lista.
+    // Navegar diretamente para UpsertHabitScreen para edição
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => HabitDetailsScreen(habitId: habit.id, initialTab: 1), // Assumindo que 1 é o índice da aba de Edição
+        builder: (context) => UpsertHabitScreen(habitToEdit: habit),
       ),
     );
-    if (result == true) {
+    if (result == true) { // UpsertHabitScreen retorna true se houve salvamento
       refreshScreenData();
       _loadWeekCompletions();
     }

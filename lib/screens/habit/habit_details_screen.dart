@@ -8,7 +8,8 @@ import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/screens/habit/widgets/habit_calendar_tab.dart';
 import 'package:myapp/screens/habit/widgets/habit_statistics_tab.dart';
-import 'package:myapp/screens/habit/widgets/habit_edit_tab.dart';
+// import 'package:myapp/screens/habit/widgets/habit_edit_tab.dart'; // Removido
+import 'package:myapp/screens/habit/upsert_habit_screen.dart'; // Adicionado
 import 'package:myapp/utils/logger.dart';
 
 /// Screen for viewing and managing a habit's details with tabs.
@@ -17,7 +18,7 @@ class HabitDetailsScreen extends StatefulWidget {
   final String habitId;
   
   /// The initial tab index to display.
-  /// 0: Calendário, 1: Editar, 2: Estatísticas
+  /// 0: Calendário, 1: Estatísticas (anteriormente Editar era 1, Estatísticas 2)
   final int initialTab;
 
   /// Constructor for HabitDetailsScreen.
@@ -42,22 +43,15 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
   @override
   void initState() {
     super.initState();
-    // Ordem das abas definida na UI: Calendário, Estatísticas, Editar
-    // O initialTab vindo da HomeScreen (para "Editar") será 1.
-    // No TabBar, "Editar" será o terceiro item, logo índice 2.
-    // "Estatísticas" será o segundo item, índice 1.
-    // "Calendário" é o primeiro, índice 0.
+    // Nova ordem das abas: Calendário (0), Estatísticas (1)
+    // O initialTab da HomeScreen para "Editar" não é mais usado para setar aba aqui,
+    // pois a edição agora é uma navegação separada.
+    // Se initialTab for 1, focará em Estatísticas.
 
-    int tabControllerInitialIndex = 0; // Padrão para Calendário
-    if (widget.initialTab == 1) { // Se a intenção é "Editar" vindo da HomeScreen
-      tabControllerInitialIndex = 2; // A aba "Editar" é a terceira (índice 2)
-    } else if (widget.initialTab == 2) { // Se a intenção é "Estatísticas"
-      tabControllerInitialIndex = 1; // A aba "Estatísticas" é a segunda (índice 1)
-    }
-    // Se initialTab for 0 (Calendário) ou outro valor, permanece 0.
+    int tabControllerInitialIndex = widget.initialTab == 1 ? 1 : 0;
 
     _tabController = TabController(
-      length: 3, 
+      length: 2, // Apenas duas abas agora: Calendário e Estatísticas
       vsync: this,
       initialIndex: tabControllerInitialIndex,
     );
@@ -163,14 +157,30 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
   }
 
   // Callback para ser chamado pelo HabitEditTab quando o hábito for salvo
-  Future<void> _onHabitUpdatedFromEditTab() async {
-    await _loadHabit(); // Recarrega os dados do hábito
-    if (mounted) {
+  // Este método não é mais necessário aqui, pois a edição é feita em UpsertHabitScreen
+  // Future<void> _onHabitUpdatedFromEditTab() async {
+  //   await _loadHabit(); // Recarrega os dados do hábito
+  //   if (mounted) {
+  //     setState(() {
+  //       _didHabitUpdate = true; // Marca que houve atualização para o pop
+  //     });
+  //     // Opcional: Mover para a aba de calendário ou estatísticas após salvar
+  //     // _tabController.animateTo(0);
+  //   }
+  // }
+
+  Future<void> _navigateToEditHabit() async {
+    if (_habit == null) return;
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => UpsertHabitScreen(habitToEdit: _habit!),
+      ),
+    );
+    if (result == true && mounted) {
+      _loadHabit(); // Recarrega os dados do hábito após a edição
       setState(() {
-        _didHabitUpdate = true; // Marca que houve atualização para o pop
+        _didHabitUpdate = true;
       });
-      // Opcional: Mover para a aba de calendário ou estatísticas após salvar
-      // _tabController.animateTo(0);
     }
   }
 
@@ -309,10 +319,15 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
           onPressed: () => Navigator.pop(context, _didHabitUpdate),
         ),
         title: Text(
-          _habit!.title, // O título pode mudar após a edição
+          _habit!.title,
           style: const TextStyle(color: Colors.white),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Editar Hábito',
+            onPressed: _navigateToEditHabit,
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             color: AppTheme.surfaceColor,
@@ -336,7 +351,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
                 value: 'reset',
                 child: Row(
                   children: [
-                    Icon(Icons.refresh, color: Colors.orange),
+                    Icon(Icons.refresh, color: Colors.orangeAccent),
                     SizedBox(width: 12),
                     Text('Reiniciar progresso', style: TextStyle(color: Colors.white)),
                   ],
@@ -346,7 +361,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
                 value: 'archive',
                 child: Row(
                   children: [
-                    Icon(Icons.archive_outlined, color: Colors.blue),
+                    Icon(Icons.archive_outlined, color: Colors.blueAccent),
                     SizedBox(width: 12),
                     Text('Arquivar', style: TextStyle(color: Colors.white)),
                   ],
@@ -356,7 +371,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete_outline, color: Colors.red),
+                    Icon(Icons.delete_outline, color: AppTheme.errorColor),
                     SizedBox(width: 12),
                     Text('Excluir hábito', style: TextStyle(color: Colors.white)),
                   ],
@@ -367,21 +382,21 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: _habit!.color, // A cor pode mudar se a categoria for alterada e a cor for dependente dela
+          indicatorColor: _habit!.color,
           indicatorWeight: 3,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.grey,
+          unselectedLabelColor: Colors.grey[600],
           tabs: const [
-            Tab(icon: Icon(Icons.calendar_today), text: 'Calendário'), // Índice 0
-            Tab(icon: Icon(Icons.edit_note), text: 'Editar'),          // Índice 1
-            Tab(icon: Icon(Icons.bar_chart), text: 'Estatísticas'),  // Índice 2
+            Tab(icon: Icon(Icons.calendar_today_outlined), text: 'Calendário'), // Índice 0
+            // Tab(icon: Icon(Icons.edit_note), text: 'Editar'), // Removida
+            Tab(icon: Icon(Icons.bar_chart_outlined), text: 'Estatísticas'),  // Agora Índice 1
           ],
         ),
       ),
-      body: WillPopScope( // Para interceptar o botão de voltar do sistema (Android)
+      body: WillPopScope(
         onWillPop: () async {
           Navigator.pop(context, _didHabitUpdate);
-          return true; // Permite o pop
+          return true;
         },
         child: TabBarView(
           controller: _tabController,
@@ -392,13 +407,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
               onToggleCompletion: _toggleDateCompletion,
             ),
 
-            // Edit Tab (Índice 1) - Corrigindo a ordem das abas na view
-            HabitEditTab(
-              habit: _habit!,
-              onHabitUpdated: _onHabitUpdatedFromEditTab, // Usar o novo handler
-            ),
-
-            // Statistics Tab (Índice 2)
+            // Statistics Tab (Índice 1)
             HabitStatisticsTab(
               habit: _habit!,
             ),

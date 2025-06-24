@@ -7,7 +7,8 @@ import 'package:myapp/screens/timer/timer_screen.dart';
 import 'package:myapp/screens/categories/categories_screen.dart';
 import 'package:myapp/widgets/app_drawer.dart';
 import 'package:myapp/widgets/add_item_bottom_sheet.dart';
-import 'package:myapp/screens/habit/add_habit_screen.dart'; 
+// import 'package:myapp/screens/habit/add_habit_screen.dart'; // Antiga tela de adicionar hábito
+import 'package:myapp/screens/habit/upsert_habit_screen.dart'; // Nova tela unificada
 import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart';
 import 'package:myapp/screens/search/search_screen.dart';
 import 'package:myapp/screens/filter/filter_screen.dart';
@@ -99,13 +100,20 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                 Navigator.of(context)
                     .push(
                       MaterialPageRoute(
-                        builder: (context) => const AddHabitScreen(),
+                        builder: (context) => const UpsertHabitScreen(), // Usar a nova tela
                       ),
                     )
                     .then((result) {
-                      if (result == true || result == null) { 
-                        if (_selectedIndex == 0) {
+                      // A UpsertHabitScreen retorna true se um hábito foi salvo/criado
+                      if (result == true) {
+                        if (_selectedIndex == 0) { // HomeScreen
                           _homeScreenKey.currentState?.refreshScreenData();
+                        }
+                        // Adicionar lógica para atualizar HabitsScreen se estiver visível
+                        if (_selectedIndex == 1) { // HabitsScreen
+                          // TODO: Adicionar GlobalKey para HabitsScreen e chamar um método de refresh
+                          // Ex: _habitsScreenKey.currentState?.refreshHabits();
+                          Logger.info("Retornou de UpsertHabitScreen, deveria atualizar HabitsScreen se ativa.");
                         }
                       }
                     });

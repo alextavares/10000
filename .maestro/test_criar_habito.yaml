@@ -1,3 +1,4 @@
+<<<<<<< SEARCH
 # Teste de criação de novo hábito
 appId: com.habitai.app
 env:
@@ -133,3 +134,126 @@ env:
 - takeScreenshot: "novo_habito_criado_com_fluxo_login"
 
 - stopApp
+=======
+# Teste de criação de novo hábito com a tela unificada UpsertHabitScreen
+appId: com.habitai.app
+env:
+  TEST_USER_EMAIL: "test@example.com" # ATENÇÃO: Substituir pelo email de teste real
+  TEST_USER_PASSWORD: "password123" # ATENÇÃO: Substituir pela senha de teste real
+  PERFORM_SETUP_FLOWS: true
+  NEW_HABIT_TITLE: "Ler um Livro por 30 Minutos"
+---
+# --- Seção de Setup: Onboarding e Login ---
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*(Bem-vindo|Começar|Próximo|Pular).*')}"
+    file: ./shared_onboarding_flow.yaml
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*Log In.*')}"
+    file: ./shared_login_flow.yaml
+    env:
+      EMAIL: "${TEST_USER_EMAIL}"
+      PASSWORD: "${TEST_USER_PASSWORD}"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # Confirma que estamos na HomeScreen
+
+# --- Iniciar Fluxo de Criação de Hábito ---
+- tapOn:
+    anyOf:
+      - id: ".*add_habit_fab.*"
+      - text: ".*Adicionar.*" # No BottomSheet
+      - icon: "add" # FAB principal
+- waitForAnimationToEnd
+
+# Se AddItemBottomSheet abrir, selecionar "Hábito"
+- tapOn:
+    text: "Hábito"
+    optional: true # Só se o BottomSheet for usado
+- waitForAnimationToEnd
+
+# --- Tela UpsertHabitScreen ---
+- assertVisible: "Novo Hábito" # Título da UpsertHabitScreen
+
+# Preencher Nome do Hábito
+- tapOn:
+    focused: false # Garante que não está focado em outro campo
+    text: "Nome do Hábito" # Toca no label para focar no campo, se necessário
+    optional: true
+- inputText: "${NEW_HABIT_TITLE}"
+- takeScreenshot: "upsert_nome_preenchido"
+
+# Selecionar Categoria
+# Esperar o Dropdown de Categoria carregar e ter itens
+- waitForAssertion:
+    visible:
+      text: "Saúde" # Espera uma categoria padrão estar visível no dropdown
+    timeout: 15000 # Aumentar timeout se o carregamento de categorias for lento
+- tapOn: # Toca para abrir o dropdown de Categoria
+    below: "Categoria" # Label do campo
+    index: 0 # Pega o primeiro DropdownButtonFormField abaixo do label
+- waitForAnimationToEnd
+- takeScreenshot: "upsert_categoria_dropdown_aberto"
+- tapOn: "Estudos" # Seleciona a categoria "Estudos"
+- waitForAnimationToEnd
+- takeScreenshot: "upsert_categoria_selecionada"
+
+# Selecionar Prioridade (Normal já é padrão, vamos mudar para Alta)
+- tapOn: # Toca para abrir o dropdown de Prioridade
+    below: "Prioridade"
+    index: 0
+- waitForAnimationToEnd
+- tapOn: "Alta"
+- waitForAnimationToEnd
+- takeScreenshot: "upsert_prioridade_selecionada"
+
+# Selecionar Tipo de Monitoramento (Sim ou Não já é padrão)
+# - tapOn: # Toca para abrir o dropdown de Tipo de Monitoramento
+#     below: "Tipo de Monitoramento"
+#     index: 0
+# - waitForAnimationToEnd
+# - tapOn: "Sim ou Não" # Texto no dropdown
+# - waitForAnimationToEnd
+
+# Selecionar Frequência (Diariamente já é padrão)
+# - tapOn: # Toca para abrir o dropdown de Frequência
+#     below: "Frequência"
+#     index: 0
+# - waitForAnimationToEnd
+# - tapOn: "Diariamente" # Texto no dropdown
+# - waitForAnimationToEnd
+
+# Configurar Lembrete (Opcional, vamos ativar)
+- tapOn: # Toca no SwitchListTile "Ativar Lembrete"
+    text: "Ativar Lembrete"
+- waitForAnimationToEnd
+- assertVisible: "Horário do Lembrete" # Verifica se o seletor de horário apareceu
+- tapOn: # Toca para abrir o seletor de horário
+    text: "Horário do Lembrete"
+- waitForAnimationToEnd
+- takeScreenshot: "upsert_time_picker_aberto"
+# Selecionar um horário (ex: 08:00) - os seletores de hora podem variar por plataforma
+# Para Android (formato relógio):
+- tapOn: "8" # Hora
+- waitForAnimationToEnd
+- tapOn: "00" # Minuto
+- waitForAnimationToEnd
+- tapOn: "OK" # Ou o texto de confirmação do TimePicker
+- waitForAnimationToEnd
+- assertVisible: "08:00" # Verifica se o horário foi definido
+- takeScreenshot: "upsert_lembrete_definido"
+
+# Salvar o Hábito
+- tapOn: "Criar Hábito"
+- waitForAnimationToEnd
+
+# Verificar se voltou para HomeScreen e o hábito está visível
+- assertVisible: ".*Hábito \"${NEW_HABIT_TITLE}\" salvo com sucesso!.*" # SnackBar
+- waitForAnimationToEnd # Espera SnackBar sumir
+- assertVisible: ".*Hoje.*" # Garante que voltou para a HomeScreen
+- waitForAnimationToEnd
+- assertVisible: "${NEW_HABIT_TITLE}"
+- takeScreenshot: "novo_habito_criado_upsert_screen"
+
+- stopApp
+>>>>>>> REPLACE
