@@ -127,6 +127,78 @@ env:
 
 # Verificar se o hábito foi removido da HomeScreen
 - assertNotVisible: "${HABIT_EDITED_TITLE}"
-- takeScreenshot: "apos_exclusao_habito"
+- takeScreenshot: "apos_exclusao_habito_final"
+
+
+# --- Teste de Navegação para Estatísticas Pós Criação/Edição ---
+# O hábito ${HABIT_EDITED_TITLE} foi excluído. Vamos criar um novo para testar estatísticas.
+- label: "Navegar para Estatísticas de um Novo Hábito"
+- tapOn: { anyOf: [{ id: ".*add_habit_fab.*" }, { text: ".*Adicionar.*" }, { icon: "add" } ] }
+- waitForAnimationToEnd
+- assertVisible: ".*Selecione uma Categoria.*"
+- waitForAssertion:
+    visible: "Saúde" # Espera a categoria "Saúde" estar visível
+- tapOn: "Saúde"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Como você quer monitorar.*"
+- tapOn: "Sim ou Não"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Qual o nome do seu novo hábito.*"
+- inputText: "Hábito para Stats"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Com que frequência.*"
+- tapOn: "Diariamente"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Quer definir um horário.*"
+- tapOn: { anyOf: [{ text: ".*AGORA NÃO.*" }, { text: ".*SALVAR SEM LEMBRETE.*" }] }
+- waitForAnimationToEnd
+- tapOn: { anyOf: [{ text: ".*CRIAR HÁBITO.*" }, { text: ".*SALVAR HÁBITO.*" }] }
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+- assertVisible: "Hábito para Stats"
+- takeScreenshot: "habito_para_stats_criado"
+
+# Abrir detalhes do novo hábito
+- tapOn: "Hábito para Stats"
+- waitForAnimationToEnd
+- assertVisible: "Calendário" # Aba padrão
+
+# Mudar para a aba de Estatísticas
+# A ordem das abas é: Calendário (0), Editar (1), Estatísticas (2)
+- tapOn: "Estatísticas" # Texto da Tab
+- waitForAnimationToEnd
+- takeScreenshot: "aba_estatisticas_visivel"
+
+# Verificar elementos chave da aba de estatísticas
+- assertVisible: "Pontuação de hábito"
+- assertVisible: "Série"
+- assertVisible: "Vezes concluída"
+- assertVisible: "Progresso ao Longo do Tempo" # Título da seção do gráfico
+- assertVisible: "Desafios de Sequência"
+
+# Verificar se os botões de período do gráfico estão presentes
+- assertVisible: "Semana"
+- assertVisible: "Mês"
+- assertVisible: "Ano"
+
+# Tentar mudar o período do gráfico (exemplo: para Semana)
+- tapOn: "Semana"
+- waitForAnimationToEnd # Dar tempo para o gráfico recarregar (se houver indicador de loading)
+- takeScreenshot: "aba_estatisticas_periodo_semana"
+# Adicionar uma asserção mais específica se soubermos o que esperar no gráfico da semana
+
+# Voltar para a HomeScreen
+- tapOn:
+    icon: "arrow_back" # Botão de voltar na AppBar da HabitDetailsScreen
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
 
 - stopApp

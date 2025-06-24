@@ -563,8 +563,31 @@ class Habit {
 
   double getCompletionRate() {
     if (completionHistory.isEmpty) return 0.0;
-    int completed = completionHistory.values.where((v) => v).length;
-    return completed / completionHistory.length;
+
+    int dueDaysCount = 0;
+    int completedOnDueDays = 0;
+
+    // Itera sobre o histórico de conclusão
+    completionHistory.forEach((date, completed) {
+      // Verifica se o hábito era devido naquele dia específico
+      // Considera o período desde a data de início do hábito até hoje ou a data alvo
+      DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      DateTime effectiveStartDate = DateTime(startDate.year, startDate.month, startDate.day);
+      DateTime effectiveEndDate = targetDate != null ? DateTime(targetDate!.year, targetDate!.month, targetDate!.day) : today;
+
+      // Considerar apenas datas dentro do período ativo do hábito
+      if (!date.isBefore(effectiveStartDate) && !date.isAfter(effectiveEndDate)) {
+        if (isDueToday(date)) {
+          dueDaysCount++;
+          if (completed) {
+            completedOnDueDays++;
+          }
+        }
+      }
+    });
+
+    if (dueDaysCount == 0) return 0.0; // Evita divisão por zero se não houve dias devidos ainda
+    return completedOnDueDays / dueDaysCount;
   }
 
   double getTodaysCompletionPercentage() {
