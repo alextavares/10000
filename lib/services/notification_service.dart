@@ -1,320 +1,494 @@
+import 'dart:convert'; // Para codificar/decodificar o payload
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:myapp/models/habit.dart';
+import 'package:myapp/utils/logger.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
-import 'package:myapp/models/habit.dart';
+// import 'package:myapp/main.dart'; // Evitar import de main.dart em services
+// import 'package:myapp/services/service_provider.dart'; // Evitar dependência direta se possível em callbacks de background
+
+// É importante que este callback seja uma função de nível superior ou estática.
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  // O ideal é que este handler seja leve.
+  // Para ações complexas, considere usar um plugin de processamento em background.
+  Logger.info(
+      'Notification Tapped (Background Handler): Payload: ${notificationResponse.payload}, ActionID: ${notificationResponse.actionId}',
+      tag: 'NotificationServiceBG');
+
+  if (notificationResponse.actionId == NotificationService.snoozeActionId &&
+      notificationResponse.payload != null) {
+
+    // Recriar e inicializar uma instância SÍNCRONA para reagendar.
+    // Esta é uma simplificação e pode ter limitações em cenários de background complexos.
+    final FlutterLocalNotificationsPlugin localNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
+    const InitializationSettings initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+
+    // Não podemos usar await aqui, pois é um callback síncrono de background.
+    // Usamos .then() para continuar a lógica após a inicialização.
+    localNotificationsPlugin.initialize(initializationSettings).then((_) async {
+      try {
+        final payloadData = json.decode(notificationResponse.payload!);
+        final String? habitId = payloadData['habitId'];
+        final String? title = payloadData['title'];
+        final String? body = payloadData['body'];
+        final int? colorValue = payloadData['color'];
+        // final String? originalReminderTimeStr = payloadData['originalReminderTime'];
+
+        if (habitId == null || title == null || body == null || colorValue == null) {
+          Logger.warning("BackgroundSnooze: Incomplete payload.", tag: "NotificationServiceBG");
+          return;
+        }
+
+        // Cancelar a notificação original que disparou o snooze
+        // O ID da notificação original é habit.id.hashCode
+        // Precisamos converter o habitId (String) para o hashCode int.
+        // Se o payloadData tiver o 'idHash' seria mais direto.
+        // Assumindo que o `habitId` do payload é o `habit.id` string.
+        await localNotificationsPlugin.cancel(habitId.hashCode);
+        Logger.info("BackgroundSnooze: Cancelled original notification $habitId", tag: "NotificationServiceBG");
+
+
+        final tz.TZDateTime snoozedTime = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 10));
+
+        final androidDetailsSnooze = AndroidNotificationDetails(
+          NotificationService.habitChannelIdSnooze, // Canal diferente para snoozed
+          'Lembretes Adiados',
+          channelDescription: 'Canal para lembretes de hábitos adiados.',
+          importance: Importance.max,
+          priority: Priority.high,
+          color: Color(colorValue),
+          icon: '@mipmap/ic_launcher',
+        );
+        const iosDetailsSnooze = DarwinNotificationDetails(
+            presentAlert: true, presentBadge: true, presentSound: true);
+        final detailsSnooze = NotificationDetails(
+            android: androidDetailsSnooze, iOS: iosDetailsSnooze);
+
+        // Usar um ID único para a notificação adiada para não colidir com o original recorrente
+        final snoozedNotificationId = (habitId + "_snooze_${DateTime.now().millisecondsSinceEpoch}").hashCode;
+
+        await localNotificationsPlugin.zonedSchedule(
+            snoozedNotificationId,
+            "Adiado: $title",
+            body,
+            snoozedTime,
+            detailsSnooze,
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+            uiLocalNotificationDateInterpretation:
+                UILocalNotificationDateInterpretation.absoluteTime,
+            payload: notificationResponse.payload // Reutilizar payload original
+            );
+        Logger.info("BackgroundSnooze: Notification for $habitId snoozed to $snoozedTime (ID: $snoozedNotificationId)", tag: "NotificationServiceBG");
+      } catch (e, s) {
+        Logger.error("Error in background snooze handler: $e", e, s, tag: "NotificationServiceBG");
+      }
+    });
+  }
+}
+
 
 /// Service for handling local notifications.
 class NotificationService {
-  /// Flutter Local Notifications Plugin instance.
   final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
 
-  /// Initializes the notification service.
+  static const String habitChannelId = 'habit_reminders_channel_id';
+  static const String habitChannelName = 'Lembretes de Hábitos';
+  static const String habitChannelDescription = 'Canal para lembretes de hábitos.';
+  static const String habitChannelIdSnooze = 'habit_snooze_channel_id';
+
+
+  // Action IDs
+  static const String snoozeActionId = 'SNOOZE_10M_ACTION';
+  // static const String completeActionId = 'COMPLETE_HABIT_ACTION'; // Para o futuro
+
   Future<void> initialize() async {
-    // Initialize timezone data
     tz_data.initializeTimeZones();
 
-    // Initialize notification settings for Android
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    final List<DarwinNotificationCategory> darwinNotificationCategories = [
+      DarwinNotificationCategory(
+        'HABIT_REMINDER_CATEGORY', // Identificador da categoria
+        actions: <DarwinNotificationAction>[
+          DarwinNotificationAction.plain(snoozeActionId, 'Adiar (10 min)'),
+          // DarwinNotificationAction.plain(completeActionId, 'Concluído'),
+        ],
+        options: <DarwinNotificationCategoryOption>{
+          DarwinNotificationCategoryOption.customDismissAction,
+        },
+      )
+    ];
 
-    // Initialize notification settings for iOS
-    const iosSettings = DarwinInitializationSettings(
+    final androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    final iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
+      notificationCategories: darwinNotificationCategories,
     );
-
-    // Initialize notification settings
-    const initSettings = InitializationSettings(
+    final initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
 
-    // Initialize the plugin
     await _notifications.initialize(
       initSettings,
-      onDidReceiveNotificationResponse: _onNotificationTapped,
+      onDidReceiveNotificationResponse: _onNotificationResponse,
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
+    Logger.info("NotificationService initialized with actions.", tag: "NotificationService");
   }
 
-  /// Handles notification tap events.
-  void _onNotificationTapped(NotificationResponse response) {
-    // Handle notification tap based on the payload
-    // TODO: Replace with proper logging framework
-    // For now, using debugPrint which is acceptable in development
-    debugPrint('Notification tapped: ${response.payload}');
-    
-    // You can add custom handling here, such as navigating to a specific screen
-    // based on the notification payload
-  }
+  Future<void> _onNotificationResponse(NotificationResponse response) async {
+    Logger.info(
+        'Notification response received. Payload: ${response.payload}, ActionID: ${response.actionId}, Input: ${response.input}',
+        tag: 'NotificationService');
 
-  /// Requests notification permissions.
-  Future<bool> requestPermissions() async {
-    // Request permissions for iOS
-    final ios = await _notifications
-        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-
-    // Request permissions for Android (Android 13+)
-    final android = await _notifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
-
-    return ios ?? android ?? false;
-  }
-
-  /// Schedules a notification for a habit reminder.
-  Future<void> scheduleHabitReminder(Habit habit) async {
-    if (!habit.notificationsEnabled || habit.reminderTime == null) {
+    if (response.payload == null || response.payload!.isEmpty) {
+      Logger.warning('Notification response with empty payload.', tag: 'NotificationService');
       return;
     }
 
-    // Create notification details for Android
+    try {
+      final payloadData = json.decode(response.payload!);
+      final String? habitId = payloadData['habitId'];
+
+      if (habitId == null) {
+        Logger.warning('Habit ID not found in payload.', tag: 'NotificationService');
+        return;
+      }
+
+      if (response.actionId == snoozeActionId) {
+        Logger.info("Snooze action tapped for habit $habitId", tag: 'NotificationService');
+        await _handleSnoozeAction(payloadData);
+      } else {
+        Logger.info("Notification tapped (not an action) for habit $habitId. Consider navigation.", tag: 'NotificationService');
+        // Ex: GlobalNavigator.navigateToHabitDetails(habitId); // Implementar com um service de navegação global
+      }
+    } catch (e, s) {
+      Logger.error("Error processing notification response: $e", e, s, tag: 'NotificationService');
+    }
+  }
+
+  Future<void> _handleSnoozeAction(Map<String, dynamic> payloadData) async {
+    final String? habitId = payloadData['habitId'];
+    final String? title = payloadData['title'];
+    final String? body = payloadData['body']; // Este é o 'description' do hábito ou mensagem padrão
+    final int? colorValue = payloadData['color'];
+    // originalReminderTime não é estritamente necessário para a lógica de snooze simples,
+    // mas pode ser útil para lógicas mais complexas ou para reconstruir o hábito.
+
+    if (habitId == null || title == null || body == null || colorValue == null) {
+      Logger.warning("Snooze action called with incomplete payload: $payloadData", tag: 'NotificationService');
+      return;
+    }
+
+    // Cancelar a notificação original que foi tocada.
+    // A notificação original tem o ID habit.id.hashCode.
+    // As notificações de snooze terão IDs diferentes.
+    await _notifications.cancel(habitId.hashCode);
+    Logger.info("Snooze: Cancelled original notification for $habitId (ID: ${habitId.hashCode})", tag: "NotificationService");
+
+
+    final tz.TZDateTime snoozedTime = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 10));
+
+    final androidDetailsSnooze = AndroidNotificationDetails(
+      habitChannelIdSnooze,
+      'Lembretes Adiados',
+      channelDescription: 'Canal para lembretes de hábitos adiados.',
+      importance: Importance.max,
+      priority: Priority.high,
+      color: Color(colorValue),
+      icon: '@mipmap/ic_launcher',
+       actions: <AndroidNotificationAction>[ // Manter a ação de adiar na notificação adiada
+        const AndroidNotificationAction(snoozeActionId, 'Adiar (10 min)'),
+      ],
+    );
+    const iosDetailsSnooze = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        categoryIdentifier: 'HABIT_REMINDER_CATEGORY', // Para ter a ação de snooze no iOS também
+    );
+    final detailsSnooze = NotificationDetails(android: androidDetailsSnooze, iOS: iosDetailsSnooze);
+
+    final snoozedNotificationId = (habitId + "_snooze_${DateTime.now().millisecondsSinceEpoch}").hashCode;
+
+    try {
+      await _notifications.zonedSchedule(
+        snoozedNotificationId,
+        "Adiado: $title",
+        body,
+        snoozedTime,
+        detailsSnooze,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        payload: json.encode(payloadData), // Reutiliza o payload original
+      );
+      Logger.info("Notification for habit '$habitId' snoozed to $snoozedTime (New ID: $snoozedNotificationId)", tag: 'NotificationService');
+    } catch (e, s) {
+      Logger.error("Error scheduling snoozed notification for habit $habitId: $e", e, s, tag: 'NotificationService');
+    }
+  }
+
+
+  Future<bool> requestPermissions() async {
+    bool? androidPermissionGranted;
+    bool? iosPermissionGranted;
+
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      iosPermissionGranted = await _notifications
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          _notifications.resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      androidPermissionGranted = await androidImplementation?.requestPermission(); // Mudança para requestPermission() que é mais genérico
+    }
+    Logger.info("iOS Permissions: $iosPermissionGranted, Android Permissions: $androidPermissionGranted", tag: "NotificationService");
+    return iosPermissionGranted ?? androidPermissionGranted ?? false;
+  }
+
+  Future<void> scheduleHabitReminder(Habit habit) async {
+    if (!habit.notificationsEnabled || habit.reminderTime == null) {
+      Logger.info("Notifications disabled or no reminder time for habit '${habit.title}'. Skipping schedule.", tag: 'NotificationService');
+      await cancelHabitReminder(habit);
+      return;
+    }
+
+    await cancelHabitReminder(habit);
+
+    final tz.TZDateTime? scheduledDate = _getNextOccurrence(habit);
+
+    if (scheduledDate == null) {
+      Logger.info("No next occurrence found for habit '${habit.title}'. Notification not scheduled.", tag: 'NotificationService');
+      return;
+    }
+
+    final String habitPayload = json.encode({
+      'habitId': habit.id,
+      'title': habit.title,
+      'body': habit.description?.isNotEmpty == true ? habit.description! : 'Lembrete: ${habit.title}',
+      'color': habit.color.value,
+      'originalReminderTime': '${habit.reminderTime!.hour.toString().padLeft(2, '0')}:${habit.reminderTime!.minute.toString().padLeft(2, '0')}',
+    });
+
     final androidDetails = AndroidNotificationDetails(
-      'habit_reminders',
-      'Habit Reminders',
-      channelDescription: 'Notifications for habit reminders',
-      importance: Importance.high,
+      habitChannelId,
+      habitChannelName,
+      channelDescription: habitChannelDescription,
+      importance: Importance.max,
       priority: Priority.high,
       color: habit.color,
+      playSound: true,
+      enableVibration: true,
+      icon: '@mipmap/ic_launcher',
+      actions: <AndroidNotificationAction>[
+        const AndroidNotificationAction(snoozeActionId, 'Adiar (10 min)'),
+      ],
     );
 
-    // Create notification details for iOS
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      categoryIdentifier: 'HABIT_REMINDER_CATEGORY',
     );
 
-    // Create notification details
     final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
-    // Calculate the next occurrence of the habit
-    final scheduledDate = _getNextOccurrence(habit);
-    if (scheduledDate == null) {
-      return;
+    try {
+      await _notifications.zonedSchedule(
+        habit.id.hashCode,
+        habit.title,
+        habit.description?.isNotEmpty == true ? habit.description! : 'Lembrete: ${habit.title}',
+        scheduledDate,
+        details,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: _getDateTimeComponents(habit),
+        payload: habitPayload,
+      );
+      Logger.info("Notification scheduled for habit '${habit.title}' (ID: ${habit.id.hashCode}) at $scheduledDate with recurrence: ${_getDateTimeComponents(habit)}", tag: 'NotificationService');
+    } catch (e, s) {
+        Logger.error("Error scheduling notification for habit ${habit.id}: $e", e, s, tag: 'NotificationService');
     }
-
-    // Schedule the notification
-    await _notifications.zonedSchedule(
-      habit.id.hashCode, // Use the habit ID as the notification ID
-      'Habit Reminder: ${habit.title}',
-      habit.description ?? 'Time to complete your habit!',
-      scheduledDate,
-      details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: _getDateTimeComponents(habit),
-      payload: habit.id, // Use the habit ID as the payload
-    );
   }
 
-  /// Cancels a scheduled notification for a habit.
-  Future<void> cancelHabitReminder(Habit habit) async {
-    await _notifications.cancel(habit.id.hashCode);
-  }
-
-  /// Gets the next occurrence of a habit based on its frequency.
   tz.TZDateTime? _getNextOccurrence(Habit habit) {
     if (habit.reminderTime == null) {
+      Logger.debug("[_getNextOccurrence] Habit '${habit.title}' has no reminderTime.", tag: 'NotificationService');
       return null;
     }
 
-    final now = tz.TZDateTime.now(tz.local);
+    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+    final TimeOfDay reminder = habit.reminderTime!;
 
-    // Create a TZDateTime for the reminder time today
-    tz.TZDateTime scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      habit.reminderTime!.hour,
-      habit.reminderTime!.minute,
-    );
+    final tz.TZDateTime habitStartDateAtReminderTime = tz.TZDateTime(
+        tz.local, habit.startDate.year, habit.startDate.month, habit.startDate.day, reminder.hour, reminder.minute);
 
-    // If the reminder time has already passed today, schedule for the next occurrence
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    if (habit.targetDate != null) {
+      final tz.TZDateTime habitTargetDateEnd = tz.TZDateTime(
+          tz.local, habit.targetDate!.year, habit.targetDate!.month, habit.targetDate!.day, 23, 59, 59);
+      if (tz.TZDateTime(tz.local, now.year, now.month, now.day).isAfter(habitTargetDateEnd)) {
+        Logger.debug("[_getNextOccurrence] Habit '${habit.title}' target date (${habit.targetDate}) has passed. No notification.", tag: 'NotificationService');
+        return null;
+      }
     }
 
-    // Adjust the date based on the habit frequency
-    switch (habit.frequency) {
-      case HabitFrequency.daily:
-        // No adjustment needed for daily habits
-        return scheduledDate;
+    tz.TZDateTime searchDateTime = tz.TZDateTime(tz.local, now.year, now.month, now.day, reminder.hour, reminder.minute);
 
-      case HabitFrequency.weekly:
-        // Find the next day of the week that matches the habit's schedule
-        if (habit.daysOfWeek == null || habit.daysOfWeek!.isEmpty) {
+    if (searchDateTime.isBefore(now)) {
+      searchDateTime = searchDateTime.add(const Duration(days: 1));
+    }
+
+    if (searchDateTime.isBefore(habitStartDateAtReminderTime)) {
+      searchDateTime = habitStartDateAtReminderTime;
+    }
+
+    for (int i = 0; i < 730; i++) {
+      tz.TZDateTime potentialDay = tz.TZDateTime(tz.local, searchDateTime.year, searchDateTime.month, searchDateTime.day).add(Duration(days: i));
+      tz.TZDateTime potentialNotificationDateTime = tz.TZDateTime(
+          tz.local,
+          potentialDay.year,
+          potentialDay.month,
+          potentialDay.day,
+          reminder.hour,
+          reminder.minute
+      );
+
+      if (potentialNotificationDateTime.isBefore(habitStartDateAtReminderTime)) {
+          continue;
+      }
+
+      if (habit.targetDate != null) {
+        final tz.TZDateTime habitTargetDateForReminder = tz.TZDateTime(
+            tz.local, habit.targetDate!.year, habit.targetDate!.month, habit.targetDate!.day, reminder.hour, reminder.minute);
+        if (potentialNotificationDateTime.isAfter(habitTargetDateForReminder)) {
+          Logger.debug("[_getNextOccurrence] Search for habit '${habit.title}' exceeded target date ($habitTargetDateForReminder). No further notifications.", tag: 'NotificationService');
           return null;
         }
+      }
 
-        // Sort the days of the week
-        final sortedDays = List<int>.from(habit.daysOfWeek!)..sort();
-
-        // Find the next day of the week
-        int daysToAdd = 0;
-        bool found = false;
-
-        for (int i = 0; i < 7; i++) {
-          final checkDay = (now.weekday + i) % 7;
-          if (sortedDays.contains(checkDay == 0 ? 7 : checkDay)) {
-            daysToAdd = i;
-            found = true;
-            break;
+      if (habit.isDueToday(potentialNotificationDateTime)) {
+          if(potentialNotificationDateTime.isAfter(now)){
+            Logger.debug("[_getNextOccurrence] Found next occurrence for '${habit.title}': $potentialNotificationDateTime", tag: 'NotificationService');
+            return potentialNotificationDateTime;
           }
-        }
-
-        if (!found) {
-          return null;
-        }
-
-        return scheduledDate.add(Duration(days: daysToAdd));
-
-      case HabitFrequency.monthly:
-        // Schedule for the same day of the month
-        final targetDay = habit.createdAt.day;
-        
-        // If today is after the target day, schedule for next month
-        if (now.day > targetDay) {
-          // Move to the next month
-          scheduledDate = tz.TZDateTime(
-            tz.local,
-            now.year,
-            now.month + 1,
-            targetDay,
-            habit.reminderTime!.hour,
-            habit.reminderTime!.minute,
-          );
-        } else if (now.day < targetDay) {
-          // Schedule for later this month
-          scheduledDate = tz.TZDateTime(
-            tz.local,
-            now.year,
-            now.month,
-            targetDay,
-            habit.reminderTime!.hour,
-            habit.reminderTime!.minute,
-          );
-        }
-        
-        return scheduledDate;
-
-      case HabitFrequency.specificDaysOfYear:
-        // Find the next specific date in the year
-        if (habit.specificYearDates == null || habit.specificYearDates!.isEmpty) {
-          return null;
-        }
-
-        // Convert specific dates to TZDateTime for this year
-        final currentYear = now.year;
-        final specificDates = habit.specificYearDates!
-            .map((date) => tz.TZDateTime(
-                  tz.local,
-                  currentYear,
-                  date.month,
-                  date.day,
-                  habit.reminderTime!.hour,
-                  habit.reminderTime!.minute,
-                ))
-            .where((date) => date.isAfter(now))
-            .toList()
-          ..sort();
-
-        if (specificDates.isNotEmpty) {
-          return specificDates.first;
-        }
-
-        // If no dates this year, try next year
-        final nextYearDates = habit.specificYearDates!
-            .map((date) => tz.TZDateTime(
-                  tz.local,
-                  currentYear + 1,
-                  date.month,
-                  date.day,
-                  habit.reminderTime!.hour,
-                  habit.reminderTime!.minute,
-                ))
-            .toList()
-          ..sort();
-
-        return nextYearDates.isNotEmpty ? nextYearDates.first : null;
-
-      case HabitFrequency.someTimesPerPeriod:
-        // For "some times per period", treat like daily for notifications
-        return scheduledDate;
-        
-      case HabitFrequency.repeat:
-        // For "repeat", treat like daily for notifications
-        return scheduledDate;
-        
-      case HabitFrequency.custom:
-        // Custom frequency would need custom logic
-        return scheduledDate;
+      }
     }
+
+    Logger.warning("[_getNextOccurrence] Could not find a valid next future occurrence for habit '${habit.title}'.", tag: 'NotificationService');
+    return null;
   }
 
-  /// Gets the date time components to match for recurring notifications.
   DateTimeComponents? _getDateTimeComponents(Habit habit) {
     switch (habit.frequency) {
       case HabitFrequency.daily:
         return DateTimeComponents.time;
       case HabitFrequency.weekly:
-        return DateTimeComponents.dayOfWeekAndTime;
+        return (habit.daysOfWeek != null && habit.daysOfWeek!.isNotEmpty)
+            ? DateTimeComponents.dayOfWeekAndTime
+            : null;
       case HabitFrequency.monthly:
-        return DateTimeComponents.dayOfMonthAndTime;
+        if (habit.daysOfMonth != null && habit.daysOfMonth!.isNotEmpty) {
+          if (habit.daysOfMonth!.contains(0) && habit.daysOfMonth!.length == 1) {
+            return null;
+          }
+          return DateTimeComponents.dayOfMonthAndTime;
+        }
+        return null;
+
       case HabitFrequency.specificDaysOfYear:
-        return DateTimeComponents.dateAndTime;
-      case HabitFrequency.someTimesPerPeriod:
-        return DateTimeComponents.time;
       case HabitFrequency.repeat:
-        return DateTimeComponents.time;
+      case HabitFrequency.someTimesPerPeriod:
       case HabitFrequency.custom:
-        return DateTimeComponents.time;
+        return null;
+      default:
+        return null;
     }
   }
 
-  /// Shows a test notification.
+  Future<void> cancelHabitReminder(Habit habit) async {
+    final String habitId = habit.id;
+    final int mainNotificationId = habitId.hashCode;
+
+    try {
+      // Cancelar a notificação principal
+      await _notifications.cancel(mainNotificationId);
+      Logger.info("Cancelled main notification for habit '$habitId' (ID: $mainNotificationId)", tag: 'NotificationService');
+
+      // Cancelar notificações de snooze relacionadas
+      final List<PendingNotificationRequest> pendingNotifications = await _notifications.pendingNotificationRequests();
+      for (final PendingNotificationRequest pnr in pendingNotifications) {
+        if (pnr.payload != null) {
+          try {
+            final payloadData = json.decode(pnr.payload!);
+            if (payloadData['habitId'] == habitId && pnr.id != mainNotificationId) {
+              await _notifications.cancel(pnr.id);
+              Logger.info("Cancelled snoozed/related notification (ID: ${pnr.id}) for habit '$habitId'", tag: 'NotificationService');
+            }
+          } catch (e) {
+            Logger.warning("Error decoding payload for pending notification ${pnr.id}: $e", tag: 'NotificationService');
+          }
+        }
+      }
+    } catch (e,s) {
+      Logger.error("Error cancelling notifications for habit $habitId: $e", e, s, tag: 'NotificationService');
+    }
+  }
+
   Future<void> showTestNotification() async {
-    // Create notification details for Android
     const androidDetails = AndroidNotificationDetails(
       'test_channel',
       'Test Channel',
       channelDescription: 'Channel for test notifications',
-      importance: Importance.high,
+      importance: Importance.max,
       priority: Priority.high,
+       icon: '@mipmap/ic_launcher',
+       actions: <AndroidNotificationAction>[
+        AndroidNotificationAction(snoozeActionId, 'Adiar Teste (10 min)'),
+      ],
     );
-
-    // Create notification details for iOS
     const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+        presentAlert: true, presentBadge: true, presentSound: true, categoryIdentifier: 'HABIT_REMINDER_CATEGORY');
+    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
 
-    // Create notification details
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+    final testId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
 
-    // Show the notification
+    final String testPayload = json.encode({
+      'habitId': 'test_habit_id_${testId}',
+      'title': 'Notificação de Teste',
+      'body': 'Este é o corpo da notificação de teste.',
+      'color': Colors.blue.value,
+      'originalReminderTime': '${TimeOfDay.now().hour.toString().padLeft(2,'0')}:${TimeOfDay.now().minute.toString().padLeft(2,'0')}',
+    });
+
     await _notifications.show(
-      0,
-      'Test Notification',
-      'This is a test notification from HabitAI',
+      testId,
+      'HabitAI - Notificação de Teste',
+      'Esta é uma notificação de teste para verificar as configurações e ações.',
       details,
+      payload: testPayload,
     );
+     Logger.info("Test notification ($testId) shown.", tag: 'NotificationService');
   }
 
-  /// Cancels all scheduled notifications.
   Future<void> cancelAllNotifications() async {
     await _notifications.cancelAll();
+    Logger.info("All notifications cancelled.", tag: 'NotificationService');
   }
 }
+>>>>>>> REPLACE
