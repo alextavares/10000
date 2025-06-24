@@ -1,0 +1,132 @@
+# Teste para Swipe Actions e Edição de Hábito
+appId: com.habitai.app
+env:
+  TEST_USER_EMAIL: "test@example.com" # ATENÇÃO: Substituir pelo email de teste real
+  TEST_USER_PASSWORD: "password123" # ATENÇÃO: Substituir pela senha de teste real
+  PERFORM_SETUP_FLOWS: true
+  HABIT_TO_EDIT_TITLE: "Hábito para Editar com Swipe"
+  HABIT_EDITED_TITLE: "Hábito Editado via Swipe Action"
+---
+# --- Seção de Setup: Onboarding, Login e Criação de Hábito de Teste ---
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*(Bem-vindo|Começar|Próximo|Pular).*')}"
+    file: ./shared_onboarding_flow.yaml
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*Log In.*')}"
+    file: ./shared_login_flow.yaml
+    env:
+      EMAIL: "${TEST_USER_EMAIL}"
+      PASSWORD: "${TEST_USER_PASSWORD}"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+
+# Criar um hábito específico para este teste
+- tapOn: { anyOf: [{ id: ".*add_habit_fab.*" }, { text: ".*Adicionar.*" }, { icon: "add" } ] }
+- waitForAnimationToEnd
+- assertVisible: ".*Selecione uma categoria.*"
+- tapOn: "Saúde"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Como você quer monitorar.*"
+- tapOn: "Sim ou Não"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Qual o nome do seu novo hábito.*"
+- inputText: "${HABIT_TO_EDIT_TITLE}"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Com que frequência.*"
+- tapOn: "Diariamente"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Quer definir um horário.*"
+- tapOn: { anyOf: [{ text: ".*AGORA NÃO.*" }, { text: ".*SALVAR SEM LEMBRETE.*" }] }
+- waitForAnimationToEnd
+- tapOn: { anyOf: [{ text: ".*CRIAR HÁBITO.*" }, { text: ".*SALVAR HÁBITO.*" }] }
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+- assertVisible: "${HABIT_TO_EDIT_TITLE}"
+- takeScreenshot: "antes_swipe_e_edicao"
+
+# --- Teste de Swipe Action e Edição ---
+- label: "Testar Swipe para Editar Hábito"
+- swipe: # Realiza o swipe no card do hábito
+    direction: LEFT # Ou RIGHT, dependendo de como foi implementado
+    element:
+      text: "${HABIT_TO_EDIT_TITLE}"
+- waitForAnimationToEnd
+- takeScreenshot: "apos_swipe_habito"
+
+- assertVisible: "Editar" # Verifica se o botão "Editar" apareceu
+- tapOn: "Editar"
+- waitForAnimationToEnd
+
+# Agora devemos estar na HabitDetailsScreen, na aba de Edição
+- assertVisible: ".*Editar.*" # Verifica se a aba "Editar" está visível/ativa
+- assertVisible: "${HABIT_TO_EDIT_TITLE}" # Verifica se o título atual está no campo
+
+# Modificar o título do hábito
+# O seletor para o campo de título dentro da aba de edição precisa ser identificado.
+# Assumindo que o campo de título é o primeiro TextField ou tem um hint/label específico.
+# Se o _titleController em HabitEditTab estiver associado a um TextField com um Key, seria ideal.
+# Por enquanto, vamos tentar uma abordagem mais genérica.
+- tapOn: # Tenta focar no campo do título. Pode ser necessário um seletor mais específico.
+    element:
+      below: "Nome do hábito" # Supondo que o label "Nome do hábito" esteja visível
+      index: 0 # Pega o primeiro campo abaixo do label
+    optional: true
+- eraseText # Limpa o campo de texto
+- inputText: "${HABIT_EDITED_TITLE}"
+- waitForAnimationToEnd
+- takeScreenshot: "edicao_habito_novo_titulo"
+
+# Salvar alterações
+- tapOn: "Salvar Alterações"
+- waitForAnimationToEnd
+
+# Verificar SnackBar de sucesso (opcional, mas bom ter)
+- assertVisible: ".*Hábito atualizado com sucesso!.*"
+- waitForAnimationToEnd # Esperar o SnackBar desaparecer ou a navegação ocorrer
+
+# A tela HabitDetailsScreen deve fechar ou voltar para a aba de visão geral.
+# E a HomeScreen deve ser atualizada.
+- assertVisible: ".*Hoje.*" # Confirma que voltamos para HomeScreen
+- assertNotVisible: "${HABIT_TO_EDIT_TITLE}" # Verifica se o título antigo sumiu
+- assertVisible: "${HABIT_EDITED_TITLE}" # Verifica se o novo título está visível
+- takeScreenshot: "apos_edicao_habito"
+
+# --- Teste de Swipe Action e Exclusão ---
+- label: "Testar Swipe para Excluir Hábito"
+- swipe:
+    direction: LEFT
+    element:
+      text: "${HABIT_EDITED_TITLE}"
+- waitForAnimationToEnd
+- takeScreenshot: "apos_swipe_para_excluir"
+
+- assertVisible: "Excluir"
+- tapOn: "Excluir"
+- waitForAnimationToEnd
+
+# Diálogo de confirmação
+- assertVisible: ".*Confirmar Exclusão.*"
+- assertVisible: ".*Tem certeza que deseja excluir.*"
+- takeScreenshot: "dialogo_exclusao_habito"
+- tapOn: "Excluir" # Botão de confirmação no diálogo
+- waitForAnimationToEnd
+
+# Verificar SnackBar de sucesso (opcional)
+- assertVisible: ".*Hábito excluído com sucesso.*"
+- waitForAnimationToEnd
+
+# Verificar se o hábito foi removido da HomeScreen
+- assertNotVisible: "${HABIT_EDITED_TITLE}"
+- takeScreenshot: "apos_exclusao_habito"
+
+- stopApp

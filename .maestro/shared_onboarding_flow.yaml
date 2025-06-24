@@ -1,0 +1,38 @@
+# Fluxo reutilizável para completar o onboarding
+# Este fluxo assume que já estamos na tela de onboarding.
+appId: com.habitai.app
+---
+# Tenta clicar em botões comuns de onboarding.
+# Adicionar seletores mais específicos se souber os textos/IDs exatos.
+- tapOn:
+    text: ".*Próximo.*|.*Continuar.*|.*Avançar.*"
+    optional: true
+- waitForAnimationToEnd
+- tapOn:
+    text: ".*Próximo.*|.*Continuar.*|.*Avançar.*"
+    optional: true
+- waitForAnimationToEnd
+- tapOn:
+    text: ".*Próximo.*|.*Continuar.*|.*Avançar.*"
+    optional: true
+- waitForAnimationToEnd
+
+# Botão final para concluir o onboarding
+- tapOn:
+    text: ".*Começar.*|.*Finalizar.*|.*Concluir.*"
+    optional: true
+- waitForAnimationToEnd
+
+# Pode haver um pedido de permissão (ex: notificações)
+- tapOn:
+    text: ".*Permitir.*|.*Autorizar.*"
+    optional: true
+- waitForAnimationToEnd
+
+# Após o onboarding, o app deve ir para a tela de Login ou para a tela Principal se o login for automático.
+# Vamos verificar se chegamos na tela de Login ou na tela Principal.
+- assertVisible:
+    anyOf:
+      - text: ".*Log In.*"  # Para o caso de ir para o Login
+      - text: ".*Hoje.*"    # Para o caso de ir direto para a Home (menos provável sem login)
+    optional: true # Torna a asserção opcional para não falhar se a navegação for muito rápida.

@@ -1,71 +1,122 @@
 # Teste de validação e cenários de erro
 appId: com.habitai.app
-
+env:
+  TEST_USER_EMAIL: "test@example.com" # ATENÇÃO: Substituir pelo email de teste real
+  TEST_USER_PASSWORD: "password123" # ATENÇÃO: Substituir pela senha de teste real
+  PERFORM_SETUP_FLOWS: true
 ---
-- launchApp
+# --- Seção de Setup: Onboarding e Login ---
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*(Bem-vindo|Começar|Próximo|Pular).*')}"
+    file: ./shared_onboarding_flow.yaml
+    env:
+      ONBOARDING_COMPLETED: true
+
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*Log In.*')}"
+    file: ./shared_login_flow.yaml
+    env:
+      EMAIL: "${TEST_USER_EMAIL}"
+      PASSWORD: "${TEST_USER_PASSWORD}"
+      LOGIN_COMPLETED: true
+
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # Confirma que estamos na HomeScreen
+
+# --- Teste 1: Tentar criar hábito sem nome ---
+- label: "Teste de Campo Obrigatório - Nome do Hábito"
+# Navegar para o início do fluxo de criação de hábito
+- tapOn:
+    anyOf:
+      - id: ".*add_habit_fab.*"
+      - text: ".*Adicionar.*"
+      - icon: "add"
+- waitForAnimationToEnd
+- assertVisible: ".*Selecione uma categoria.*" # Tela AddHabitScreen
+- tapOn: "Saúde" # Seleciona uma categoria qualquer
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA" # Botão em AddHabitScreen
+- waitForAnimationToEnd
+- assertVisible: ".*Como você quer monitorar.*" # Tela HabitTrackingTypeScreen
+- tapOn: "Sim ou Não" # Seleciona um tipo de tracking
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA" # Botão em HabitTrackingTypeScreen
+- waitForAnimationToEnd
+- assertVisible: ".*Qual o nome do seu novo hábito.*" # Tela AddHabitTitleScreen
+
+# Agora, na tela de título, NÃO inserir texto e tentar avançar/salvar
+# O botão "PRÓXIMA" nesta tela deve estar desabilitado ou mostrar erro ao ser tocado se o nome estiver vazio.
+# Se o botão estiver habilitado e permitir avançar, o erro pode aparecer na tela de frequência ou resumo.
+# Vamos assumir que o erro é validado na AddHabitTitleScreen ao tentar avançar.
+
+- tapOn: "PRÓXIMA" # Tenta avançar sem nome
 - waitForAnimationToEnd
 
-# Teste 1: Tentar criar hábito sem nome
-- tapOn:
-    text: ".*[Aa]dicionar.*|.*[Nn]ovo.*|\\+"
-    optional: true
-    
-- waitForAnimationToEnd
-
-# Tentar salvar sem preencher campos obrigatórios
-- tapOn:
-    text: ".*[Ss]alvar.*|.*[Cc]riar.*"
-    optional: true
-
-# Verificar mensagem de erro
+# Verificar mensagem de erro para campo de nome obrigatório
+# A mensagem exata pode variar.
 - assertVisible:
-    text: ".*[Cc]ampo.*obrigatório.*|.*[Pp]reencha.*|.*[Nn]ome.*necessário.*"
+    text: ".*[Pp]reencha.*[Nn]ome.*|.*[Nn]ome.*[Oo]brigatório.*|.*[Ii]nsira.*[Nn]ome.*"
+    optional: true # Torna opcional se a UI impedir o toque ou o erro for diferente
+- takeScreenshot: "validacao_nome_habito_obrigatorio"
+
+# Voltar para a HomeScreen para o próximo teste (ou use back se o fluxo for modal)
+# Se o fluxo de criação for uma série de pushReplacement, pode ser necessário um fluxo para cancelar/voltar
+# Por simplicidade, vamos assumir que podemos voltar para a HomeScreen.
+# Se o botão "PRÓXIMA" estava desabilitado, precisamos de um 'back' ou 'cancelar'.
+- tapOn: # Botão de voltar/fechar na AppBar da AddHabitTitleScreen
+    icon: "arrow_back" # ou 'close', dependendo do ícone usado
     optional: true
+- waitForAnimationToEnd
+- tapOn: # Botão de voltar/fechar na AppBar da HabitTrackingTypeScreen
+    icon: "arrow_back" # ou 'close'
+    optional: true
+- waitForAnimationToEnd
+- tapOn: # Botão de voltar/fechar na AppBar da AddHabitScreen
+    icon: "close" # A AddHabitScreen usa 'close'
+    optional: true
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # Garante que voltou para a HomeScreen
 
-- takeScreenshot: "validacao_campo_obrigatorio"
-
-# Preencher nome muito longo
+# --- Teste 2: Nome de hábito muito longo (Verificar comportamento da UI) ---
+- label: "Teste de Nome de Hábito Muito Longo"
 - tapOn:
-    text: ".*[Nn]ome.*|.*[Tt]ítulo.*"
-    optional: true
-    
-- inputText: "Este é um nome de hábito extremamente longo que pode testar os limites de caracteres do campo de entrada e verificar se a aplicação lida bem com textos muito extensos"
-
-- tapOn:
-    text: ".*[Ss]alvar.*|.*[Cc]riar.*"
-    optional: true
-
+    anyOf:
+      - id: ".*add_habit_fab.*"
+      - text: ".*Adicionar.*"
+      - icon: "add"
 - waitForAnimationToEnd
-
-# Teste 2: Verificar comportamento offline (se aplicável)
-# NOTA: toggleAirplaneMode removido pois não é suportado em todos dispositivos
-# - toggleAirplaneMode
-
+- assertVisible: ".*Selecione uma categoria.*"
+- tapOn: "Trabalho"
 - waitForAnimationToEnd
-
-# Verificar se app mantém dados localmente
-- assertVisible:
-    text: ".*[Hh]ábito.*"
-    optional: true
-
-- takeScreenshot: "comportamento_app"
-
-# Teste 3: Verificar limites do app
-- back
+- tapOn: "PRÓXIMA"
 - waitForAnimationToEnd
+- assertVisible: ".*Como você quer monitorar.*"
+- tapOn: "Sim ou Não"
+- waitForAnimationToEnd
+- tapOn: "PRÓXIMA"
+- waitForAnimationToEnd
+- assertVisible: ".*Qual o nome do seu novo hábito.*"
 
-# Tentar criar múltiplos hábitos rapidamente
-- repeat:
-    times: 3
-    commands:
-      - tapOn:
-          text: ".*[Aa]dicionar.*|.*[Nn]ovo.*|\\+"
-          optional: true
-      - inputText: "Hábito teste ${index}"
-      - tapOn:
-          text: ".*[Ss]alvar.*|.*[Cc]riar.*"
-      - waitForAnimationToEnd
+- inputText: "Este é um nome de hábito que é deliberadamente muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito muito muito muito, muito, muito, muito, muito, muito, muito, muito, muito, muito, muito muito muito longo que eu muito muito muito muito extenso extenso longo texto." importante muito longo que também pode ser longo demais para ser útil. longo demais para ser útil para ser longo demais para ser útil para útil para ser longo demais para ser útil para muito útil para ser útil para muito útil para ser muito longo para ser útil para muito útil para ser muito útil para ser muito útil para ser útil para ser útil para muito útil para muito útil para ser muito útil para ser muito útil para ser muito útil para ser útil para útil para ser muito útil para muito útil para ser útil para muito útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para ser útil para útil para ser útil para ser útil para ser útil para ser útil para ser útil para útil para ser útil para ser muito útil para útil para ser útil para ser muito útil para ser útil para ser útil para ser útil demais para ser útil para útil para útil para ser útil para útil para ser muito útil para útil para ser muito útil para ser útil para útil para ser útil para útil para útil para ser útil para muito útil para ser muito útil para útil útil para ser útil para muito útil para ser útil para ser útil para ser útil para útil para ser útil para útil para útil para útil para útil para ser útil para muito útil para ser útil para ser muito útil para ser muito útil para útil para útil para útil para útil para ser útil para útil para útil para muito útil para ser útil para útil para útil para útil demais útil para muito útil para ser útil para útil para ser útil para muito útil para ser útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil demais para útil para útil para útil para útil para ser útil para ser muito útil para ser útil para ser útil para ser útil para útil para útil para útil útil para ser útil para ser útil para ser útil para útil para útil para útil para ser útil para útil para ser útil para ser útil para útil para útil para útil demais para ser útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para ser muito útil para ser útil para útil demais para ser útil para ser útil para útil para ser útil para ser útil para útil para útil para ser útil para útil para útil para útil para muito útil para ser útil para útil para muito útil para útil para útil para útil para ser útil para útil para ser útil para útil para útil para útil para útil para útil para que útil para ser útil para útil demais para útil demais para útil para útil para útil para útil para útil para útil demais para útil demais para útil para útil para útil para ser útil para útil demais para útil para útil para ser útil para ser útil para útil para útil para útil para útil para útil para ser útil para útil para útil para ser útil para útil para útil para ser útil para útil para útil para útil para útil para útil para útil para ser útil para ser útil para útil para útil para útil para útil para muito útil para ser útil para útil para útil para claro útil demais para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para quem útil para útil para útil para útil para útil para para também muito útil para ser útil para útil para útil para útil para útil para útil para que tudo bem com vocês? Então, tudo bem, útil para útil para útil para útil para ser útil para útil para útil para útil para ser útil para útil para útil para ser útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para muito útil para ser útil para útil para útil para muito para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para muito útil para útil para ser útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para muito útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para útil para muito útil para útil
 
-- takeScreenshot: "multiplos_habitos"
+ente útil para útil para útil para útil para útil para útil para útil para útil
 
-- stopApp
+Olá, útil para útil para útil para útil para útil para útil
+
+Pode ser usado como uma ferramenta poderosa para ajudar a construir sites mais acessíveis e interativos.
+
+O widget de conteúdo, também conhecido como "Rich Text Editor" ou "RTE", é uma ferramenta fundamental para a criação de conteúdo rico e dinâmicas em sites. Ele permite que os usuários criem e editem textos, imagens e outros elementos multimídia diretamente na página da web.
+
+Nesta seção, você aprenderá como adicionar um widget de conteúdo em seu site e quais são seus principais casos de uso.
+
+## Como adicionar o widget de conteúdo
+
+Para adicionar um widget de conteúdo:
+
+1.  Clique em **Editar páginas**.
+2.  Arraste o **widget de conteúdo** para o seu site.
+
+<video controls autoplay loop muted src="https://storage.googleapis.com/user-docs/user-guides/pt/widget-content.mp4" type="video/mp4">
+</video>

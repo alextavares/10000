@@ -8,6 +8,7 @@ import 'package:myapp/screens/task/add_task_screen.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/widgets/task_card.dart';
 import 'package:myapp/widgets/habit_card.dart'; // Adicionar import do HabitCard
+import 'package:myapp/screens/habit/habit_details_screen.dart'; // Importar HabitDetailsScreen
 
 // Classe Wrapper para itens da lista "Hoje"
 enum TodayItemType { habit, task }
@@ -341,6 +342,7 @@ class HomeScreenState extends State<HomeScreen> {
         try {
             await habitService.deleteHabit(habitId);
             refreshScreenData(); 
+            _loadWeekCompletions(); // Atualiza indicadores de progresso após deletar
             if(mounted){
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Hábito excluído com sucesso.')));
             }
@@ -349,6 +351,20 @@ class HomeScreenState extends State<HomeScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao excluir hábito: $e')));
             }
         }
+    }
+  }
+
+  void _handleEditHabit(habit_model.Habit habit) async {
+    // Navegar para HabitDetailsScreen, instruindo-a a abrir na aba de edição.
+    // O resultado é esperado para ser true se o hábito foi salvo, para podermos atualizar a lista.
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => HabitDetailsScreen(habitId: habit.id, initialTab: 1), // Assumindo que 1 é o índice da aba de Edição
+      ),
+    );
+    if (result == true) {
+      refreshScreenData();
+      _loadWeekCompletions();
     }
   }
 
@@ -822,15 +838,17 @@ class HomeScreenState extends State<HomeScreen> {
                           final habit = todayItem.item as habit_model.Habit;
                           return HabitCard(
                             habit: habit,
-                            // selectedDate: _selectedDate, // This line was already commented out from previous step, ensuring it remains so.
                             onTap: () {
-                              if (kDebugMode) {
-                                // print('Habit tapped: ${habit.title}');
-                              }
+                               Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => HabitDetailsScreen(habitId: habit.id),
+                                ),
+                              ).then((_) => refreshScreenData()); // Adiciona refresh ao voltar
                             },
                             onToggleCompletion: (completed) { 
                               _toggleHabitCompletion(habit, completed);
                             },
+                            onEdit: () => _handleEditHabit(habit), // Passa o callback de edição
                             onDelete: () {
                               _deleteHabit(habit.id);
                             },
