@@ -49,80 +49,89 @@ class AchievementService extends ChangeNotifier {
     final newlyUnlocked = <Achievement>[];
     final achievements = Map<String, AchievementProgress>.from(_userProfile!.achievements);
     
+    // Calcular valores agregados uma vez
+    final int maxStreakOverall = habits.isEmpty ? 0 : habits.map((h) => h.streak).reduce((a, b) => a > b ? a : b);
+    final int longestStreakOverall = habits.isEmpty ? 0 : habits.map((h) => h.longestStreak).reduce((a, b) => a > b ? a : b);
+    final int totalCompletionsAllHabits = habits.fold(0, (sum, h) => sum + h.totalCompletions);
+    final int uniqueCategoriesCount = habits.map((h) => h.category.toLowerCase()).toSet().length;
+    final int totalActiveHabitsCount = habits.length;
+
     // Verificar conquistas de streak
-    final maxStreak = habits.isEmpty ? 0 : 
-        habits.map((h) => h.streak).reduce((a, b) => a > b ? a : b);
-    final longestStreak = habits.isEmpty ? 0 : 
-        habits.map((h) => h.longestStreak).reduce((a, b) => a > b ? a : b);
-    
     for (final achievement in AchievementDefinitions.streakAchievements) {
-      final progress = achievements[achievement.id]!;
-      if (!progress.isUnlocked) {
-        final currentProgress = longestStreak > maxStreak ? longestStreak : maxStreak;
-        
-        if (currentProgress >= achievement.requirement) {
-          // Desbloqueou!
+      final progress = achievements[achievement.id];
+      if (progress != null && !progress.isUnlocked) {
+        // Verifica se ALGUM hábito atingiu o streak necessário
+        bool achievedByAnyHabit = false;
+        int currentMaxStreakForThis = 0;
+        for (final habit in habits) {
+          if (habit.streak >= achievement.requirement) {
+            achievedByAnyHabit = true;
+          }
+          if (habit.longestStreak > currentMaxStreakForThis) { // Usar longestStreak para o progresso visual
+            currentMaxStreakForThis = habit.longestStreak;
+          }
+        }
+        // Se nenhum hábito tem streak, usar o streak geral para progresso
+        if (currentMaxStreakForThis == 0 && longestStreakOverall > currentMaxStreakForThis) {
+            currentMaxStreakForThis = longestStreakOverall;
+        }
+
+
+        if (achievedByAnyHabit) {
           achievements[achievement.id] = progress.copyWith(
-            currentProgress: currentProgress,
+            currentProgress: currentMaxStreakForThis, // Pode ser o streak do hábito específico ou o geral
             isUnlocked: true,
             unlockedAt: DateTime.now(),
             isNew: true,
           );
           newlyUnlocked.add(achievement);
           _recentlyUnlocked.add(achievement.id);
-        } else {
-          // Atualiza progresso
-          achievements[achievement.id] = progress.copyWith(
-            currentProgress: currentProgress,
-          );
+        } else if (currentMaxStreakForThis > progress.currentProgress) {
+          achievements[achievement.id] = progress.copyWith(currentProgress: currentMaxStreakForThis);
         }
       }
     }
     
     // Verificar conquistas de conclusões totais
-    final totalCompletions = habits.fold(0, (sum, h) => sum + h.totalCompletions);
-    
     for (final achievement in AchievementDefinitions.completionAchievements) {
-      final progress = achievements[achievement.id]!;
-      if (!progress.isUnlocked) {
-        if (totalCompletions >= achievement.requirement) {
-          // Desbloqueou!
+      final progress = achievements[achievement.id];
+      if (progress != null && !progress.isUnlocked) {
+        if (totalCompletionsAllHabits >= achievement.requirement) {
           achievements[achievement.id] = progress.copyWith(
-            currentProgress: totalCompletions,
+            currentProgress: totalCompletionsAllHabits,
             isUnlocked: true,
             unlockedAt: DateTime.now(),
             isNew: true,
           );
           newlyUnlocked.add(achievement);
           _recentlyUnlocked.add(achievement.id);
-        } else {
-          // Atualiza progresso
-          achievements[achievement.id] = progress.copyWith(
-            currentProgress: totalCompletions,
-          );
+        } else if (totalCompletionsAllHabits > progress.currentProgress) {
+          achievements[achievement.id] = progress.copyWith(currentProgress: totalCompletionsAllHabits);
         }
       }
     }
     
     // Verificar conquistas de variedade
-    final uniqueCategories = habits.map((h) => h.category).toSet().length;
-    final totalActiveHabits = habits.length;
-    
     for (final achievement in AchievementDefinitions.varietyAchievements) {
-      final progress = achievements[achievement.id]!;
-      if (!progress.isUnlocked) {
-        int currentProgress = 0;
+      final progress = achievements[achievement.id];
+      if (progress != null && !progress.isUnlocked) {
+        int currentProgressValue = 0;
+        bool conditionMet = false;
+
+        if (achievement.specialCondition == 'distinct_categories_used') {
+          currentProgressValue = uniqueCategoriesCount;
+        } else if (achievement.specialCondition == 'total_habits_created') {
+          currentProgressValue = totalActiveHabitsCount;
+        }
+        // Adicione mais casos para outros specialCondition se necessário
         
-        if (achievement.id == 'explorer' || achievement.id == 'balanced') {
-          currentProgress = uniqueCategories;
-        } else if (achievement.id == 'renaissance') {
-          currentProgress = totalActiveHabits;
+        if (currentProgressValue >= achievement.requirement) {
+          conditionMet = true;
         }
         
-        if (currentProgress >= achievement.requirement) {
-          // Desbloqueou!
+        if (conditionMet) {
           achievements[achievement.id] = progress.copyWith(
-            currentProgress: currentProgress,
+            currentProgress: currentProgressValue,
             isUnlocked: true,
             unlockedAt: DateTime.now(),
             isNew: true,
@@ -171,31 +180,110 @@ class AchievementService extends ChangeNotifier {
     List<Achievement> newlyUnlocked,
   ) async {
     // Semana perfeita - todos os hábitos completados por 7 dias
-    final perfectWeekAchievement = AchievementDefinitions.consistencyAchievements
-        .firstWhere((a) => a.id == 'perfect_week');
-    final perfectWeekProgress = achievements[perfectWeekAchievement.id]!;
+    // A lógica de 'perfect_week' é mais específica e está em _checkSpecialAchievements.
+    // A lógica de 'perfect_month' e 'early_bird' também.
+
+    // Chamada para _checkSpecialAchievements que agora lida com 'perfect_week_daily_habit'
+    await _checkSpecialAchievements(habits, achievements, newlyUnlocked);
     
-    if (!perfectWeekProgress.isUnlocked && habits.isNotEmpty) {
-      bool hasPerfectWeek = true;
-      final now = DateTime.now();
+    // Atualizar perfil se houver mudanças
+    bool profileChanged = newlyUnlocked.isNotEmpty;
+    if (!profileChanged) {
+        // Verificar se algum progresso foi atualizado
+        _userProfile!.achievements.forEach((key, oldProgress) {
+            if (achievements[key] != null && achievements[key]!.currentProgress != oldProgress.currentProgress) {
+                profileChanged = true;
+            }
+        });
+    }
+
+    if (profileChanged) {
+      // Calcular novos pontos
+      final newPoints = newlyUnlocked.fold(0, (sum, a) => sum + a.points);
+      final totalPoints = (_userProfile?.totalPoints ?? 0) + newPoints; // Lidar com _userProfile null
+      final newLevel = UserAchievementProfile.calculateLevel(totalPoints);
+      final newTitle = UserAchievementProfile.getLevelTitle(newLevel);
       
-      for (int i = 0; i < 7; i++) {
-        final date = now.subtract(Duration(days: i));
-        final dateKey = DateTime(date.year, date.month, date.day);
-        
+      _userProfile = _userProfile?.copyWith( // Lidar com _userProfile null
+        achievements: achievements,
+        totalPoints: totalPoints,
+        level: newLevel,
+        title: newTitle,
+        lastUpdated: DateTime.now(),
+      ) ?? UserAchievementProfile( // Criar um novo se for nulo (improvável aqui, mas seguro)
+        userId: _userProfile?.userId ?? "unknown", // Deveria ter userId
+        achievements: achievements,
+        totalPoints: totalPoints,
+        level: newLevel,
+        title: newTitle,
+        lastUpdated: DateTime.now(),
+      );
+
+      await _saveProfile();
+      notifyListeners();
+    }
+
+    return newlyUnlocked;
+  }
+
+  /// Verifica conquistas especiais com condições específicas
+  Future<void> _checkSpecialAchievements(
+    List<Habit> habits,
+    Map<String, AchievementProgress> achievements, // progresso atual
+    List<Achievement> newlyUnlocked, // lista para adicionar novas desbloqueadas
+  ) async {
+    if (_userProfile == null) return;
+
+    // Semana Impecável (um hábito diário com streak de 7 dias)
+    final perfectWeekDailyAchievement = AchievementDefinitions.getById('perfect_week');
+    if (perfectWeekDailyAchievement != null &&
+        perfectWeekDailyAchievement.specialCondition == 'perfect_week_daily_habit') {
+      final progress = achievements[perfectWeekDailyAchievement.id];
+      if (progress != null && !progress.isUnlocked) {
+        int maxStreakForThis = 0;
+        bool achieved = false;
         for (final habit in habits) {
-          if (habit.isDueToday(date) && habit.completionHistory[dateKey] != true) {
-            hasPerfectWeek = false;
-            break;
+          if (habit.frequency == HabitFrequency.daily && habit.streak >= perfectWeekDailyAchievement.requirement) {
+            achieved = true;
+            if (habit.streak > maxStreakForThis) maxStreakForThis = habit.streak;
+          } else if (habit.frequency == HabitFrequency.daily && habit.streak > maxStreakForThis) {
+             maxStreakForThis = habit.streak;
           }
         }
-        
-        if (!hasPerfectWeek) break;
+        if (achieved) {
+          achievements[perfectWeekDailyAchievement.id] = progress.copyWith(
+            currentProgress: maxStreakForThis, // Usa o maior streak que ativou ou o requirement
+            isUnlocked: true,
+            unlockedAt: DateTime.now(),
+            isNew: true,
+          );
+          newlyUnlocked.add(perfectWeekDailyAchievement);
+          _recentlyUnlocked.add(perfectWeekDailyAchievement.id);
+        } else if (maxStreakForThis > progress.currentProgress) {
+           achievements[perfectWeekDailyAchievement.id] = progress.copyWith(currentProgress: maxStreakForThis);
+        }
       }
-      
-      if (hasPerfectWeek) {
-        achievements[perfectWeekAchievement.id] = perfectWeekProgress.copyWith(
-          currentProgress: 7,
+    }
+
+    // Mês Impecável (um hábito diário com streak de 30 dias)
+    final perfectMonthDailyAchievement = AchievementDefinitions.getById('perfect_month');
+    if (perfectMonthDailyAchievement != null &&
+        perfectMonthDailyAchievement.specialCondition == 'perfect_month_daily_habit') {
+      final progress = achievements[perfectMonthDailyAchievement.id];
+      if (progress != null && !progress.isUnlocked) {
+         int maxStreakForThis = 0;
+         bool achieved = false;
+        for (final habit in habits) {
+          if (habit.frequency == HabitFrequency.daily && habit.streak >= perfectMonthDailyAchievement.requirement) {
+            achieved = true;
+            if (habit.streak > maxStreakForThis) maxStreakForThis = habit.streak;
+          } else if (habit.frequency == HabitFrequency.daily && habit.streak > maxStreakForThis) {
+             maxStreakForThis = habit.streak;
+          }
+        }
+         if (achieved) {
+          achievements[perfectMonthDailyAchievement.id] = progress.copyWith(
+            currentProgress: maxStreakForThis,
           isUnlocked: true,
           unlockedAt: DateTime.now(),
           isNew: true,

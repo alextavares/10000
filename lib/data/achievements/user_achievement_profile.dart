@@ -63,6 +63,10 @@ class UserAchievementProfile {
   final int level;
   final String title; // Título baseado no nível
   final DateTime lastUpdated;
+
+  static const List<int> levelThresholds = [
+      0, 50, 150, 300, 500, 800, 1200, 1700, 2500, 3500, 5000, 7000, 10000, 999999 // Último valor alto para nível máximo
+  ];
   
   const UserAchievementProfile({
     required this.userId,
@@ -113,16 +117,34 @@ class UserAchievementProfile {
   
   /// Calcula quantos pontos faltam para o próximo nível
   static int pointsToNextLevel(int currentPoints) {
-    final levelThresholds = [
-      0, 50, 150, 300, 500, 800, 1200, 1700, 2500, 3500, 5000, 7000, 10000
-    ];
-    
+    // Usa a constante da classe
     for (int i = 1; i < levelThresholds.length; i++) {
       if (currentPoints < levelThresholds[i]) {
         return levelThresholds[i] - currentPoints;
       }
     }
-    return 0; // Nível máximo
+    return 0; // Nível máximo ou já atingiu o último threshold
+  }
+
+  /// Calcula a porcentagem de progresso para o nível atual
+  static double getLevelProgressPercentage(int currentPoints, int currentLevel) {
+    if (currentLevel <= 0 || currentLevel > titles.length) return 0.0; // Nível inválido
+
+    final int currentLevelThreshold = (currentLevel > 1 && currentLevel -1 < levelThresholds.length)
+                                        ? levelThresholds[currentLevel - 1]
+                                        : 0;
+    final int nextLevelThreshold = (currentLevel < levelThresholds.length)
+                                        ? levelThresholds[currentLevel]
+                                        : currentPoints; // Se for nível máximo, progresso é 100% ou não aplicável
+
+    if (nextLevelThreshold <= currentLevelThreshold) return 1.0; // Já no nível máximo ou erro de limiar
+
+    final int pointsInCurrentLevel = currentPoints - currentLevelThreshold;
+    final int pointsForLevelSpan = nextLevelThreshold - currentLevelThreshold;
+
+    if (pointsForLevelSpan <= 0) return 1.0; // Evita divisão por zero, considera completo
+
+    return (pointsInCurrentLevel / pointsForLevelSpan).clamp(0.0, 1.0);
   }
   
   /// Retorna conquistas desbloqueadas

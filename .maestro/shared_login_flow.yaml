@@ -1,0 +1,36 @@
+# Fluxo reutilizável para login
+# Este fluxo assume que já estamos na tela de login.
+appId: com.habitai.app
+---
+# Garante que estamos na tela de login, procurando pelo título ou um campo específico.
+# Opcional: true para não falhar se o app já estiver logado por algum motivo em execuções locais.
+- assertVisible:
+    text: ".*Log In.*"
+    optional: true
+
+# Tocar no campo de Email. O seletor pode precisar de ajuste.
+# Se os TextFormFields não tiverem um texto 'Email' visível como label permanente,
+# pode ser necessário usar um ID ou um selector mais complexo.
+# Assumindo que 'Email' é o labelText que se torna visível.
+- tapOn:
+    text: "Email"
+    optional: true # Se o campo já estiver focado ou o texto não for exatamente "Email"
+- inputText: "${EMAIL}"
+
+# Tocar no campo de Senha.
+- tapOn:
+    text: "Password"
+    optional: true
+- inputText: "${PASSWORD}"
+
+# Tocar no botão de Login.
+- tapOn:
+    text: "Log In" # Este é o texto do ElevatedButton
+
+# Aguardar a navegação e a próxima tela carregar.
+- waitForAnimationToEnd
+
+# Verificar se o login foi bem-sucedido.
+# Procurar por um elemento que só aparece após o login, na MainNavigationScreen ou HomeScreen.
+# "Hoje" parece ser um bom candidato da HomeScreen.
+- assertVisible: ".*Hoje.*"

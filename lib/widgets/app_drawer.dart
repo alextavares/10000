@@ -145,34 +145,46 @@ class _AppDrawerState extends State<AppDrawer> {
               widget.onItemSelected(categoriasIndex);
             },
           ),
+          _buildMenuItem( // Adicionando item para Conquistas
+            context: context,
+            icon: Icons.emoji_events_outlined, // Ícone de conquistas
+            title: 'Conquistas',
+            isSelected: ModalRoute.of(context)?.settings.name == '/achievements', // Verifica a rota atual
+            onTap: () {
+              Navigator.pop(context); // Fecha o drawer
+              Navigator.pushNamed(context, '/achievements'); // Navega para a tela de conquistas
+            },
+          ),
           _buildMenuItem(
             context: context,
             icon: Icons.palette_outlined, 
             title: 'Personalizar',
-            isSelected: false, // No corresponding index yet
+            isSelected: false,
             onTap: () {
               Navigator.pop(context);
               // TODO: Navigate to Personalizar screen (e.g., Navigator.pushNamed(context, '/personalizar');)
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Tela Personalizar em breve!")));
             },
           ),
           _buildMenuItem(
             context: context,
             icon: Icons.settings_outlined,
             title: 'Configurações',
-            isSelected: false, // No corresponding index yet
+            isSelected: ModalRoute.of(context)?.settings.name == '/settings', // Exemplo se houver rota /settings
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to Configurações screen
+              Navigator.pushNamed(context, '/settings'); // Exemplo de navegação
             },
           ),
           _buildMenuItem(
             context: context,
             icon: Icons.backup_outlined,
             title: 'Backup',
-            isSelected: false, // No corresponding index yet
+            isSelected: false,
             onTap: () {
               Navigator.pop(context);
               // TODO: Navigate to Backup screen
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Tela Backup em breve!")));
             },
           ),
           Divider(color: Colors.grey[700], height: 30, indent: 16, endIndent: 16),
@@ -183,27 +195,27 @@ class _AppDrawerState extends State<AppDrawer> {
             isSelected: false,
             onTap: () {
               Navigator.pop(context);
-              // TODO: Navigate to Premium screen/flow
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Funcionalidade Premium em breve!")));
             },
           ),
           _buildMenuItem(
             context: context,
-            icon: Icons.star_outline,
+            icon: Icons.star_border_outlined, // Ícone atualizado
             title: 'Avalie o aplicativo',
             isSelected: false,
             onTap: () {
               Navigator.pop(context);
-              // TODO: Implement app rating functionality
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Funcionalidade de Avaliação em breve!")));
             },
           ),
           _buildMenuItem(
             context: context,
             icon: Icons.contact_support_outlined, 
-            title: 'Contate-Nos',
+            title: 'Contato', // Ajuste no nome
             isSelected: false,
             onTap: () {
               Navigator.pop(context);
-              // TODO: Implement contact functionality
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Funcionalidade de Contato em breve!")));
             },
           ),
         ],

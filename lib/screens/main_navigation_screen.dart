@@ -7,7 +7,8 @@ import 'package:myapp/screens/timer/timer_screen.dart';
 import 'package:myapp/screens/categories/categories_screen.dart';
 import 'package:myapp/widgets/app_drawer.dart';
 import 'package:myapp/widgets/add_item_bottom_sheet.dart';
-import 'package:myapp/screens/habit/add_habit_screen.dart'; 
+// import 'package:myapp/screens/habit/add_habit_screen.dart'; // Antiga tela de adicionar hábito
+import 'package:myapp/screens/habit/upsert_habit_screen.dart'; // Nova tela unificada
 import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart';
 import 'package:myapp/screens/search/search_screen.dart';
 import 'package:myapp/screens/filter/filter_screen.dart';
@@ -15,6 +16,10 @@ import 'package:myapp/screens/stats/stats_screen.dart';
 import 'package:myapp/screens/calendar/calendar_screen.dart';
 import 'package:myapp/utils/logger.dart';
 import 'package:myapp/utils/responsive/responsive.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/data/achievements/achievement_definitions.dart';
+import 'package:myapp/theme/app_theme.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -41,21 +46,32 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   ];
 
   late final List<Widget> _widgetOptions;
+  AchievementService? _achievementService; // Para remover o listener
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this); // Para a aba Tarefas
     _widgetOptions = <Widget>[
-      HomeScreen(key: _homeScreenKey),
-      const HabitsScreen(),
-      TasksScreen(key: _tasksScreenKey, tabController: _tabController),
-      const TimerScreen(),
-      const CategoriesScreen(),
+      HomeScreen(key: _homeScreenKey), // Índice 0
+      const HabitsScreen(),            // Índice 1
+      TasksScreen(key: _tasksScreenKey, tabController: _tabController), // Índice 2
+      const TimerScreen(),             // Índice 3
+      const CategoriesScreen(),        // Índice 4
+      // A tela de Conquistas é navegada via rota, não é uma aba principal aqui.
     ];
     _tabController.addListener(() {
       if (_selectedIndex == 2 && _tabController.indexIsChanging) {
-        // setState(() {});
+        // setState(() {}); // Não parece necessário
+      }
+    });
+
+    // Adicionar listener para AchievementService
+    // Usar WidgetsBinding.instance.addPostFrameCallback para garantir que o context está pronto
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _achievementService = Provider.of<AchievementService>(context, listen: false);
+        _achievementService?.addListener(_showAchievementUnlockedSnackbar);
       }
     });
   }
@@ -63,7 +79,64 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   @override
   void dispose() {
     _tabController.dispose();
+    _achievementService?.removeListener(_showAchievementUnlockedSnackbar);
     super.dispose();
+  }
+
+  void _showAchievementUnlockedSnackbar() {
+    if (!mounted) return;
+    final service = _achievementService; //Provider.of<AchievementService>(context, listen: false);
+    if (service != null && service.recentlyUnlocked.isNotEmpty) {
+      final achievementId = service.recentlyUnlocked.first; // Pega a primeira recém-desbloqueada
+      final achievementDef = AchievementDefinitions.getById(achievementId);
+
+      if (achievementDef != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(achievementDef.icon, color: achievementDef.color, size: 28),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Conquista Desbloqueada!',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      Text(
+                        achievementDef.title,
+                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.surfaceColor.withBlue(AppTheme.surfaceColor.blue + 20), // Um pouco mais claro ou diferente
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            margin: const EdgeInsets.all(10),
+            action: SnackBarAction(
+              label: 'VER',
+              textColor: AppTheme.primaryColor,
+              onPressed: () {
+                Navigator.of(context).pushNamed(AchievementsScreen.routeName);
+              },
+            ),
+          ),
+        );
+      }
+      // Limpa a lista de recém desbloqueadas no serviço após mostrar
+      // para não mostrar novamente na próxima notificação de mudança.
+      // Isso deve ser feito com cuidado para não limpar antes de todas as UIs reagirem se necessário.
+      // Para um SnackBar, limpar após mostrar a primeira é geralmente ok.
+      service.clearRecentlyUnlocked();
+    }
   }
 
   void _onItemTapped(int index) {
@@ -99,13 +172,20 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
                 Navigator.of(context)
                     .push(
                       MaterialPageRoute(
-                        builder: (context) => const AddHabitScreen(),
+                        builder: (context) => const UpsertHabitScreen(), // Usar a nova tela
                       ),
                     )
                     .then((result) {
-                      if (result == true || result == null) { 
-                        if (_selectedIndex == 0) {
+                      // A UpsertHabitScreen retorna true se um hábito foi salvo/criado
+                      if (result == true) {
+                        if (_selectedIndex == 0) { // HomeScreen
                           _homeScreenKey.currentState?.refreshScreenData();
+                        }
+                        // Adicionar lógica para atualizar HabitsScreen se estiver visível
+                        if (_selectedIndex == 1) { // HabitsScreen
+                          // TODO: Adicionar GlobalKey para HabitsScreen e chamar um método de refresh
+                          // Ex: _habitsScreenKey.currentState?.refreshHabits();
+                          Logger.info("Retornou de UpsertHabitScreen, deveria atualizar HabitsScreen se ativa.");
                         }
                       }
                     });

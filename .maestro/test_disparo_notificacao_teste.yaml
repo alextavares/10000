@@ -1,0 +1,131 @@
+appId: com.habitai.app
+env:
+  TEST_USER_EMAIL: "test_notifications@example.com"
+  TEST_USER_PASSWORD: "password123"
+  PERFORM_SETUP_FLOWS: true
+---
+# --- Seção de Setup: Onboarding e Login ---
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*(Bem-vindo|Começar|Próximo|Pular).*')}"
+    file: ./shared_onboarding_flow.yaml
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*Log In.*')}"
+    file: ./shared_login_flow.yaml
+    env:
+      EMAIL: "${TEST_USER_EMAIL}"
+      PASSWORD: "${TEST_USER_PASSWORD}"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # Confirma que estamos na HomeScreen ou MainNavigationScreen
+
+# --- Navegar para a Tela de Configurações de Notificação ---
+- label: "Navegar para Configurações de Notificação"
+- tapOn: # Abrir o Drawer
+    id: ".*menu.*|.*drawer.*"
+    optional: true
+- tapOn:
+    icon: "menu"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: "drawer_aberto_para_notificacoes"
+
+- assertVisible: ".*Configurações.*" # Item de menu no Drawer (ou o nome que leva a Notificações)
+- tapOn: ".*Configurações.*" # Ou o caminho direto se houver "Notificações" no drawer
+- waitForAnimationToEnd
+# Se "Configurações" levar a outra tela de menu:
+- tapOn:
+    text: ".*Notificações.*" # Item dentro de Configurações para ir para NotificationSettingsScreen
+    optional: true # Se o item "Configurações" já levar direto, este será opcional
+- waitForAnimationToEnd
+- assertVisible: "Notificações Inteligentes" # Título da NotificationSettingsScreen
+- takeScreenshot: "tela_configuracoes_notificacao"
+
+# --- Teste 1: Disparar Notificação de Teste ---
+- label: "Disparar Notificação de Teste"
+- assertVisible: "Testar Notificação" # Botão que chama showTestNotification
+- tapOn: "Testar Notificação"
+- waitForAnimationToEnd # Espera um pouco para a notificação ser processada
+
+# Verificação:
+# 1. App não deve crashar.
+# 2. SnackBar de "Notificação teste enviada!" deve aparecer.
+- assertVisible: ".*Notificação de teste enviada!.*"
+- takeScreenshot: "apos_disparar_notificacao_teste"
+
+# O Maestro não pode ver a notificação do sistema.
+# A confirmação de que a action "Adiar" está lá é feita visualmente/manualmente
+# ou verificando os logs do NotificationService se o Maestro tivesse acesso.
+
+# --- Teste 2: Configurar um Lembrete de Hábito e Verificar Agendamento (Indireto) ---
+- label: "Configurar Lembrete de Hábito"
+# Voltar para HomeScreen para criar um hábito
+- tapOn: {icon: "arrow_back"} # Voltar da NotificationSettingsScreen
+- waitForAnimationToEnd
+- assertVisible: ".*Configurações.*" # Se voltou para a tela de Configurações geral
+  optional: true
+- tapOn: {icon: "arrow_back", optional: true} # Voltar novamente se necessário
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # De volta à HomeScreen
+
+# Criar um novo hábito com lembrete
+- tapOn: { anyOf: [{ id: ".*add_habit_fab.*" }, { text: ".*Adicionar.*" }, { icon: "add" } ] }
+- waitForAnimationToEnd
+- tapOn: { text: "Hábito", optional: true }
+- waitForAnimationToEnd
+- assertVisible: "Novo Hábito"
+
+- inputText: "Hábito com Lembrete Teste" # No campo Nome do Hábito
+- waitForAnimationToEnd
+- waitForAssertion: { visible: "Saúde" }
+- tapOn: { below: "Categoria", index: 0 }
+- waitForAnimationToEnd
+- tapOn: "Saúde"
+- waitForAnimationToEnd
+
+# Ativar Lembrete
+- tapOn: "Ativar Lembrete" # O SwitchListTile
+- waitForAnimationToEnd
+- assertVisible: "Horário do Lembrete"
+- tapOn: "Horário do Lembrete" # Para abrir o TimePicker
+- waitForAnimationToEnd
+# Definir um horário (ex: 10:30) - os seletores podem variar
+- tapOn: "10" # Hora
+- waitForAnimationToEnd
+- tapOn: "30" # Minuto
+- waitForAnimationToEnd
+- tapOn: "OK"
+- waitForAnimationToEnd
+- assertVisible: "10:30" # Verificar se o horário foi definido na UI
+- takeScreenshot: "habito_com_lembrete_configurado"
+
+- tapOn: "Criar Hábito"
+- waitForAnimationToEnd
+- assertVisible: ".*Hábito \"Hábito com Lembrete Teste\" salvo com sucesso!.*"
+- waitForAnimationToEnd
+- assertVisible: "Hábito com Lembrete Teste" # Hábito na lista
+- takeScreenshot: "habito_com_lembrete_criado"
+
+# Verificação Indireta:
+# - O app não crashou.
+# - O hábito foi criado com o lembrete (próximo passo seria editar e ver se o lembrete está lá).
+# - Logs do NotificationService (se acessíveis) mostrariam "Notification scheduled...".
+
+# Editar o hábito para verificar se o lembrete foi salvo
+- swipe:
+    direction: LEFT
+    element:
+      text: "Hábito com Lembrete Teste"
+- waitForAnimationToEnd
+- tapOn: "Editar"
+- waitForAnimationToEnd
+- assertVisible: "Editar Hábito"
+- assertVisible: "10:30" # Verifica se o horário do lembrete está correto na tela de edição
+- takeScreenshot: "edicao_habito_com_lembrete_confirmado"
+
+# Cancelar edição
+- tapOn: {icon: "close"} # Botão de fechar na AppBar da UpsertHabitScreen
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # De volta à HomeScreen
+
+- stopApp

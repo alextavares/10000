@@ -8,7 +8,8 @@ import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/screens/habit/widgets/habit_calendar_tab.dart';
 import 'package:myapp/screens/habit/widgets/habit_statistics_tab.dart';
-import 'package:myapp/screens/habit/widgets/habit_edit_tab.dart';
+// import 'package:myapp/screens/habit/widgets/habit_edit_tab.dart'; // Removido
+import 'package:myapp/screens/habit/upsert_habit_screen.dart'; // Adicionado
 import 'package:myapp/utils/logger.dart';
 
 /// Screen for viewing and managing a habit's details with tabs.
@@ -16,14 +17,15 @@ class HabitDetailsScreen extends StatefulWidget {
   /// The ID of the habit to display.
   final String habitId;
   
-  /// Whether to focus on statistics section
-  final bool focusOnStats;
+  /// The initial tab index to display.
+  /// 0: Calendário, 1: Estatísticas (anteriormente Editar era 1, Estatísticas 2)
+  final int initialTab;
 
   /// Constructor for HabitDetailsScreen.
   const HabitDetailsScreen({
     super.key,
     required this.habitId,
-    this.focusOnStats = false,
+    this.initialTab = 0,
   });
 
   @override
@@ -36,14 +38,22 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
   Habit? _habit;
   String? _errorMessage;
   late TabController _tabController;
+  bool _didHabitUpdate = false; // Flag para indicar se o hábito foi atualizado
 
   @override
   void initState() {
     super.initState();
+    // Nova ordem das abas: Calendário (0), Estatísticas (1)
+    // O initialTab da HomeScreen para "Editar" não é mais usado para setar aba aqui,
+    // pois a edição agora é uma navegação separada.
+    // Se initialTab for 1, focará em Estatísticas.
+
+    int tabControllerInitialIndex = widget.initialTab == 1 ? 1 : 0;
+
     _tabController = TabController(
-      length: 3, 
+      length: 2, // Apenas duas abas agora: Calendário e Estatísticas
       vsync: this,
-      initialIndex: widget.focusOnStats ? 1 : 0, // Start on stats tab if requested
+      initialIndex: tabControllerInitialIndex,
     );
     _loadHabit();
   }
@@ -133,6 +143,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
       await habitService.deleteHabit(_habit!.id);
       
       if (mounted) {
+        // Pop com true para indicar que a HomeScreen deve atualizar a lista
         Navigator.pop(context, true);
       }
     } catch (e) {
@@ -145,6 +156,34 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
     }
   }
 
+  // Callback para ser chamado pelo HabitEditTab quando o hábito for salvo
+  // Este método não é mais necessário aqui, pois a edição é feita em UpsertHabitScreen
+  // Future<void> _onHabitUpdatedFromEditTab() async {
+  //   await _loadHabit(); // Recarrega os dados do hábito
+  //   if (mounted) {
+  //     setState(() {
+  //       _didHabitUpdate = true; // Marca que houve atualização para o pop
+  //     });
+  //     // Opcional: Mover para a aba de calendário ou estatísticas após salvar
+  //     // _tabController.animateTo(0);
+  //   }
+  // }
+
+  Future<void> _navigateToEditHabit() async {
+    if (_habit == null) return;
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => UpsertHabitScreen(habitToEdit: _habit!),
+      ),
+    );
+    if (result == true && mounted) {
+      _loadHabit(); // Recarrega os dados do hábito após a edição
+      setState(() {
+        _didHabitUpdate = true;
+      });
+    }
+  }
+
   Future<void> _toggleDateCompletion(DateTime date, bool completed) async {
     if (_habit == null || !mounted) return;
 
@@ -152,7 +191,12 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
       final habitService = context.read<HabitService>();
       await habitService.markHabitCompletion(widget.habitId, date, completed);
       
-      if (mounted) await _loadHabit();
+      if (mounted) {
+        await _loadHabit(); // Recarrega o hábito para atualizar dados como streak, etc.
+        setState(() {
+          _didHabitUpdate = true; // Marcar que houve uma atualização
+        });
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -202,6 +246,9 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
       
       if (mounted) {
         await _loadHabit();
+        setState(() {
+          _didHabitUpdate = true; // Marcar que houve uma atualização
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Progresso do hábito reiniciado com sucesso')),
         );
@@ -268,13 +315,19 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          // Ao pressionar o botão voltar, retorna o status da atualização
+          onPressed: () => Navigator.pop(context, _didHabitUpdate),
         ),
         title: Text(
           _habit!.title,
           style: const TextStyle(color: Colors.white),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Editar Hábito',
+            onPressed: _navigateToEditHabit,
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: Colors.white),
             color: AppTheme.surfaceColor,
@@ -298,7 +351,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
                 value: 'reset',
                 child: Row(
                   children: [
-                    Icon(Icons.refresh, color: Colors.orange),
+                    Icon(Icons.refresh, color: Colors.orangeAccent),
                     SizedBox(width: 12),
                     Text('Reiniciar progresso', style: TextStyle(color: Colors.white)),
                   ],
@@ -308,7 +361,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
                 value: 'archive',
                 child: Row(
                   children: [
-                    Icon(Icons.archive_outlined, color: Colors.blue),
+                    Icon(Icons.archive_outlined, color: Colors.blueAccent),
                     SizedBox(width: 12),
                     Text('Arquivar', style: TextStyle(color: Colors.white)),
                   ],
@@ -318,7 +371,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete_outline, color: Colors.red),
+                    Icon(Icons.delete_outline, color: AppTheme.errorColor),
                     SizedBox(width: 12),
                     Text('Excluir hábito', style: TextStyle(color: Colors.white)),
                   ],
@@ -332,34 +385,34 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
           indicatorColor: _habit!.color,
           indicatorWeight: 3,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.grey,
+          unselectedLabelColor: Colors.grey[600],
           tabs: const [
-            Tab(text: 'Calendário'),
-            Tab(text: 'Estatísticas'),
-            Tab(text: 'Editar'),
+            Tab(icon: Icon(Icons.calendar_today_outlined), text: 'Calendário'), // Índice 0
+            // Tab(icon: Icon(Icons.edit_note), text: 'Editar'), // Removida
+            Tab(icon: Icon(Icons.bar_chart_outlined), text: 'Estatísticas'),  // Agora Índice 1
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          // Calendar Tab
-          HabitCalendarTab(
-            habit: _habit!,
-            onToggleCompletion: _toggleDateCompletion,
-          ),
-          
-          // Statistics Tab
-          HabitStatisticsTab(
-            habit: _habit!,
-          ),
-          
-          // Edit Tab
-          HabitEditTab(
-            habit: _habit!,
-            onHabitUpdated: _loadHabit,
-          ),
-        ],
+      body: WillPopScope(
+        onWillPop: () async {
+          Navigator.pop(context, _didHabitUpdate);
+          return true;
+        },
+        child: TabBarView(
+          controller: _tabController,
+          children: [
+            // Calendar Tab (Índice 0)
+            HabitCalendarTab(
+              habit: _habit!,
+              onToggleCompletion: _toggleDateCompletion,
+            ),
+
+            // Statistics Tab (Índice 1)
+            HabitStatisticsTab(
+              habit: _habit!,
+            ),
+          ],
+        ),
       ),
     );
   }

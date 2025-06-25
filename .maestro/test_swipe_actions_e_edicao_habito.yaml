@@ -1,0 +1,173 @@
+# Teste para Swipe Actions e Edição de Hábito
+appId: com.habitai.app
+env:
+  TEST_USER_EMAIL: "test@example.com" # ATENÇÃO: Substituir pelo email de teste real
+  TEST_USER_PASSWORD: "password123" # ATENÇÃO: Substituir pela senha de teste real
+  PERFORM_SETUP_FLOWS: true
+  HABIT_TO_EDIT_TITLE: "Hábito para Editar com Swipe"
+  HABIT_EDITED_TITLE: "Hábito Editado via Swipe Action"
+---
+# --- Seção de Setup: Onboarding, Login e Criação de Hábito de Teste ---
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*(Bem-vindo|Começar|Próximo|Pular).*')}"
+    file: ./shared_onboarding_flow.yaml
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*Log In.*')}"
+    file: ./shared_login_flow.yaml
+    env:
+      EMAIL: "${TEST_USER_EMAIL}"
+      PASSWORD: "${TEST_USER_PASSWORD}"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+
+# Criar um hábito específico para este teste
+- tapOn: { anyOf: [{ id: ".*add_habit_fab.*" }, { text: ".*Adicionar.*" }, { icon: "add" } ] }
+- waitForAnimationToEnd
+- tapOn: { text: "Hábito", optional: true } # Se AddItemBottomSheet abrir
+- waitForAnimationToEnd
+- assertVisible: "Novo Hábito" # Título da UpsertHabitScreen
+
+# Preencher UpsertHabitScreen
+- tapOn: { text: "Nome do Hábito", optional: true } # Focar no campo
+- inputText: "${HABIT_TO_EDIT_TITLE}"
+- waitForAssertion: { visible: "Saúde", timeout: 10000 }
+- tapOn: { below: "Categoria", index: 0 } # Abrir dropdown de categoria
+- waitForAnimationToEnd
+- tapOn: "Saúde" # Selecionar Saúde
+- waitForAnimationToEnd
+# Outros campos como Prioridade, Tipo de Monitoramento, Frequência, Lembrete podem usar valores padrão
+# ou serem configurados aqui se necessário para o teste específico.
+# Para este teste, o foco é no swipe e edição do título.
+- tapOn: "Criar Hábito"
+- waitForAnimationToEnd
+- assertVisible: ".*Hábito \"${HABIT_TO_EDIT_TITLE}\" salvo com sucesso!.*" # SnackBar
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+- assertVisible: "${HABIT_TO_EDIT_TITLE}"
+- takeScreenshot: "antes_swipe_e_edicao"
+
+# --- Teste de Swipe Action e Edição ---
+- label: "Testar Swipe para Editar Hábito"
+- swipe: # Realiza o swipe no card do hábito
+    direction: LEFT # Ou RIGHT, dependendo de como foi implementado
+    element:
+      text: "${HABIT_TO_EDIT_TITLE}"
+- waitForAnimationToEnd
+- takeScreenshot: "apos_swipe_habito"
+
+- assertVisible: "Editar" # Verifica se o botão "Editar" apareceu
+- tapOn: "Editar"
+- waitForAnimationToEnd
+
+# Agora devemos estar na UpsertHabitScreen em modo de edição
+- assertVisible: "Editar Hábito" # Título da UpsertHabitScreen no modo de edição
+- assertVisible: "${HABIT_TO_EDIT_TITLE}" # Verifica se o título atual está no campo (ou como valor do TextFormField)
+
+# Modificar o título do hábito
+- tapOn: # Focar no campo de nome do hábito
+    text: "${HABIT_TO_EDIT_TITLE}" # Tocar no texto atual para focar e permitir apagar
+    index: 0 # Pode ser necessário se houver múltiplos elementos com este texto
+- eraseText
+- inputText: "${HABIT_EDITED_TITLE}"
+- waitForAnimationToEnd
+- takeScreenshot: "edicao_habito_novo_titulo_upsert"
+
+# Salvar alterações
+- tapOn: "Salvar Alterações" # Botão na UpsertHabitScreen
+- waitForAnimationToEnd
+
+# Verificar SnackBar de sucesso
+- assertVisible: ".*Hábito \"${HABIT_EDITED_TITLE}\" salvo com sucesso!.*"
+- waitForAnimationToEnd
+
+# Verificar se voltamos para HomeScreen e o hábito foi atualizado
+- assertVisible: ".*Hoje.*"
+- assertNotVisible: "${HABIT_TO_EDIT_TITLE}"
+- assertVisible: "${HABIT_EDITED_TITLE}"
+- takeScreenshot: "apos_edicao_habito_upsert"
+
+# --- Teste de Swipe Action e Exclusão (permanece o mesmo, pois a exclusão não mudou de lugar) ---
+- label: "Testar Swipe para Excluir Hábito"
+- swipe:
+    direction: LEFT
+    element:
+      text: "${HABIT_EDITED_TITLE}"
+- waitForAnimationToEnd
+- takeScreenshot: "apos_swipe_para_excluir"
+
+- assertVisible: "Excluir"
+- tapOn: "Excluir"
+- waitForAnimationToEnd
+
+# Diálogo de confirmação
+- assertVisible: ".*Confirmar Exclusão.*"
+- assertVisible: ".*Tem certeza que deseja excluir.*"
+- takeScreenshot: "dialogo_exclusao_habito"
+- tapOn: "Excluir" # Botão de confirmação no diálogo
+- waitForAnimationToEnd
+
+# Verificar SnackBar de sucesso (opcional)
+- assertVisible: ".*Hábito excluído com sucesso.*"
+- waitForAnimationToEnd
+
+# Verificar se o hábito foi removido da HomeScreen
+- assertNotVisible: "${HABIT_EDITED_TITLE}"
+- takeScreenshot: "apos_exclusao_habito_final"
+
+
+# --- Teste de Navegação para Estatísticas Pós Criação/Edição ---
+# O hábito ${HABIT_EDITED_TITLE} foi excluído. Vamos criar um novo para testar a navegação para estatísticas a partir dos detalhes.
+- label: "Navegar para Estatísticas de um Novo Hábito pela HabitDetailsScreen"
+- tapOn: { anyOf: [{ id: ".*add_habit_fab.*" }, { text: ".*Adicionar.*" }, { icon: "add" } ] }
+- waitForAnimationToEnd
+- tapOn: { text: "Hábito", optional: true } # Se AddItemBottomSheet abrir
+- waitForAnimationToEnd
+- assertVisible: "Novo Hábito" # Título da UpsertHabitScreen
+
+# Preencher UpsertHabitScreen para o novo hábito de stats
+- tapOn: { text: "Nome do Hábito", optional: true }
+- inputText: "Hábito para Stats"
+- waitForAssertion: { visible: "Saúde", timeout: 10000 }
+- tapOn: { below: "Categoria", index: 0 }
+- waitForAnimationToEnd
+- tapOn: "Saúde"
+- waitForAnimationToEnd
+- tapOn: "Criar Hábito"
+- waitForAnimationToEnd
+- assertVisible: ".*Hábito \"Hábito para Stats\" salvo com sucesso!.*"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+- assertVisible: "Hábito para Stats"
+- takeScreenshot: "habito_para_stats_criado_swipe_test"
+
+# Abrir detalhes do novo hábito "Hábito para Stats"
+- tapOn: "Hábito para Stats" # Tocar no card do hábito na HomeScreen
+- waitForAnimationToEnd
+- assertVisible: "Calendário" # Verifica se a HabitDetailsScreen abriu na aba padrão (Calendário)
+- assertVisible: "Hábito para Stats" # Verifica o título do hábito na AppBar da HabitDetailsScreen
+
+# Mudar para a aba de Estatísticas
+# A ordem das abas é: Calendário (0), Estatísticas (1)
+- tapOn: "Estatísticas" # Texto da Tab
+- waitForAnimationToEnd
+- takeScreenshot: "aba_estatisticas_visivel_swipe_test"
+
+# Verificar elementos chave da aba de estatísticas
+- assertVisible: "Pontuação de hábito"
+- assertVisible: "Série"
+- assertVisible: "Vezes concluída"
+- assertVisible: "Progresso ao Longo do Tempo"
+- assertVisible: "Desafios de Sequência"
+- assertVisible: "Semana" # Botão de período
+- assertVisible: "Mês"   # Botão de período
+- assertVisible: "Ano"   # Botão de período
+
+# Voltar para a HomeScreen
+- tapOn:
+    icon: "arrow_back"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+
+- stopApp

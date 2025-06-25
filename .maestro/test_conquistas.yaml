@@ -1,0 +1,164 @@
+appId: com.habitai.app
+env:
+  TEST_USER_EMAIL: "test_achievements@example.com" # Usuário específico para este teste
+  TEST_USER_PASSWORD: "password123"
+  PERFORM_SETUP_FLOWS: true
+  NEW_HABIT_FOR_ACHIEVEMENT: "Hábito Conquistador"
+---
+# --- Seção de Setup: Onboarding e Login ---
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*(Bem-vindo|Começar|Próximo|Pular).*')}"
+    file: ./shared_onboarding_flow.yaml
+- runFlow:
+    when:
+      condition: "${PERFORM_SETUP_FLOWS == true && visible(text: '.*Log In.*')}"
+    file: ./shared_login_flow.yaml
+    env:
+      EMAIL: "${TEST_USER_EMAIL}"
+      PASSWORD: "${TEST_USER_PASSWORD}"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*" # Confirma que estamos na HomeScreen
+
+# --- Teste 1: Navegar para Tela de Conquistas e Verificar UI Inicial ---
+- label: "Navegar e Verificar Tela de Conquistas"
+- tapOn: # Abrir o Drawer (pode ser um ícone de menu ou swipe da esquerda)
+    id: ".*menu.*|.*drawer.*" # Tentar por ID primeiro
+    optional: true
+- tapOn: # Se não houver ID, tentar por um ícone comum de menu
+    icon: "menu"
+    optional: true
+- waitForAnimationToEnd
+- takeScreenshot: "drawer_aberto"
+
+- assertVisible: "Conquistas" # Item de menu no Drawer
+- tapOn: "Conquistas"
+- waitForAnimationToEnd
+
+- assertVisible: "Minhas Conquistas" # Título da AchievementsScreen
+- takeScreenshot: "tela_conquistas_vazia_ou_inicial"
+
+# Verificar elementos do perfil de jogador (nível, pontos)
+# Os valores exatos dependerão do estado inicial do usuário de teste
+- assertVisible: ".*Nível.*" # Ex: "Nível 1"
+- assertVisible: ".*Pontos.*" # Ex: "0 Pontos"
+- assertVisible: ".*Iniciante.*" # Título do nível
+
+# Verificar se categorias de conquistas são exibidas
+- assertVisible: ".*Sequências Incríveis.*" # Exemplo de nome de categoria de conquista
+- assertVisible: ".*Marcas de Conclusão.*"
+
+# Voltar para a HomeScreen
+- tapOn:
+    icon: "arrow_back"
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+
+# --- Teste 2: Desbloquear Conquista "Pioneiro dos Hábitos" ---
+- label: "Desbloquear Pioneiro dos Hábitos"
+# Criar o primeiro hábito
+- tapOn: { anyOf: [{ id: ".*add_habit_fab.*" }, { text: ".*Adicionar.*" }, { icon: "add" } ] }
+- waitForAnimationToEnd
+- tapOn: { text: "Hábito", optional: true }
+- waitForAnimationToEnd
+- assertVisible: "Novo Hábito"
+
+- tapOn: { text: "Nome do Hábito", optional: true }
+- inputText: "${NEW_HABIT_FOR_ACHIEVEMENT}"
+- waitForAssertion: { visible: "Saúde", timeout: 10000 }
+- tapOn: { below: "Categoria", index: 0 }
+- waitForAnimationToEnd
+- tapOn: "Saúde"
+- waitForAnimationToEnd
+- tapOn: "Criar Hábito"
+- waitForAnimationToEnd
+- assertVisible: ".*Hábito \"${NEW_HABIT_FOR_ACHIEVEMENT}\" salvo com sucesso!.*"
+- waitForAnimationToEnd
+- assertVisible: "${NEW_HABIT_FOR_ACHIEVEMENT}"
+- takeScreenshot: "primeiro_habito_criado_para_conquista"
+
+# Navegar para a tela de Conquistas novamente
+- tapOn: { icon: "menu", optional: true }
+- waitForAnimationToEnd
+- tapOn: "Conquistas"
+- waitForAnimationToEnd
+- assertVisible: "Minhas Conquistas"
+- takeScreenshot: "tela_conquistas_apos_primeiro_habito"
+
+# Verificar se "Pioneiro dos Hábitos" está desbloqueada
+# O card da conquista deve ter uma aparência diferente (ex: cor, ícone de check)
+- assertVisible: "Pioneiro dos Hábitos"
+- assertVisible: # Verificar um elemento que indica desbloqueio, ex: data ou ícone
+    element:
+      descendantOf:
+        text: "Pioneiro dos Hábitos" # Dentro do card da conquista
+      icon: "check_circle" # Ícone de check que aparece quando desbloqueada
+    optional: true # O ícone pode variar
+- assertVisible: # Ou verificar pela data de desbloqueio
+    element:
+      descendantOf:
+        text: "Pioneiro dos Hábitos"
+      text: ".*Desbloqueado em.*" # Regex para a data
+    optional: true
+- assertVisible: # Verificar se o indicador "NOVO" (se houver) está lá
+    element:
+        descendantOf:
+            text: "Pioneiro dos Hábitos"
+        point: "90%,10%" # Posição aproximada de um badge "novo" no canto
+    optional: true
+- takeScreenshot: "conquista_pioneiro_desbloqueada"
+
+# --- Teste 3: Desbloquear "Primeira Missão Cumprida" ---
+- label: "Desbloquear Primeira Missão Cumprida"
+# Voltar para HomeScreen para completar o hábito
+- tapOn: { icon: "arrow_back" }
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+
+# Marcar o hábito como concluído
+- tapOn: # Tocar no checkbox do hábito
+    element:
+      rightOf: "${NEW_HABIT_FOR_ACHIEVEMENT}" # Checkbox à direita do título
+      className: ".*Checkbox.*" # Ou tipo de widget específico
+    optional: true
+- tapOn: # Fallback se o checkbox não for encontrado, tenta tocar no card para abrir detalhes e marcar lá
+    text: "${NEW_HABIT_FOR_ACHIEVEMENT}"
+    optional: true
+- waitForAnimationToEnd
+# Se abriu detalhes:
+- tapOn: { text: "Marcar Concluído", optional: true } # Botão na tela de detalhes ou card
+- tapOn: { text: "Confirmar", optional: true } # Se houver confirmação
+- waitForAnimationToEnd
+- if: # Se voltou para HomeScreen, ok. Senão, voltar.
+    notVisible: ".*Hoje.*"
+  commands:
+    - back
+- waitForAnimationToEnd
+- assertVisible: ".*Hoje.*"
+- takeScreenshot: "habito_marcado_para_conquista"
+
+# Navegar para Conquistas
+- tapOn: { icon: "menu", optional: true }
+- waitForAnimationToEnd
+- tapOn: "Conquistas"
+- waitForAnimationToEnd
+- assertVisible: "Minhas Conquistas"
+- takeScreenshot: "tela_conquistas_apos_primeira_conclusao"
+
+# Verificar se "Primeira Missão Cumprida" está desbloqueada
+- assertVisible: "Primeira Missão Cumprida"
+- assertVisible:
+    element:
+      descendantOf:
+        text: "Primeira Missão Cumprida"
+      icon: "check_circle"
+    optional: true
+- assertVisible:
+    element:
+      descendantOf:
+        text: "Primeira Missão Cumprida"
+      text: ".*Desbloqueado em.*"
+    optional: true
+- takeScreenshot: "conquista_primeira_missao_desbloqueada"
+
+- stopApp

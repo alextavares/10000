@@ -42,9 +42,19 @@ class AchievementDefinitions {
   // 🔥 CONQUISTAS DE STREAK
   static const List<Achievement> streakAchievements = [
     Achievement(
-      id: 'first_week',
-      title: 'Primeira Semana',
-      description: 'Complete 7 dias seguidos!',
+      id: 'streak_3_days',
+      title: 'Embalando no Ritmo',
+      description: 'Mantenha uma sequência de 3 dias em qualquer hábito.',
+      icon: Icons.whatshot_outlined, // Ícone um pouco diferente para diferenciar
+      color: Colors.deepOrangeAccent,
+      category: AchievementCategory.streak,
+      requirement: 3,
+      points: 25,
+    ),
+    Achievement(
+      id: 'first_week', // Mantém esta como a de 7 dias
+      title: 'Primeira Semana de Fogo!', // Nome um pouco mais empolgante
+      description: 'Complete 7 dias seguidos em um hábito!',
       icon: Icons.local_fire_department,
       color: Colors.orange,
       category: AchievementCategory.streak,
@@ -129,35 +139,49 @@ class AchievementDefinitions {
   
   // 🌈 CONQUISTAS DE VARIEDADE
   static const List<Achievement> varietyAchievements = [
+     Achievement( // Nova conquista "Pioneiro dos Hábitos"
+      id: 'habit_pioneer',
+      title: 'Pioneiro dos Hábitos',
+      description: 'Você criou seu primeiro hábito! O primeiro passo é o mais importante.',
+      icon: Icons.flag_circle_outlined,
+      color: Colors.lightGreen,
+      category: AchievementCategory.variety, // Pode ser 'completion' ou 'special' também
+      requirement: 1, // Requer 1 hábito criado/ativo
+      points: 10,
+      specialCondition: 'total_habits_created', // Para ajudar o service a identificar
+    ),
     Achievement(
       id: 'explorer',
-      title: 'Explorador',
-      description: 'Crie hábitos em 3 categorias diferentes',
-      icon: Icons.explore,
+      title: 'Explorador de Categorias', // Nome mais específico
+      description: 'Crie ou use hábitos em 3 categorias diferentes.',
+      icon: Icons.explore_outlined,
       color: Colors.teal,
       category: AchievementCategory.variety,
-      requirement: 3,
+      requirement: 3, // 3 categorias distintas
       points: 75,
+      specialCondition: 'distinct_categories_used', // Para ajudar o service
     ),
     Achievement(
-      id: 'balanced',
+      id: 'balanced_life', // ID ajustado para evitar conflito com 'balanced' se existir em outro lugar
       title: 'Vida Equilibrada',
-      description: 'Mantenha hábitos ativos em 5 categorias',
-      icon: Icons.balance,
+      description: 'Mantenha hábitos ativos em 5 categorias diferentes.',
+      icon: Icons.eco_outlined, // Ícone alternativo
       color: Colors.cyan,
       category: AchievementCategory.variety,
-      requirement: 5,
+      requirement: 5, // 5 categorias distintas
       points: 150,
+      specialCondition: 'distinct_categories_used',
     ),
     Achievement(
-      id: 'renaissance',
-      title: 'Renascentista',
-      description: 'Tenha pelo menos 10 hábitos diferentes ativos',
-      icon: Icons.palette,
+      id: 'habit_collector', // Nome mais direto
+      title: 'Colecionador de Hábitos',
+      description: 'Tenha pelo menos 5 hábitos diferentes ativos.', // Reduzido de 10 para ser mais alcançável inicialmente
+      icon: Icons.inventory_2_outlined,
       color: Colors.pink,
       category: AchievementCategory.variety,
-      requirement: 10,
-      points: 250,
+      requirement: 5, // 5 hábitos ativos
+      points: 100, // Ajuste de pontos
+      specialCondition: 'total_habits_created',
     ),
   ];
   
