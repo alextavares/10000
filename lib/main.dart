@@ -162,9 +162,10 @@ class MyApp extends StatelessWidget {
           '/onboarding': (context) => const OnboardingScreen(),
           // '/categories': (context) => const CategoriesScreen(), // CategoriesScreen é uma aba em MainNavigationScreen
           // '/timer': (context) => const TimerScreen(), // TimerScreen é uma aba em MainNavigationScreen
-          '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen Placeholder'))), // Exemplo
+          '/settings': (context) => const Scaffold(body: Center(child: Text('Settings Screen Placeholder'))),
           '/notification-settings': (context) => const NotificationSettingsScreen(),
           '/test-notifications': (context) => const NotificationTestScreen(),
+          AchievementsScreen.routeName: (context) => const AchievementsScreen(), // Adicionar rota
           // TestCharactersScreen não parece ser uma rota principal
         },
         onGenerateRoute: (settings) {
@@ -179,8 +180,8 @@ class MyApp extends StatelessWidget {
               },
             );
           }
-          // Manter outras rotas onGenerateRoute se existirem e forem necessárias
-          return null; // Retornar null para rotas não tratadas
+          // Adicionar aqui outras rotas geradas dinamicamente se necessário
+          return null;
         },
       ),
     );
@@ -203,10 +204,38 @@ class AuthWrapper extends StatelessWidget {
           );
         }
         
-        if (snapshot.hasData && snapshot.data != null) {
+        final user = snapshot.data;
+        if (user != null) {
+          // Usuário está logado, inicializar AchievementService se necessário
+          // É importante chamar isso apenas uma vez ou quando o usuário muda.
+          // O AchievementService internamente pode verificar se já foi inicializado para este usuário.
+
+          // Usar Future.microtask para evitar chamar setState durante o build do Provider.
+          Future.microtask(() async {
+            final achievementService = Provider.of<AchievementService>(context, listen: false);
+            if (achievementService.userProfile == null || achievementService.userProfile!.userId != user.uid) {
+              try {
+                await achievementService.initialize(user.uid);
+                Logger.info("AchievementService initialized for user ${user.uid} from AuthWrapper", tag: "AuthWrapper");
+
+                // Opcional: Disparar uma verificação inicial de conquistas
+                // final habitService = Provider.of<HabitService>(context, listen: false);
+                // final List<Habit> habits = await habitService.getAllHabits();
+                // if (habits.isNotEmpty) {
+                //   await achievementService.checkAchievements(habits);
+                //   Logger.info("Initial achievement check run from AuthWrapper.", tag: "AuthWrapper");
+                // }
+
+              } catch (e,s) {
+                  Logger.error("Error initializing AchievementService from AuthWrapper: $e", e, s, tag: "AuthWrapper");
+              }
+            }
+          });
+
           return const MainNavigationScreen(); 
         }
         
+        // Usuário não está logado
         return const LoginScreen();
       },
     );

@@ -1,22 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:myapp/models/habit.dart';
 import 'package:uuid/uuid.dart';
-import 'package:myapp/services/notification_service.dart'; // Usar o serviço base de notificação
+import 'package:myapp/services/notification_service.dart';
+import 'package:myapp/services/achievement_service.dart'; // Importar AchievementService
 import 'package:myapp/utils/logger.dart';
-// import 'package:myapp/services/notifications/smart_notification_service.dart'; // Pode ser usado em conjunto ou substituído
-// import 'package:myapp/services/notifications/behavior_analyzer.dart';
 
 class HabitService extends ChangeNotifier {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
-  final NotificationService notificationService; // Injetar NotificationService
+  final NotificationService notificationService;
+  final AchievementService achievementService; // Injetar AchievementService
   final Uuid _uuid = const Uuid();
 
-  // List<Habit> _habits = []; // Remover se formos buscar sempre do Firestore
-
-  HabitService({required this.firestore, required this.auth, required this.notificationService});
+  HabitService({
+    required this.firestore,
+    required this.auth,
+    required this.notificationService,
+    required this.achievementService, // Adicionar ao construtor
+  });
 
   String? get _userId => auth.currentUser?.uid;
 
@@ -34,7 +40,7 @@ class HabitService extends ChangeNotifier {
       return snapshot.docs.map((doc) => Habit.fromMap(doc.data())).toList();
     });
   }
-  
+
   Future<List<Habit>> getAllHabits() async { // Usado por CategoryService e outros
     if (_userId == null) return [];
     final snapshot = await _habitsCollection.orderBy('createdAt', descending: true).get();
@@ -53,6 +59,11 @@ class HabitService extends ChangeNotifier {
       if (habitWithUser.notificationsEnabled && habitWithUser.reminderTime != null) {
         await notificationService.scheduleHabitReminder(habitWithUser);
       }
+      // Verificar conquistas após adicionar hábito
+      // Precisamos da lista atual de hábitos para algumas conquistas (como Mestre das Categorias ou Pioneiro)
+      final allHabits = await getAllHabits();
+      await achievementService.checkAchievements(_userId!, habit: habitWithUser, eventType: 'habit_created', allUserHabits: allHabits);
+
       notifyListeners();
       return habitWithUser.id;
     } catch (e, s) {
@@ -116,11 +127,17 @@ class HabitService extends ChangeNotifier {
     if (_userId == null) throw Exception("User not authenticated.");
     try {
       final habit = await getHabitById(id);
-      if (habit != null) {
-        await notificationService.cancelHabitReminder(habit);
+      final habitToDelete = await getHabitById(id);
+      if (habitToDelete != null) {
+        await notificationService.cancelHabitReminder(habitToDelete);
       }
       await _habitsCollection.doc(id).delete();
       Logger.info('Habit deleted: $id', tag: 'HabitService');
+
+      // Verificar conquistas após deletar hábito (pode afetar contagens)
+      final allHabits = await getAllHabits();
+      await achievementService.checkAchievements(_userId!, eventType: 'habit_deleted', allUserHabits: allHabits);
+
       notifyListeners();
     } catch (e, s) {
       Logger.error('Error deleting habit $id: $e', e, s, tag: 'HabitService');
@@ -174,11 +191,13 @@ class HabitService extends ChangeNotifier {
       await updateHabit(updatedHabit); // Salva o hábito atualizado (que também reagendará notificações)
       Logger.info('Habit $habitId completion for $date marked as $completed', tag: 'HabitService');
 
-      // O SmartNotificationService poderia ser invocado aqui se necessário para análises
-      // final smartNotificationService = SmartNotificationService();
-      // if (completed) {
-      //   await smartNotificationService.analyzeUserBehavior(await getAllHabits());
-      // }
+      // Verificar conquistas após marcar conclusão e atualizar streak
+      final finalUpdatedHabit = await getHabitById(habitId); // Pega a versão mais recente com streak atualizado
+      if (finalUpdatedHabit != null) {
+        final allHabits = await getAllHabits();
+        await achievementService.checkAchievements(_userId!, habit: finalUpdatedHabit, eventType: 'habit_completed', allUserHabits: allHabits);
+        await achievementService.checkAchievements(_userId!, habit: finalUpdatedHabit, eventType: 'streak_updated', allUserHabits: allHabits);
+      }
 
     } else {
        Logger.warning('Habit $habitId not found for marking completion.', tag: 'HabitService');
@@ -193,12 +212,17 @@ class HabitService extends ChangeNotifier {
         completionHistory: {},
         dailyProgress: {},
         streak: 0,
-        // longestStreak: 0, // Manter o recorde de longestStreak ou resetar? Decisão de produto. Vamos manter.
+        // longestStreak: 0, // Decidido manter o longestStreak
         totalCompletions: 0,
         updatedAt: DateTime.now(),
       );
       await updateHabit(resetHabit); // Salva e reagenda notificações
       Logger.info('Habit progress reset for: ${habit.title}', tag: 'HabitService');
+
+      // Verificar conquistas após resetar (pode afetar streaks, etc.)
+      final allHabits = await getAllHabits();
+      await achievementService.checkAchievements(_userId!, habit: resetHabit, eventType: 'progress_reset', allUserHabits: allHabits);
+
     } else {
       Logger.warning('Habit $habitId not found for progress reset.', tag: 'HabitService');
     }
