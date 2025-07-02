@@ -5,6 +5,7 @@ import 'package:myapp/theme/app_theme.dart';
 // If AuthWrapper is in main.dart, you'd typically pass it via navigator.
 // Let's import AuthWrapper from main.dart
 import 'package:myapp/main.dart'; // Assuming AuthWrapper is accessible via main.dart
+import 'package:myapp/screens/onboarding/welcome_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
@@ -64,13 +65,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Future<void> _navigateToNextScreen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool onboardingCompleted = prefs.getBool('onboardingCompleted') ?? false;
+    bool hasSeenWelcome = prefs.getBool('hasSeenWelcome') ?? false;
 
     if (mounted) { // Check if the widget is still in the tree
       if (!onboardingCompleted) {
         Navigator.of(context).pushReplacementNamed('/onboarding');
+      } else if (!hasSeenWelcome) {
+        // Primeira vez após onboarding - mostrar tela de boas-vindas
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+        );
       } else {
-        // Onboarding is completed. Navigate to AuthWrapper.
-        // AuthWrapper will then decide to show LoginScreen or MainNavigationScreen.
+        // Já viu a tela de boas-vindas - verificar autenticação
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const AuthWrapper()),
         );

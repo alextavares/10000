@@ -4,6 +4,7 @@ import 'package:myapp/services/auth_strategy.dart';
 import 'package:myapp/screens\main_navigation_screen.dart';
 import 'package:myapp/screens\auth\login_screen.dart';
 import 'package:myapp/services\service_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Tela de boas-vindas para estratégia "Try First, Register Later"
 class WelcomeScreen extends StatefulWidget {
@@ -49,6 +50,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     setState(() => _isStartingTrial = true);
     
     try {
+      // Marcar que já viu a tela de boas-vindas
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('hasSeenWelcome', true);
+      
       // Fazer login anônimo automaticamente para o trial
       final serviceProvider = ServiceProvider.of(context);
       await serviceProvider.authService.signInAnonymously();
@@ -74,7 +79,11 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     }
   }
 
-  void _goToLogin() {
+  void _goToLogin() async {
+    // Marcar que já viu a tela de boas-vindas
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasSeenWelcome', true);
+    
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const LoginScreen(),
