@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/habits/habits_screen.dart';
+import 'package:myapp/screens/habits/add_habit_simple_screen.dart'; // Adicionar importação
 import 'package:myapp/screens/tasks/tasks_screen.dart';
 import 'package:myapp/screens/task/add_task_screen.dart'; 
 import 'package:myapp/screens/timer/timer_screen.dart';
@@ -158,6 +159,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   void _showAddItemBottomSheet(BuildContext context) {
+    Logger.debug("=== BOTÃO + CLICADO ===");
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -170,13 +172,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
       builder: (BuildContext bc) {
         return AddItemBottomSheet(
           onItemSelected: (AddItemType type) {
+            Logger.debug("=== TIPO SELECIONADO: $type ===");
             Navigator.pop(context); 
             switch (type) {
               case AddItemType.habit:
+                Logger.debug("=== NAVEGANDO PARA UPSERT HABIT SCREEN ===");
                 Navigator.of(context)
                     .push(
                       MaterialPageRoute(
-                        builder: (context) => const UpsertHabitScreen(), // Usar a nova tela
+                        builder: (context) => const UpsertHabitScreen(), // Usar a tela completa
                       ),
                     )
                     .then((result) {
