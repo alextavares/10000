@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myapp/models/habit.dart';
-import 'package:myapp/models/category.dart';
 import 'package:myapp/screens/habit/habit_details_screen.dart';
-import 'package:myapp/theme/category_colors.dart';
-import 'package:myapp/services/category_service.dart';
-import 'package:myapp/services/service_provider.dart';
 
 class HabitCardRedesigned extends StatelessWidget {
   final Habit habit;

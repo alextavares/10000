@@ -2,15 +2,15 @@ import 'package:flutter/foundation.dart'; // Import for kDebugMode
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/task.dart';
+import 'package:myapp/models/recurring_task.dart';
 import 'package:myapp/screens/task/add_task_screen.dart'; // Import AddTaskScreen
 import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart'; // Import AddRecurringTaskScreen
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/services/task_service.dart';
 import 'package:myapp/services/recurring_task_service.dart';
 import 'package:myapp/widgets/task_card.dart'; // Import the new TaskCard
+import 'package:myapp/screens/habits/add_habit_simple_screen.dart'; // Import AddHabitSimpleScreen
 import 'package:myapp/widgets/recurring_task_card.dart'; // Import the new RecurringTaskCard
-import 'package:myapp/screens/habit/add_habit_screen.dart'; // Added import
-import 'package:myapp/models/recurring_task.dart';
 import 'package:myapp/utils/logger.dart';
 
 class TasksScreen extends StatefulWidget {
@@ -158,7 +158,7 @@ class TasksScreenState extends State<TasksScreen> { // Made public
                   if (kDebugMode) {
                     Logger.debug('[TasksScreen] _showAddTaskOptions: Navigating to AddHabitScreen.');
                   }
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddHabitScreen())); // Navigate to AddHabitScreen
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddHabitSimpleScreen())); // Navigate to AddHabitScreen
                 },
               ),
               ListTile(

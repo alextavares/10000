@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/models/recurring_task.dart';
-import 'package:intl/intl.dart';
 
 class RecurringTaskCard extends StatelessWidget {
   final RecurringTask recurringTask;

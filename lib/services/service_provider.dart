@@ -6,6 +6,9 @@ import 'package:myapp/services/task_service.dart';
 import 'package:myapp/services/recurring_task_service.dart';
 import 'package:myapp/services/ai_service.dart';
 import 'package:myapp/services/notification_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/services/category_service.dart';
 import 'package:myapp/services/achievement_service.dart'; // Importar AchievementService
 
 /// Service provider for accessing all services throughout the app.
@@ -91,10 +94,7 @@ class ServiceProvider extends InheritedWidget {
         // o CategoryService ou a CategoriesScreen precisa de um mecanismo de atualização.
         // O CategoryService já foi refatorado para usar Firestore.
         Provider<CategoryService>(
-          create: (context) => CategoryService(
-            // firestore: FirebaseFirestore.instance, // Assumindo que CategoryService usa instâncias globais
-            // auth: FirebaseAuth.instance,
-          ),
+          create: (context) => CategoryService(),
         ),
 
         // AchievementService precisa do HabitService para buscar todos os hábitos.
@@ -106,12 +106,7 @@ class ServiceProvider extends InheritedWidget {
         // Opção 1: AchievementService não depende de HabitService no construtor,
         // mas o método checkAndUnlockAchievements recebe List<Habit> (já planejado).
         ChangeNotifierProvider<AchievementService>(
-          create: (context) => AchievementService(
-            firestore: FirebaseFirestore.instance, // Assumindo que AchievementService usa instâncias globais ou DI
-            auth: FirebaseAuth.instance,
-            habitService: Provider.of<HabitService>(context, listen: false) // Temporário, idealmente não injetar HabitService aqui
-                                                                          // Ou melhor, o checkAchievements recebe List<Habit>
-          ),
+          create: (context) => AchievementService(),
         ),
         ChangeNotifierProvider<HabitService>(
           create: (context) => HabitService(
@@ -131,18 +126,41 @@ class ServiceProvider extends InheritedWidget {
           create: (_) => AIService(apiKey: aiApiKey),
         ),
       ],
-      // O ConsumerX precisa ser atualizado para incluir AchievementService
-      child: Consumer7<AuthService, HabitService, TaskService, RecurringTaskService, AIService, NotificationService, AchievementService>(
-        builder: (context, authService, habitService, taskService, recurringTaskService, aiService, notificationService, achievementService, _) {
-          return ServiceProvider(
-            authService: authService,
-            habitService: habitService,
-            taskService: taskService,
-            recurringTaskService: recurringTaskService,
-            aiService: aiService,
-            notificationService: notificationService,
-            achievementService: achievementService, // Passar para o InheritedWidget
-            child: child,
+      child: Consumer<AchievementService>(
+        builder: (context, achievementService, _) {
+          return Consumer<AuthService>(
+            builder: (context, authService, _) {
+              return Consumer<HabitService>(
+                builder: (context, habitService, _) {
+                  return Consumer<TaskService>(
+                    builder: (context, taskService, _) {
+                      return Consumer<RecurringTaskService>(
+                        builder: (context, recurringTaskService, _) {
+                          return Consumer<AIService>(
+                            builder: (context, aiService, _) {
+                              return Consumer<NotificationService>(
+                                builder: (context, notificationService, _) {
+                                  return ServiceProvider(
+                                    authService: authService,
+                                    habitService: habitService,
+                                    taskService: taskService,
+                                    recurringTaskService: recurringTaskService,
+                                    aiService: aiService,
+                                    notificationService: notificationService,
+                                    achievementService: achievementService,
+                                    child: child,
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+            },
           );
         },
       ),
@@ -183,25 +201,4 @@ extension ServiceProviderExtension on BuildContext {
 
   /// Gets the AchievementService.
   AchievementService get achievementService => ServiceProvider.of(this).achievementService; // Adicionar getter
-}
-
-/// Extension methods for BuildContext to easily access services.
-extension ServiceProviderExtension on BuildContext {
-  /// Gets the AuthService.
-  AuthService get authService => ServiceProvider.of(this).authService;
-
-  /// Gets the HabitService.
-  HabitService get habitService => ServiceProvider.of(this).habitService;
-
-  /// Gets the TaskService.
-  TaskService get taskService => ServiceProvider.of(this).taskService;
-
-  /// Gets the RecurringTaskService.
-  RecurringTaskService get recurringTaskService => ServiceProvider.of(this).recurringTaskService;
-
-  /// Gets the AIService.
-  AIService get aiService => ServiceProvider.of(this).aiService;
-
-  /// Gets the NotificationService.
-  NotificationService get notificationService => ServiceProvider.of(this).notificationService;
 }

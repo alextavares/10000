@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste de Criação de Hábitos - HabitAI</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        .log {
+            background-color: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste de Criação de Hábitos - HabitAI</h1>
+    
+    <div>
+        <button id="testBtn" onclick="runTest()">Executar Teste</button>
+        <button onclick="clearLog()">Limpar Log</button>
+    </div>
+    
+    <div id="log" class="log"></div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            logDiv.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        async function runTest() {
+            const btn = document.getElementById('testBtn');
+            btn.disabled = true;
+            
+            log('=== INICIANDO TESTE DE CRIAÇÃO DE HÁBITO ===', 'info');
+            
+            try {
+                // Abrir o app em nova janela
+                log('Abrindo HabitAI...', 'info');
+                const appWindow = window.open('http://localhost:8080', 'habitai', 'width=1200,height=800');
+                
+                if (!appWindow) {
+                    log('❌ Não foi possível abrir o app. Verifique se o popup foi bloqueado.', 'error');
+                    btn.disabled = false;
+                    return;
+                }
+                
+                log('✅ App aberto. Aguarde 5 segundos para carregar...', 'success');
+                
+                // Aguardar carregamento
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                
+                log('⚠️ IMPORTANTE: Faça login manualmente no app que foi aberto!', 'info');
+                log('Após fazer login, clique em "Continuar Teste" abaixo.', 'info');
+                
+                // Criar botão para continuar
+                const continueBtn = document.createElement('button');
+                continueBtn.textContent = 'Continuar Teste';
+                continueBtn.onclick = async () => {
+                    continueBtn.disabled = true;
+                    
+                    try {
+                        // Tentar acessar o Firebase da janela do app
+                        const firebase = appWindow.firebase;
+                        
+                        if (!firebase) {
+                            log('❌ Firebase não encontrado na janela do app', 'error');
+                            return;
+                        }
+                        
+                        const auth = firebase.auth();
+                        const user = auth.currentUser;
+                        
+                        if (!user) {
+                            log('❌ Usuário não está autenticado!', 'error');
+                            return;
+                        }
+                        
+                        log('✅ Usuário autenticado: ' + user.uid, 'success');
+                        log('   Email: ' + (user.email || 'Anônimo'), 'info');
+                        
+                        // Criar hábito de teste
+                        const db = firebase.firestore();
+                        const habitId = 'test-' + Date.now();
+                        
+                        const testHabit = {
+                            id: habitId,
+                            title: 'Hábito de Teste Automatizado',
+                            description: 'Criado via teste automatizado',
+                            category: 'Saúde',
+                            icon: '🏃',
+                            color: '#4CAF50',
+                            priority: 'Normal',
+                            frequency: 'daily',
+                            startDate: new Date().toISOString(),
+                            trackingType: 'simNao',
+                            userId: user.uid,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString(),
+                            completionHistory: {},
+                            dailyProgress: {},
+                            streak: 0,
+                            longestStreak: 0,
+                            totalCompletions: 0,
+                            notificationsEnabled: false
+                        };
+                        
+                        log('📝 Criando hábito de teste...', 'info');
+                        
+                        await db.collection('users').doc(user.uid).collection('habits').doc(habitId).set(testHabit);
+                        log('✅ Hábito criado com sucesso!', 'success');
+                        
+                        // Ler o hábito
+                        const doc = await db.collection('users').doc(user.uid).collection('habits').doc(habitId).get();
+                        
+                        if (doc.exists) {
+                            log('✅ Hábito verificado no Firestore', 'success');
+                            log('Dados: ' + JSON.stringify(doc.data(), null, 2), 'info');
+                            
+                            // Deletar o hábito de teste
+                            await doc.ref.delete();
+                            log('🗑️ Hábito de teste removido', 'success');
+                        }
+                        
+                        log('=== TESTE CONCLUÍDO COM SUCESSO ===', 'success');
+                        
+                    } catch (error) {
+                        log('❌ Erro: ' + error.message, 'error');
+                        if (error.code) {
+                            log('   Código: ' + error.code, 'error');
+                        }
+                    }
+                };
+                
+                document.body.insertBefore(continueBtn, document.getElementById('log'));
+                
+            } catch (error) {
+                log('❌ Erro geral: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

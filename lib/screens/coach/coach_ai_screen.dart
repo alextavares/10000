@@ -72,7 +72,7 @@ class _CoachAIScreenState extends State<CoachAIScreen> with SingleTickerProvider
 
     try {
       // Load habits
-      final habits = await context.habitService.getHabits();
+      final habits = context.habitService.getHabits();
       
       setState(() {
         _habits = habits;

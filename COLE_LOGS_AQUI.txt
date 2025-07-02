@@ -1,0 +1,21 @@
+// INSTRUÇÕES PARA CAPTURAR LOGS DO CONSOLE
+// 
+// Por favor, siga estes passos:
+// 
+// 1. Abra o navegador em http://localhost:8080
+// 2. Abra o Console do Desenvolvedor (F12 → Console)
+// 3. Faça login no app
+// 4. Tente criar um hábito
+// 5. No console, você verá logs como:
+//    - [DEBUG] === INICIANDO PROCESSO DE SALVAMENTO DE HÁBITO ===
+//    - [DEBUG] User ID: xxx
+//    - [ERROR] === ERRO NO FIRESTORE ===
+// 
+// 6. COPIE TODOS OS LOGS que aparecerem
+// 7. COLE os logs aqui neste arquivo
+// 8. SALVE o arquivo
+//
+// COLE OS LOGS ABAIXO DESTA LINHA:
+// =====================================
+
+

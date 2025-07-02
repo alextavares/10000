@@ -128,7 +128,7 @@ class UserAchievementProfile {
 
   /// Calcula a porcentagem de progresso para o nível atual
   static double getLevelProgressPercentage(int currentPoints, int currentLevel) {
-    if (currentLevel <= 0 || currentLevel > titles.length) return 0.0; // Nível inválido
+    if (currentLevel <= 0 || currentLevel > levelThresholds.length) return 0.0; // Nível inválido
 
     final int currentLevelThreshold = (currentLevel > 1 && currentLevel -1 < levelThresholds.length)
                                         ? levelThresholds[currentLevel - 1]

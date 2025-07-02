@@ -290,11 +290,12 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen>
           }
         }
         
-        await habitService.addHabit(
+        final newHabit = Habit(
+          id: '',
           title: suggestion.name,
-          categoryName: suggestion.category,
-          categoryIcon: suggestion.icon,
-          categoryColor: suggestion.color,
+          category: suggestion.category,
+          icon: suggestion.icon,
+          color: suggestion.color,
           frequency: frequency,
           trackingType: trackingType,
           startDate: DateTime.now(),
@@ -303,7 +304,12 @@ class _HabitSelectionScreenState extends State<HabitSelectionScreen>
           reminderTime: suggestion.defaultReminder,
           notificationsEnabled: suggestion.defaultReminder != null,
           description: suggestion.description,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          completionHistory: {},
+          dailyProgress: {},
         );
+        await habitService.addHabit(newHabit);
       }
       
       if (mounted) {

@@ -23,3 +23,7 @@ plugins {
 }
 
 include(":app")
+
+includeBuild("../integration_test") {
+    name = "integration_tests_build"
+}

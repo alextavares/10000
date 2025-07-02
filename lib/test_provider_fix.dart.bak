@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/services/service_provider.dart';
+import 'package:myapp/services/task_service.dart';
+import 'package:myapp/services/category_service.dart';
+
+// Arquivo de teste para verificar se os providers estão funcionando corretamente
+class TestProviderWidget extends StatelessWidget {
+  const TestProviderWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Testar acesso via extensão
+    final taskService = context.taskService;
+    print('TaskService via extension: $taskService');
+    
+    // Testar acesso via Provider.of
+    final categoryService = Provider.of<CategoryService>(context, listen: false);
+    print('CategoryService via Provider.of: $categoryService');
+    
+    // Testar acesso via context.read
+    final taskServiceRead = context.read<TaskService>();
+    print('TaskService via context.read: $taskServiceRead');
+    
+    return const Scaffold(
+      body: Center(
+        child: Text('Provider Test'),
+      ),
+    );
+  }
+}

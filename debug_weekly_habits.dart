@@ -20,7 +20,7 @@ void main() async {
     daysOfWeek: [1, 3, 5], // Monday, Wednesday, Friday
   );
   
-  final habits = await habitService.getHabits();
+  final habits = habitService.getHabits();
   print('Created habits: ${habits.length}');
   
   if (habits.isNotEmpty) {

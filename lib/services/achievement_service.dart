@@ -141,7 +141,7 @@ class AchievementService extends ChangeNotifier {
         } else {
           // Atualiza progresso
           achievements[achievement.id] = progress.copyWith(
-            currentProgress: currentProgress,
+            currentProgress: currentProgressValue,
           );
         }
       }
@@ -170,59 +170,6 @@ class AchievementService extends ChangeNotifier {
       notifyListeners();
     }
     
-    return newlyUnlocked;
-  }
-  
-  /// Verifica conquistas especiais com condições específicas
-  Future<void> _checkSpecialAchievements(
-    List<Habit> habits,
-    Map<String, AchievementProgress> achievements,
-    List<Achievement> newlyUnlocked,
-  ) async {
-    // Semana perfeita - todos os hábitos completados por 7 dias
-    // A lógica de 'perfect_week' é mais específica e está em _checkSpecialAchievements.
-    // A lógica de 'perfect_month' e 'early_bird' também.
-
-    // Chamada para _checkSpecialAchievements que agora lida com 'perfect_week_daily_habit'
-    await _checkSpecialAchievements(habits, achievements, newlyUnlocked);
-    
-    // Atualizar perfil se houver mudanças
-    bool profileChanged = newlyUnlocked.isNotEmpty;
-    if (!profileChanged) {
-        // Verificar se algum progresso foi atualizado
-        _userProfile!.achievements.forEach((key, oldProgress) {
-            if (achievements[key] != null && achievements[key]!.currentProgress != oldProgress.currentProgress) {
-                profileChanged = true;
-            }
-        });
-    }
-
-    if (profileChanged) {
-      // Calcular novos pontos
-      final newPoints = newlyUnlocked.fold(0, (sum, a) => sum + a.points);
-      final totalPoints = (_userProfile?.totalPoints ?? 0) + newPoints; // Lidar com _userProfile null
-      final newLevel = UserAchievementProfile.calculateLevel(totalPoints);
-      final newTitle = UserAchievementProfile.getLevelTitle(newLevel);
-      
-      _userProfile = _userProfile?.copyWith( // Lidar com _userProfile null
-        achievements: achievements,
-        totalPoints: totalPoints,
-        level: newLevel,
-        title: newTitle,
-        lastUpdated: DateTime.now(),
-      ) ?? UserAchievementProfile( // Criar um novo se for nulo (improvável aqui, mas seguro)
-        userId: _userProfile?.userId ?? "unknown", // Deveria ter userId
-        achievements: achievements,
-        totalPoints: totalPoints,
-        level: newLevel,
-        title: newTitle,
-        lastUpdated: DateTime.now(),
-      );
-
-      await _saveProfile();
-      notifyListeners();
-    }
-
     return newlyUnlocked;
   }
 
@@ -288,8 +235,9 @@ class AchievementService extends ChangeNotifier {
           unlockedAt: DateTime.now(),
           isNew: true,
         );
-        newlyUnlocked.add(perfectWeekAchievement);
-        _recentlyUnlocked.add(perfectWeekAchievement.id);
+        newlyUnlocked.add(perfectMonthDailyAchievement);
+        _recentlyUnlocked.add(perfectMonthDailyAchievement.id);
+        }
       }
     }
     

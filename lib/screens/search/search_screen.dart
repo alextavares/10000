@@ -60,7 +60,7 @@ class _SearchScreenState extends State<SearchScreen> {
       final recurringTaskService = ServiceProvider.of(context).recurringTaskService;
 
       final tasks = await taskService.getTasks();
-      final habits = await habitService.getHabits();
+      final habits = await habitService.getAllHabits();
       final recurringTasks = await recurringTaskService.getRecurringTasks();
 
       List<SearchItem> items = [];

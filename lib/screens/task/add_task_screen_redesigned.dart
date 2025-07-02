@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:myapp/models/task.dart';
 import 'package:myapp/models/category.dart';
-import 'package:myapp/services/service_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:myapp/services/category_service.dart';
+import 'package:myapp/services/task_service.dart';
 import 'package:myapp/theme/category_colors.dart';
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +31,7 @@ class _AddTaskScreenRedesignedState extends State<AddTaskScreenRedesigned> {
   bool _notificationsEnabled = false;
   TaskPriority _priority = TaskPriority.normal;
   bool _isPending = true;
-  bool _showSubitems = false;
+  final bool _showSubitems = false;
   
   final List<String> _subitems = [];
   List<Category> _categories = [];
@@ -63,7 +64,7 @@ class _AddTaskScreenRedesignedState extends State<AddTaskScreenRedesigned> {
   }
 
   Future<void> _loadCategories() async {
-    final categoryService = ServiceProvider.of<CategoryService>(context);
+    final categoryService = context.read<CategoryService>();
     final categories = await categoryService.getAllCategories();
     if (mounted) {
       setState(() {
@@ -184,7 +185,7 @@ class _AddTaskScreenRedesignedState extends State<AddTaskScreenRedesigned> {
     });
 
     try {
-      final taskService = ServiceProvider.of(context).taskService;
+      final taskService = context.read<TaskService>();
       final task = Task(
         id: _isEditing ? widget.taskToEdit!.id : uuid.v4(),
         title: _titleController.text.trim(),
@@ -716,7 +717,7 @@ class _AddTaskScreenRedesignedState extends State<AddTaskScreenRedesigned> {
       });
 
       try {
-        final taskService = ServiceProvider.of(context).taskService;
+        final taskService = context.read<TaskService>();
         await taskService.deleteTask(widget.taskToEdit!.id);
         
         if (mounted) {

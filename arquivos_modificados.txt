@@ -1,0 +1,9 @@
+A	SYNC_WITH_JULES.md
+M	ios/Flutter/flutter_export_environment.sh
+M	ios/Runner/GeneratedPluginRegistrant.m
+M	linux/flutter/generated_plugin_registrant.cc
+M	pubspec.lock
+M	pubspec.yaml
+A	pubspec.yaml.backup
+A	pubspec_clean.yaml
+M	windows/flutter/generated_plugin_registrant.cc

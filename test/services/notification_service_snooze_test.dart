@@ -63,9 +63,13 @@ void main() {
       uiLocalNotificationDateInterpretation: anyNamed('uiLocalNotificationDateInterpretation'),
       payload: anyNamed('payload'),
       matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
-    )).thenAnswer((_) async {});
+    )).thenAnswer((_) async {
+      return null;
+    });
 
-    when(mockFlutterLocalNotificationsPlugin.cancel(any)).thenAnswer((_) async {});
+    when(mockFlutterLocalNotificationsPlugin.cancel(any)).thenAnswer((_) async {
+      return null;
+    });
 
     // Para testar _handleSnoozeAction, precisamos de uma forma de chamar _onNotificationResponse
     // ou expor _handleSnoozeAction (o que não é ideal para um método privado).

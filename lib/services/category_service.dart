@@ -111,7 +111,7 @@ class CategoryService {
       throw ArgumentError("Default categories cannot be modified.");
     }
     if (category.userId != _userId) {
-      throw SecurityException("User not authorized to update this category.");
+      throw Exception("User not authorized to update this category.");
     }
 
     // Check if another category (excluding the current one) already has the new name
@@ -153,7 +153,7 @@ class CategoryService {
       throw ArgumentError("Categorias padrão não podem ser excluídas.");
     }
     if (categoryToDelete.userId != _userId) {
-      throw SecurityException("User not authorized to delete this category.");
+      throw Exception("User not authorized to delete this category.");
     }
 
     try {

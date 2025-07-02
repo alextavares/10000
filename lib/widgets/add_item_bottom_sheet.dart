@@ -12,9 +12,9 @@ class AddItemBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final Color cardColor = isDarkMode ? Colors.grey[850]! : Colors.white;
+    final Color cardColor = isDarkMode ? (Colors.grey[850] ?? Colors.grey) : Colors.white;
     final Color textColor = isDarkMode ? Colors.white : Colors.black87;
-    final Color subTextColor = isDarkMode ? Colors.grey[400]! : Colors.grey[600]!;
+    final Color subTextColor = isDarkMode ? (Colors.grey[400] ?? Colors.grey) : (Colors.grey[600] ?? Colors.grey);
     // Use a consistent accent color, perhaps from AppTheme if available
     final Color accentColor = AppTheme.primaryColor; // Example, adjust as per your AppTheme
 

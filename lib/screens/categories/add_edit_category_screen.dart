@@ -6,7 +6,6 @@ import 'package:myapp/services/habit_service.dart'; // Para reatribuição de h�
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/utils/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 class AddEditCategoryScreen extends StatefulWidget {
   final Category? categoryToEdit;

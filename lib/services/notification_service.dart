@@ -1,6 +1,7 @@
 import 'dart:convert'; // Para codificar/decodificar o payload
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/material.dart';
 import 'package:myapp/models/habit.dart';
 import 'package:myapp/utils/logger.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -14,8 +15,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
   // O ideal é que este handler seja leve.
   // Para ações complexas, considere usar um plugin de processamento em background.
   Logger.info(
-      'Notification Tapped (Background Handler): Payload: ${notificationResponse.payload}, ActionID: ${notificationResponse.actionId}',
-      tag: 'NotificationServiceBG');
+      'Notification Tapped (Background Handler): Payload: ${notificationResponse.payload}, ActionID: ${notificationResponse.actionId}');
 
   if (notificationResponse.actionId == NotificationService.snoozeActionId &&
       notificationResponse.payload != null) {
@@ -40,7 +40,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
         // final String? originalReminderTimeStr = payloadData['originalReminderTime'];
 
         if (habitId == null || title == null || body == null || colorValue == null) {
-          Logger.warning("BackgroundSnooze: Incomplete payload.", tag: "NotificationServiceBG");
+                  Logger.warning("BackgroundSnooze: Incomplete payload.");
           return;
         }
 
@@ -50,7 +50,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
         // Se o payloadData tiver o 'idHash' seria mais direto.
         // Assumindo que o `habitId` do payload é o `habit.id` string.
         await localNotificationsPlugin.cancel(habitId.hashCode);
-        Logger.info("BackgroundSnooze: Cancelled original notification $habitId", tag: "NotificationServiceBG");
+                Logger.info("BackgroundSnooze: Cancelled original notification $habitId");
 
 
         final tz.TZDateTime snoozedTime = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 10));
@@ -61,7 +61,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
           channelDescription: 'Canal para lembretes de hábitos adiados.',
           importance: Importance.max,
           priority: Priority.high,
-          color: Color(colorValue),
+          color: Color(colorValue ?? 0xFFFFFFFF),
           icon: '@mipmap/ic_launcher',
         );
         const iosDetailsSnooze = DarwinNotificationDetails(
@@ -70,7 +70,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
             android: androidDetailsSnooze, iOS: iosDetailsSnooze);
 
         // Usar um ID único para a notificação adiada para não colidir com o original recorrente
-        final snoozedNotificationId = (habitId + "_snooze_${DateTime.now().millisecondsSinceEpoch}").hashCode;
+        final snoozedNotificationId = ("${habitId}_snooze_${DateTime.now().millisecondsSinceEpoch}").hashCode;
 
         await localNotificationsPlugin.zonedSchedule(
             snoozedNotificationId,
@@ -79,13 +79,12 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
             snoozedTime,
             detailsSnooze,
             androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-            uiLocalNotificationDateInterpretation:
-                UILocalNotificationDateInterpretation.absoluteTime,
+
             payload: notificationResponse.payload // Reutilizar payload original
             );
-        Logger.info("BackgroundSnooze: Notification for $habitId snoozed to $snoozedTime (ID: $snoozedNotificationId)", tag: "NotificationServiceBG");
+        Logger.info("BackgroundSnooze: Notification for $habitId snoozed to $snoozedTime (ID: $snoozedNotificationId)");
       } catch (e, s) {
-        Logger.error("Error in background snooze handler: $e", e, s, tag: "NotificationServiceBG");
+        Logger.error("Error in background snooze handler: $e", e, s);
       }
     });
   }
@@ -139,16 +138,15 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationResponse,
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
-    Logger.info("NotificationService initialized with actions.", tag: "NotificationService");
+    Logger.info("NotificationService initialized with actions.");
   }
 
   Future<void> _onNotificationResponse(NotificationResponse response) async {
     Logger.info(
-        'Notification response received. Payload: ${response.payload}, ActionID: ${response.actionId}, Input: ${response.input}',
-        tag: 'NotificationService');
+        'Notification response received. Payload: ${response.payload}, ActionID: ${response.actionId}, Input: ${response.input}');
 
     if (response.payload == null || response.payload!.isEmpty) {
-      Logger.warning('Notification response with empty payload.', tag: 'NotificationService');
+      Logger.warning('Notification response with empty payload.');
       return;
     }
 
@@ -157,19 +155,19 @@ class NotificationService {
       final String? habitId = payloadData['habitId'];
 
       if (habitId == null) {
-        Logger.warning('Habit ID not found in payload.', tag: 'NotificationService');
+        Logger.warning('Habit ID not found in payload.');
         return;
       }
 
       if (response.actionId == snoozeActionId) {
-        Logger.info("Snooze action tapped for habit $habitId", tag: 'NotificationService');
+        Logger.info("Snooze action tapped for habit $habitId");
         await _handleSnoozeAction(payloadData);
       } else {
-        Logger.info("Notification tapped (not an action) for habit $habitId. Consider navigation.", tag: 'NotificationService');
+        Logger.info("Notification tapped (not an action) for habit $habitId. Consider navigation.");
         // Ex: GlobalNavigator.navigateToHabitDetails(habitId); // Implementar com um service de navegação global
       }
     } catch (e, s) {
-      Logger.error("Error processing notification response: $e", e, s, tag: 'NotificationService');
+      Logger.error("Error processing notification response: $e", e, s);
     }
   }
 
@@ -182,7 +180,7 @@ class NotificationService {
     // mas pode ser útil para lógicas mais complexas ou para reconstruir o hábito.
 
     if (habitId == null || title == null || body == null || colorValue == null) {
-      Logger.warning("Snooze action called with incomplete payload: $payloadData", tag: 'NotificationService');
+      Logger.warning("Snooze action called with incomplete payload: $payloadData");
       return;
     }
 
@@ -190,7 +188,7 @@ class NotificationService {
     // A notificação original tem o ID habit.id.hashCode.
     // As notificações de snooze terão IDs diferentes.
     await _notifications.cancel(habitId.hashCode);
-    Logger.info("Snooze: Cancelled original notification for $habitId (ID: ${habitId.hashCode})", tag: "NotificationService");
+    Logger.info("Snooze: Cancelled original notification for $habitId (ID: ${habitId.hashCode})");
 
 
     final tz.TZDateTime snoozedTime = tz.TZDateTime.now(tz.local).add(const Duration(minutes: 10));
@@ -215,7 +213,7 @@ class NotificationService {
     );
     final detailsSnooze = NotificationDetails(android: androidDetailsSnooze, iOS: iosDetailsSnooze);
 
-    final snoozedNotificationId = (habitId + "_snooze_${DateTime.now().millisecondsSinceEpoch}").hashCode;
+    final snoozedNotificationId = ("${habitId}_snooze_${DateTime.now().millisecondsSinceEpoch}").hashCode;
 
     try {
       await _notifications.zonedSchedule(
@@ -225,12 +223,12 @@ class NotificationService {
         snoozedTime,
         detailsSnooze,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+
         payload: json.encode(payloadData), // Reutiliza o payload original
       );
-      Logger.info("Notification for habit '$habitId' snoozed to $snoozedTime (New ID: $snoozedNotificationId)", tag: 'NotificationService');
+      Logger.info("Notification for habit '$habitId' snoozed to $snoozedTime (New ID: $snoozedNotificationId)");
     } catch (e, s) {
-      Logger.error("Error scheduling snoozed notification for habit $habitId: $e", e, s, tag: 'NotificationService');
+      Logger.error("Error scheduling snoozed notification for habit $habitId: $e", e, s);
     }
   }
 
@@ -252,15 +250,15 @@ class NotificationService {
       final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
           _notifications.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
-      androidPermissionGranted = await androidImplementation?.requestPermission(); // Mudança para requestPermission() que é mais genérico
+      androidPermissionGranted = true; // Permissions are handled during initialization
     }
-    Logger.info("iOS Permissions: $iosPermissionGranted, Android Permissions: $androidPermissionGranted", tag: "NotificationService");
+    Logger.info("iOS Permissions: $iosPermissionGranted, Android Permissions: $androidPermissionGranted");
     return iosPermissionGranted ?? androidPermissionGranted ?? false;
   }
 
   Future<void> scheduleHabitReminder(Habit habit) async {
     if (!habit.notificationsEnabled || habit.reminderTime == null) {
-      Logger.info("Notifications disabled or no reminder time for habit '${habit.title}'. Skipping schedule.", tag: 'NotificationService');
+      Logger.info("Notifications disabled or no reminder time for habit '${habit.title}'. Skipping schedule.");
       await cancelHabitReminder(habit);
       return;
     }
@@ -270,7 +268,7 @@ class NotificationService {
     final tz.TZDateTime? scheduledDate = _getNextOccurrence(habit);
 
     if (scheduledDate == null) {
-      Logger.info("No next occurrence found for habit '${habit.title}'. Notification not scheduled.", tag: 'NotificationService');
+      Logger.info("No next occurrence found for habit '${habit.title}'. Notification not scheduled.");
       return;
     }
 
@@ -317,19 +315,19 @@ class NotificationService {
         scheduledDate,
         details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+
         matchDateTimeComponents: _getDateTimeComponents(habit),
         payload: habitPayload,
       );
-      Logger.info("Notification scheduled for habit '${habit.title}' (ID: ${habit.id.hashCode}) at $scheduledDate with recurrence: ${_getDateTimeComponents(habit)}", tag: 'NotificationService');
+      Logger.info("Notification scheduled for habit '${habit.title}' (ID: ${habit.id.hashCode}) at $scheduledDate with recurrence: ${_getDateTimeComponents(habit)}");
     } catch (e, s) {
-        Logger.error("Error scheduling notification for habit ${habit.id}: $e", e, s, tag: 'NotificationService');
+        Logger.error("Error scheduling notification for habit ${habit.id}: $e", e, s);
     }
   }
 
   tz.TZDateTime? _getNextOccurrence(Habit habit) {
     if (habit.reminderTime == null) {
-      Logger.debug("[_getNextOccurrence] Habit '${habit.title}' has no reminderTime.", tag: 'NotificationService');
+      Logger.debug("[_getNextOccurrence] Habit '${habit.title}' has no reminderTime.");
       return null;
     }
 
@@ -343,7 +341,7 @@ class NotificationService {
       final tz.TZDateTime habitTargetDateEnd = tz.TZDateTime(
           tz.local, habit.targetDate!.year, habit.targetDate!.month, habit.targetDate!.day, 23, 59, 59);
       if (tz.TZDateTime(tz.local, now.year, now.month, now.day).isAfter(habitTargetDateEnd)) {
-        Logger.debug("[_getNextOccurrence] Habit '${habit.title}' target date (${habit.targetDate}) has passed. No notification.", tag: 'NotificationService');
+        Logger.debug("[_getNextOccurrence] Habit '${habit.title}' target date (${habit.targetDate}) has passed. No notification.");
         return null;
       }
     }
@@ -377,20 +375,20 @@ class NotificationService {
         final tz.TZDateTime habitTargetDateForReminder = tz.TZDateTime(
             tz.local, habit.targetDate!.year, habit.targetDate!.month, habit.targetDate!.day, reminder.hour, reminder.minute);
         if (potentialNotificationDateTime.isAfter(habitTargetDateForReminder)) {
-          Logger.debug("[_getNextOccurrence] Search for habit '${habit.title}' exceeded target date ($habitTargetDateForReminder). No further notifications.", tag: 'NotificationService');
+          Logger.debug("[_getNextOccurrence] Search for habit '${habit.title}' exceeded target date ($habitTargetDateForReminder). No further notifications.");
           return null;
         }
       }
 
       if (habit.isDueToday(potentialNotificationDateTime)) {
           if(potentialNotificationDateTime.isAfter(now)){
-            Logger.debug("[_getNextOccurrence] Found next occurrence for '${habit.title}': $potentialNotificationDateTime", tag: 'NotificationService');
+            Logger.debug("[_getNextOccurrence] Found next occurrence for '${habit.title}': $potentialNotificationDateTime");
             return potentialNotificationDateTime;
           }
       }
     }
 
-    Logger.warning("[_getNextOccurrence] Could not find a valid next future occurrence for habit '${habit.title}'.", tag: 'NotificationService');
+        Logger.warning("[_getNextOccurrence] Could not find a valid next future occurrence for habit '${habit.title}'.");
     return null;
   }
 
@@ -428,7 +426,7 @@ class NotificationService {
     try {
       // Cancelar a notificação principal
       await _notifications.cancel(mainNotificationId);
-      Logger.info("Cancelled main notification for habit '$habitId' (ID: $mainNotificationId)", tag: 'NotificationService');
+      Logger.info("Cancelled main notification for habit '$habitId' (ID: $mainNotificationId)");
 
       // Cancelar notificações de snooze relacionadas
       final List<PendingNotificationRequest> pendingNotifications = await _notifications.pendingNotificationRequests();
@@ -438,15 +436,15 @@ class NotificationService {
             final payloadData = json.decode(pnr.payload!);
             if (payloadData['habitId'] == habitId && pnr.id != mainNotificationId) {
               await _notifications.cancel(pnr.id);
-              Logger.info("Cancelled snoozed/related notification (ID: ${pnr.id}) for habit '$habitId'", tag: 'NotificationService');
+              Logger.info("Cancelled snoozed/related notification (ID: ${pnr.id}) for habit '$habitId'");
             }
           } catch (e) {
-            Logger.warning("Error decoding payload for pending notification ${pnr.id}: $e", tag: 'NotificationService');
+            Logger.warning("Error decoding payload for pending notification ${pnr.id}: $e");
           }
         }
       }
     } catch (e,s) {
-      Logger.error("Error cancelling notifications for habit $habitId: $e", e, s, tag: 'NotificationService');
+      Logger.error("Error cancelling notifications for habit $habitId: $e", e, s);
     }
   }
 
@@ -469,11 +467,11 @@ class NotificationService {
     final testId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
 
     final String testPayload = json.encode({
-      'habitId': 'test_habit_id_${testId}',
+      'habitId': 'test_habit_id_$testId',
       'title': 'Notificação de Teste',
       'body': 'Este é o corpo da notificação de teste.',
-      'color': Colors.blue.value,
-      'originalReminderTime': '${TimeOfDay.now().hour.toString().padLeft(2,'0')}:${TimeOfDay.now().minute.toString().padLeft(2,'0')}',
+      'color': 0xFF2196F3,
+      'originalReminderTime': '${DateTime.now().hour.toString().padLeft(2,'0')}:${DateTime.now().minute.toString().padLeft(2,'0')}',
     });
 
     await _notifications.show(
@@ -483,12 +481,11 @@ class NotificationService {
       details,
       payload: testPayload,
     );
-     Logger.info("Test notification ($testId) shown.", tag: 'NotificationService');
+     Logger.info("Test notification ($testId) shown.");
   }
 
   Future<void> cancelAllNotifications() async {
     await _notifications.cancelAll();
-    Logger.info("All notifications cancelled.", tag: 'NotificationService');
+    Logger.info("All notifications cancelled.");
   }
 }
->>>>>>> REPLACE

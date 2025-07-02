@@ -13,10 +13,14 @@ import 'package:myapp/screens/recurring_task/add_recurring_task_screen.dart';
 import 'package:myapp/screens/search/search_screen.dart';
 import 'package:myapp/screens/filter/filter_screen.dart';
 import 'package:myapp/screens/stats/stats_screen.dart';
+import 'package:myapp/screens/achievements/achievements_screen.dart';
 import 'package:myapp/screens/calendar/calendar_screen.dart';
 import 'package:myapp/utils/logger.dart';
 import 'package:myapp/utils/responsive/responsive.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/models/habit.dart';
+import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/data/achievements/achievement_definitions.dart';
 import 'package:myapp/theme/app_theme.dart';
@@ -421,6 +425,72 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         tooltip: 'Testar Notificações',
         onPressed: () {
           Navigator.pushNamed(context, '/test-notifications');
+        },
+      ),
+    );
+    
+    // BOTÃO TEMPORÁRIO PARA TESTE DE CRIAÇÃO DE HÁBITO
+    actions.add(
+      IconButton(
+        icon: const Icon(Icons.bug_report, color: Colors.red),
+        tooltip: 'Testar Criação de Hábito',
+        onPressed: () async {
+          try {
+            final habitService = Provider.of<HabitService>(context, listen: false);
+            final auth = FirebaseAuth.instance;
+            final user = auth.currentUser;
+            
+            if (user == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('❌ Usuário não autenticado!')),
+              );
+              return;
+            }
+            
+            // Criar hábito de teste
+            final testHabit = Habit(
+              id: 'test-${DateTime.now().millisecondsSinceEpoch}',
+              title: 'Hábito de Teste ${DateTime.now().second}',
+              description: 'Criado automaticamente para teste',
+              category: 'Saúde',
+              icon: Icons.directions_run,
+              color: const Color(0xFF4CAF50),
+              priority: 'Normal',
+              frequency: HabitFrequency.daily,
+              startDate: DateTime.now(),
+              trackingType: HabitTrackingType.simOuNao,
+              userId: user.uid,
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+              completionHistory: {},
+              dailyProgress: {},
+              streak: 0,
+              longestStreak: 0,
+              totalCompletions: 0,
+              notificationsEnabled: false,
+            );
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('📝 Criando hábito de teste...')),
+            );
+            
+            await habitService.addHabit(testHabit);
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('✅ Hábito "${testHabit.title}" criado com sucesso!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('❌ Erro: $e'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         },
       ),
     );

@@ -292,49 +292,56 @@ class Habit {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'description': description,
-      'category': category,
-      'icon': icon.codePoint,
-      'color': color.value,
-      'frequency': frequency.toString(),
-      'daysOfWeek': daysOfWeek,
-      'daysOfMonth': daysOfMonth, // Added to toMap
-      'specificYearDates': specificYearDates?.map((d) => d.toIso8601String()).toList(),
-      'timesPerPeriod': timesPerPeriod,
-      'periodType': periodType,
-      'repeatEveryDays': repeatEveryDays,
-      'isFlexible': isFlexible,
-      'alternateDays': alternateDays,
-      'reminderTime': reminderTime != null
-          ? '${reminderTime!.hour}:${reminderTime!.minute}'
-          : null,
-      'notificationsEnabled': notificationsEnabled,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
-      'aiSuggestions': aiSuggestions,
-      'streak': streak,
-      'longestStreak': longestStreak,
-      'totalCompletions': totalCompletions,
-      'completionHistory': completionHistory.map(
-        (key, value) => MapEntry(key.toIso8601String(), value),
-      ),
-      'trackingType': trackingType.toString(),
-      'targetQuantity': targetQuantity,
-      'quantityUnit': quantityUnit,
-      'targetTime': targetTime?.inSeconds,
-      'subtasks': subtasks?.map((s) => s.toMap()).toList(),
-      'dailyProgress': dailyProgress.map(
-        (key, value) => MapEntry(key.toIso8601String(), value.toMap()),
-      ),
-      'startDate': startDate.toIso8601String(),
-      'targetDate': targetDate?.toIso8601String(),
-      'priority': priority,
-      'userId': userId,
-      'isArchived': isArchived,
-    };
+    try {
+      final map = {
+        'id': id,
+        'title': title,
+        'description': description,
+        'category': category,
+        'icon': icon.codePoint,
+        'color': color.value,
+        'frequency': frequency.toString(),
+        'daysOfWeek': daysOfWeek,
+        'daysOfMonth': daysOfMonth, // Added to toMap
+        'specificYearDates': specificYearDates?.map((d) => d.toIso8601String()).toList(),
+        'timesPerPeriod': timesPerPeriod,
+        'periodType': periodType,
+        'repeatEveryDays': repeatEveryDays,
+        'isFlexible': isFlexible,
+        'alternateDays': alternateDays,
+        'reminderTime': reminderTime != null
+            ? '${reminderTime!.hour}:${reminderTime!.minute}'
+            : null,
+        'notificationsEnabled': notificationsEnabled,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'aiSuggestions': aiSuggestions,
+        'streak': streak,
+        'longestStreak': longestStreak,
+        'totalCompletions': totalCompletions,
+        'completionHistory': completionHistory.map(
+          (key, value) => MapEntry(key.toIso8601String(), value),
+        ),
+        'trackingType': trackingType.toString(),
+        'targetQuantity': targetQuantity,
+        'quantityUnit': quantityUnit,
+        'targetTime': targetTime?.inSeconds,
+        'subtasks': subtasks?.map((s) => s.toMap()).toList(),
+        'dailyProgress': dailyProgress.map(
+          (key, value) => MapEntry(key.toIso8601String(), value.toMap()),
+        ),
+        'startDate': startDate.toIso8601String(),
+        'targetDate': targetDate?.toIso8601String(),
+        'priority': priority,
+        'userId': userId,
+        'isArchived': isArchived,
+      };
+      return map;
+    } catch (e, stackTrace) {
+      print('ERRO NO toMap(): $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
+    }
   }
 
   factory Habit.fromMap(Map<String, dynamic> map) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:myapp/models/habit.dart';
 import 'package:myapp/services/habit_service.dart';
-import 'package:myapp/services/ai_service.dart';
 import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/screens/loading_screen.dart';
@@ -408,9 +407,7 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen>
             ),
 
             // Statistics Tab (Índice 1)
-            HabitStatisticsTab(
-              habit: _habit!,
-            ),
+            HabitStatisticsTab(),
           ],
         ),
       ),

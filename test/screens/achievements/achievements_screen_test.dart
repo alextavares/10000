@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:myapp/data/achievements/achievement_definitions.dart';
-import 'package:myapp/data/achievements/user_achievement_profile.dart';
-import 'package:myapp/models/habit.dart'; // Necessário para HabitFrequency
+import 'package:myapp/data/achievements/user_achievement_profile.dart'; // Necessário para HabitFrequency
 import 'package:myapp/screens/achievements/achievements_screen.dart';
 import 'package:myapp/services/achievement_service.dart';
-import 'package:myapp/services/auth_service.dart'; // Para mock do AuthService e User
-import 'package:myapp/services/habit_service.dart'; // Para o construtor de AchievementService
-import 'package:myapp/services/notification_service.dart'; // Para o construtor de HabitService
+import 'package:myapp/services/auth_service.dart';
+import 'package:myapp/services/habit_service.dart';
+import 'package:myapp/services/notification_service.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:mockito/mockito.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-
+import 'package:intl/intl.dart';
+import '../mocks/generated.mocks.dart'; // Importar os mocks centralizados
 
 class MockAuthService extends Mock implements AuthService {}
 class MockHabitService extends Mock implements HabitService {}
@@ -23,7 +21,7 @@ class MockNotificationService extends Mock implements NotificationService {}
 class MockAchievementService extends Mock implements AchievementService {
   // Precisamos mockar o getter userProfile e recentlyUnlocked, e o método initialize
   UserAchievementProfile? _profile;
-  List<String> _recent = [];
+  final List<String> _recent = [];
 
   @override
   UserAchievementProfile? get userProfile => _profile;
@@ -88,7 +86,7 @@ class MockAchievementService extends Mock implements AchievementService {
 
 void main() {
   late MockAchievementService mockAchievementService;
-  late MockAuthService mockAuthService;
+  late MockAuthService mockAuthService; // Mantido para o provider, mas o mock real vem do generated
   late MockUser mockUser;
 
   setUp(() async {
@@ -97,7 +95,7 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized(); // Para DateFormat
 
     mockAchievementService = MockAchievementService();
-    mockUser = MockUser(uid: 'test_user_id');
+    mockUser = MockUser(uid: 'test_user_id', email: 'test@example.com');
     mockAuthService = MockAuthService();
     when(mockAuthService.currentUser).thenReturn(mockUser); // Simula usuário logado
 
@@ -111,7 +109,7 @@ void main() {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AchievementService>.value(value: mockAchievementService),
-        Provider<AuthService>.value(value: mockAuthService),
+        Provider<AuthService>.value(value: mockAuthService), // Usar o mock local para o provider
         // Outros serviços que AchievementScreen possa depender indiretamente via context
         Provider<HabitService>(create: (_) => MockHabitService()),
         Provider<NotificationService>(create: (_) => MockNotificationService()),

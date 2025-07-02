@@ -34,7 +34,7 @@ class _TimerScreenState extends State<TimerScreen> with TickerProviderStateMixin
   // bool _isIntervalRunning = false; // Descomentado quando implementar
   
   // Configurações
-  bool _vibrationEnabled = true;
+  final bool _vibrationEnabled = true;
   // bool _soundEnabled = true; // Descomentado quando implementar sons
   
   // Atividade selecionada

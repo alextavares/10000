@@ -25,7 +25,7 @@ void main() {
       );
       
       // Assert
-      final habits = await habitService.getHabits();
+      final habits = habitService.getHabits();
       expect(habits.length, 1);
       expect(habits.first.title, 'Beber água');
       expect(habits.first.category, 'Saúde');
@@ -45,7 +45,7 @@ void main() {
       );
       
       // Verificar que foi adicionado
-      var habits = await habitService.getHabits();
+      var habits = habitService.getHabits();
       expect(habits.length, 1);
       final habitId = habits.first.id;
       
@@ -53,7 +53,7 @@ void main() {
       await habitService.deleteHabit(habitId);
       
       // Assert
-      habits = await habitService.getHabits();
+      habits = habitService.getHabits();
       expect(habits.length, 0);
     });
 
@@ -70,7 +70,7 @@ void main() {
         startDate: DateTime.now(),
       );
       
-      var habits = await habitService.getHabits();
+      var habits = habitService.getHabits();
       final originalHabit = habits.first;
       
       // Act - Atualizar o hábito
@@ -82,7 +82,7 @@ void main() {
       await habitService.updateHabit(updatedHabit);
       
       // Assert
-      habits = await habitService.getHabits();
+      habits = habitService.getHabits();
       expect(habits.first.title, 'Leitura Diária');
       expect(habits.first.description, 'Ler 1 hora por dia');
     });
@@ -100,7 +100,7 @@ void main() {
         startDate: DateTime.now(),
       );
       
-      var habits = await habitService.getHabits();
+      var habits = habitService.getHabits();
       final habitId = habits.first.id;
       
       // Act
@@ -108,7 +108,7 @@ void main() {
       await habitService.markHabitCompletion(habitId, today, true);
       
       // Assert
-      habits = await habitService.getHabits();
+      habits = habitService.getHabits();
       expect(habits.first.isCompletedToday(), true);
     });
 
@@ -128,7 +128,7 @@ void main() {
       );
       
       // Act & Assert
-      final habits = await habitService.getHabits();
+      final habits = habitService.getHabits();
       expect(habits.length, 1);
       expect(habits.first.isDueToday(), true);
     });
@@ -166,7 +166,7 @@ void main() {
       );
 
       // Assert
-      final habits = await habitService.getHabits();
+      final habits = habitService.getHabits();
       expect(habits.length, 3);
       expect(habits.map((h) => h.title).toList(), 
         containsAll(['Hábito 1', 'Hábito 2', 'Hábito 3']));
@@ -192,7 +192,7 @@ void main() {
         startDate: DateTime.now(),
       );
       
-      var habits = await habitService.getHabits();
+      var habits = habitService.getHabits();
       final habitId = habits.first.id;
       final today = DateTime.now();
       
@@ -203,7 +203,7 @@ void main() {
       await habitService.markHabitCompletion(habitId, today, false);
       
       // Assert
-      habits = await habitService.getHabits();
+      habits = habitService.getHabits();
       expect(habits.first.isCompletedToday(), false);
     });
 
@@ -220,7 +220,7 @@ void main() {
       );
       
       // Assert
-      final habits = await habitService.getHabits();
+      final habits = habitService.getHabits();
       expect(habits.length, 1);
       expect(habits.first.trackingType, HabitTrackingType.quantia);
     });
@@ -239,7 +239,7 @@ void main() {
       );
       
       // Assert
-      final habits = await habitService.getHabits();
+      final habits = habitService.getHabits();
       expect(habits.length, 1);
       expect(habits.first.frequency, HabitFrequency.monthly);
       expect(habits.first.daysOfMonth, [1, 15]);

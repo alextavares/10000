@@ -227,5 +227,4 @@ void main() {
     expect(find.text('Sem dados de conclusão para este período.'), findsOneWidget);
   });
 
-}) // End of group
-;
+}); // End of group

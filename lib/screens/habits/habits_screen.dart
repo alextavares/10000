@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:provider/provider.dart';
 import 'package:myapp/models/habit.dart' as habit_model;
 import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/widgets/habit_card_complete.dart';
-import 'package:myapp/screens/habit/habit_details_screen.dart';
 import 'package:myapp/screens/habits/add_habit_simple_screen.dart';
 import 'package:myapp/screens/habits/habit_selection_screen.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/utils/logger.dart';
 import 'package:myapp/utils/responsive/responsive.dart';
+import 'package:provider/provider.dart';
+import 'package:myapp/services/service_provider.dart';
 
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({super.key});
@@ -42,7 +42,12 @@ class _HabitsScreenState extends State<HabitsScreen> {
         _activelySelectedDayIndexInWeek = _weekDays.length > 2 ? _weekDays.length - 3 : 0; 
       }
     }
-    // Serviço será obtido pelo Consumer
+  }
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _habitService = context.habitService;
   }
 
   void _generateWeekDays(DateTime referenceDate) {
@@ -223,13 +228,18 @@ class _HabitsScreenState extends State<HabitsScreen> {
   @override
   Widget build(BuildContext context) {
     Logger.debug('[HabitsScreen] Building UI. Selected date: $_selectedDate, weekday: ${_selectedDate.weekday}');
-    return Consumer<HabitService>(
-      builder: (context, habitService, child) {
-        // Atualiza a referência do serviço
-        _habitService = habitService;
-        
-        // Obtém a lista de hábitos diretamente do serviço
-        final habits = habitService.getHabitsSync();
+    
+    return StreamBuilder<List<habit_model.Habit>>(
+      stream: context.habitService.getHabits(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          Logger.error('[HabitsScreen] Error loading habits: ${snapshot.error}');
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        final habits = snapshot.data ?? [];
         
         return Scaffold(
           backgroundColor: AppTheme.backgroundColor,
@@ -249,7 +259,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                                   child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                          Icon(Icons.list_alt_rounded, size: 80, color: AppTheme.subtitleColor.withValues(alpha: 0.5)),
+                                          Icon(Icons.list_alt_rounded, size: 80, color: AppTheme.subtitleColor.withOpacity(0.5)),
                                           const SizedBox(height:16),
                                           Text(
                                               'No habits yet.', 
@@ -266,7 +276,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                                           Text(
                                               'Tap the + button to add your first habit.',
                                               style: TextStyle(
-                                                color: AppTheme.subtitleColor.withValues(alpha: 0.7), 
+                                                color: AppTheme.subtitleColor.withOpacity(0.7), 
                                                 fontSize: Responsive.value<double>(
                                                   context: context,
                                                   mobile: 14,
@@ -285,7 +295,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                                     itemBuilder: (context, index) => _buildHabitItem(habits[index]),
                                   ),
                                   desktop: GridView.builder(
-                                    padding: EdgeInsets.only(bottom: 80), 
+                                    padding: const EdgeInsets.only(bottom: 80), 
                                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: Responsive.gridColumns(context),
                                       crossAxisSpacing: 16,
@@ -307,13 +317,12 @@ class _HabitsScreenState extends State<HabitsScreen> {
               FloatingActionButton(
                 heroTag: "suggestions",
                 onPressed: () async {
-                  final result = await Navigator.push(
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const HabitSelectionScreen()),
                   );
-                  // O Consumer vai atualizar automaticamente quando os hábitos forem adicionados
                 },
-                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                backgroundColor: AppTheme.primaryColor.withOpacity(0.9),
                 mini: true,
                 child: const Icon(Icons.lightbulb_outline, color: Colors.white),
               ),
@@ -325,7 +334,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
                     context,
                     MaterialPageRoute(builder: (context) => const AddHabitSimpleScreen()),
                   );
-                  // O Consumer vai atualizar automaticamente quando o hábito for adicionado
                 },
                 backgroundColor: AppTheme.primaryColor,
                 child: const Icon(Icons.add, color: Colors.white),

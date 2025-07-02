@@ -332,9 +332,18 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
   
   Widget _buildHabitSettingsTab() {
-    return Consumer<HabitService>(
-      builder: (context, habitService, _) {
-        final habits = habitService.habits;
+    return FutureBuilder<List<Habit>>(
+      future: context.read<HabitService>().getAllHabits(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return const Center(child: Text('Error loading habits'));
+        }
+
+        final habits = snapshot.data ?? [];
         
         if (habits.isEmpty) {
           return const Center(

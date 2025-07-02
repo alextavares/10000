@@ -1,0 +1,186 @@
+--------- beginning of main
+06-27 01:38:34.716 14231 14231 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-27 01:38:34.915 14231 14335 I flutter : The Dart VM service is listening on http://127.0.0.1:39121/p_mQ9wpxTk4=/
+06-27 01:38:56.383 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 01:38:56.384 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-27 01:38:56.370286
+06-27 01:38:56.386 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 01:38:56.386 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 01:38:56.387 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 01:58:26.856 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 01:58:26.859 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-23 01:38:56.370286
+06-27 01:58:26.859 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 01:58:26.860 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 01:58:26.860 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 01:58:27.990 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 01:58:27.991 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-24 01:38:56.370286
+06-27 01:58:27.991 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 01:58:27.992 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 01:58:27.992 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 01:59:05.831 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 01:59:05.831 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-27 01:59:05.829632
+06-27 01:59:05.832 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 01:59:05.832 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 01:59:05.832 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 03:37:17.034 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 03:37:17.045 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-27 03:37:17.022815
+06-27 03:37:17.046 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 03:37:17.046 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 03:37:17.047 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 03:41:53.555 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 03:41:53.555 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-25 03:37:17.022815
+06-27 03:41:53.555 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 03:41:53.555 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 03:41:53.556 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 03:41:54.697 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 03:41:54.698 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-26 03:37:17.022815
+06-27 03:41:54.702 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 03:41:54.704 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 03:41:54.705 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 18:11:44.355 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:44.356 14231 14231 I flutter : Stack trace: #0      _AddTaskScreenState._saveTask (package:myapp/screens/task/add_task_screen.dart:279:11)
+06-27 18:11:44.356 14231 14231 I flutter : <asynchronous suspension>
+06-27 18:11:44.356 14231 14231 I flutter : 
+06-27 18:11:46.845 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:46.846 14231 14231 I flutter : Stack trace: #0      _AddTaskScreenState._saveTask (package:myapp/screens/task/add_task_screen.dart:279:11)
+06-27 18:11:46.847 14231 14231 I flutter : <asynchronous suspension>
+06-27 18:11:46.848 14231 14231 I flutter : 
+06-27 18:11:47.405 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:47.406 14231 14231 I flutter : Stack trace: #0      _AddTaskScreenState._saveTask (package:myapp/screens/task/add_task_screen.dart:279:11)
+06-27 18:11:47.406 14231 14231 I flutter : <asynchronous suspension>
+06-27 18:11:47.407 14231 14231 I flutter : 
+06-27 18:11:47.666 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:47.667 14231 14231 I flutter : Stack trace: #0      _AddTaskScreenState._saveTask (package:myapp/screens/task/add_task_screen.dart:279:11)
+06-27 18:11:47.668 14231 14231 I flutter : <asynchronous suspension>
+06-27 18:11:47.668 14231 14231 I flutter : 
+06-27 18:11:47.891 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:47.893 14231 14231 I flutter : Stack trace: #0      _AddTaskScreenState._saveTask (package:myapp/screens/task/add_task_screen.dart:279:11)
+06-27 18:11:47.893 14231 14231 I flutter : <asynchronous suspension>
+06-27 18:11:47.893 14231 14231 I flutter : 
+06-27 18:11:53.882 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:53.882 14231 14231 I flutter : Stack trace: #0      _AddTaskScreenState._saveTask (package:myapp/screens/task/add_task_screen.dart:279:11)
+06-27 18:11:53.882 14231 14231 I flutter : <asynchronous suspension>
+06-27 18:11:53.883 14231 14231 I flutter : 
+06-27 18:56:33.165 14231 14231 I flutter : [DEBUG] Total tasks: 0
+06-27 18:56:33.166 14231 14231 I flutter : [DEBUG] Selected date: 2025-06-27 18:56:33.165552
+06-27 18:56:33.166 14231 14231 I flutter : [DEBUG] Total habits: 0
+06-27 18:56:33.166 14231 14231 I flutter : [DEBUG] Habits for day: 0
+06-27 18:56:33.166 14231 14231 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 21:33:49.570 16623 16623 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-27 21:33:49.814 16623 16720 I flutter : The Dart VM service is listening on http://127.0.0.1:37499/Bn3QXwteMog=/
+06-27 21:40:04.661 16623 16623 I flutter : [DEBUG] Total tasks: 0
+06-27 21:40:04.662 16623 16623 I flutter : [DEBUG] Selected date: 2025-06-27 21:40:02.942012
+06-27 21:40:05.017 16623 16623 I flutter : [DEBUG] Total habits: 0
+06-27 21:40:05.017 16623 16623 I flutter : [DEBUG] Habits for day: 0
+06-27 21:40:05.017 16623 16623 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 21:44:05.465 17038 17038 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-27 21:44:05.760 17038 17134 I flutter : The Dart VM service is listening on http://127.0.0.1:37109/Uw-vVVG3G_Q=/
+06-27 21:44:15.536 17038 17038 I flutter : [DEBUG] Total tasks: 0
+06-27 21:44:15.540 17038 17038 I flutter : [DEBUG] Selected date: 2025-06-27 21:44:14.957916
+06-27 21:44:15.791 17038 17038 I flutter : [DEBUG] Total habits: 0
+06-27 21:44:15.791 17038 17038 I flutter : [DEBUG] Habits for day: 0
+06-27 21:44:15.795 17038 17038 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 21:46:11.151 17235 17235 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-27 21:46:12.212 17235 17318 I flutter : The Dart VM service is listening on http://127.0.0.1:40355/GSLqWoIN65E=/
+06-27 21:46:26.671 17235 17235 I flutter : [DEBUG] Total tasks: 0
+06-27 21:46:26.685 17235 17235 I flutter : [DEBUG] Selected date: 2025-06-27 21:46:25.926105
+06-27 21:46:27.003 17235 17235 I flutter : [DEBUG] Total habits: 0
+06-27 21:46:27.006 17235 17235 I flutter : [DEBUG] Habits for day: 0
+06-27 21:46:27.006 17235 17235 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-27 22:37:01.971 17648 17648 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-27 22:37:02.172 17648 17738 I flutter : The Dart VM service is listening on http://127.0.0.1:38507/ooedqVjXZaM=/
+06-27 22:37:12.438 17648 17648 I flutter : [DEBUG] Total tasks: 0
+06-27 22:37:12.439 17648 17648 I flutter : [DEBUG] Selected date: 2025-06-27 22:37:12.003865
+06-27 22:37:12.622 17648 17648 I flutter : [DEBUG] Total habits: 0
+06-27 22:37:12.622 17648 17648 I flutter : [DEBUG] Habits for day: 0
+06-27 22:37:12.623 17648 17648 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 09:46:33.754 21723 21723 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 09:46:34.520 21723 21839 I flutter : The Dart VM service is listening on http://127.0.0.1:36071/ztP9uPPNbuk=/
+06-28 09:46:52.702 21911 21911 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 09:46:52.964 21911 21960 I flutter : The Dart VM service is listening on http://127.0.0.1:35085/5QApYLhvOCs=/
+06-28 09:47:02.876 21911 21911 I flutter : [DEBUG] Total tasks: 0
+06-28 09:47:02.894 21911 21911 I flutter : [DEBUG] Selected date: 2025-06-28 09:47:02.210079
+06-28 09:47:03.095 21911 21911 I flutter : [DEBUG] Total habits: 0
+06-28 09:47:03.095 21911 21911 I flutter : [DEBUG] Habits for day: 0
+06-28 09:47:03.095 21911 21911 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 10:37:45.109 22321 22321 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 10:37:45.390 22321 22401 I flutter : The Dart VM service is listening on http://127.0.0.1:40401/D9_QuRxJE3A=/
+06-28 10:37:59.508 22321 22321 I flutter : [DEBUG] Total tasks: 0
+06-28 10:37:59.510 22321 22321 I flutter : [DEBUG] Selected date: 2025-06-28 10:37:58.956113
+06-28 10:37:59.727 22321 22321 I flutter : [DEBUG] Total habits: 0
+06-28 10:37:59.734 22321 22321 I flutter : [DEBUG] Habits for day: 0
+06-28 10:37:59.743 22321 22321 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 10:48:10.691 22553 22553 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 10:48:11.015 22553 22665 I flutter : The Dart VM service is listening on http://127.0.0.1:37179/mXeG5Xr50ss=/
+06-28 10:48:25.925 22553 22553 I flutter : [DEBUG] Total tasks: 0
+06-28 10:48:25.928 22553 22553 I flutter : [DEBUG] Selected date: 2025-06-28 10:48:25.288844
+06-28 10:48:26.246 22553 22553 I flutter : [DEBUG] Total habits: 0
+06-28 10:48:26.246 22553 22553 I flutter : [DEBUG] Habits for day: 0
+06-28 10:48:26.246 22553 22553 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 10:53:49.176 22553 22553 I flutter : [DEBUG] Total tasks: 0
+06-28 10:53:49.176 22553 22553 I flutter : [DEBUG] Selected date: 2025-06-28 10:53:48.857633
+06-28 10:53:49.275 22553 22553 I flutter : [DEBUG] Total habits: 0
+06-28 10:53:49.290 22553 22553 I flutter : [DEBUG] Habits for day: 0
+06-28 10:53:49.291 22553 22553 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 11:16:42.211 22950 22950 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 11:16:42.604 22950 23033 I flutter : The Dart VM service is listening on http://127.0.0.1:33473/Ac40aI1GKas=/
+06-28 11:16:51.844 22950 22950 I flutter : [DEBUG] Total tasks: 0
+06-28 11:16:51.846 22950 22950 I flutter : [DEBUG] Selected date: 2025-06-28 11:16:51.374698
+06-28 11:16:52.031 22950 22950 I flutter : [DEBUG] Total habits: 0
+06-28 11:16:52.031 22950 22950 I flutter : [DEBUG] Habits for day: 0
+06-28 11:16:52.031 22950 22950 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 11:38:45.543 23230 23230 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 11:38:45.699 23230 23321 I flutter : The Dart VM service is listening on http://127.0.0.1:36527/ymA1wHpc46c=/
+06-28 11:38:51.683 23230 23230 I flutter : [DEBUG] Total tasks: 0
+06-28 11:38:51.685 23230 23230 I flutter : [DEBUG] Selected date: 2025-06-28 11:38:51.404220
+06-28 11:38:51.859 23230 23230 I flutter : [DEBUG] Total habits: 0
+06-28 11:38:51.859 23230 23230 I flutter : [DEBUG] Habits for day: 0
+06-28 11:38:51.859 23230 23230 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 12:02:06.886 23574 23574 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 12:02:07.024 23574 23638 I flutter : The Dart VM service is listening on http://127.0.0.1:42921/0mnlVJ5cHPc=/
+06-28 12:02:13.173 23574 23574 I flutter : [DEBUG] Total tasks: 0
+06-28 12:02:13.177 23574 23574 I flutter : [DEBUG] Selected date: 2025-06-28 12:02:12.899845
+06-28 12:02:13.366 23574 23574 I flutter : [DEBUG] Total habits: 0
+06-28 12:02:13.366 23574 23574 I flutter : [DEBUG] Habits for day: 0
+06-28 12:02:13.366 23574 23574 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 12:49:48.450 23968 23968 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 12:49:48.592 23968 24023 I flutter : The Dart VM service is listening on http://127.0.0.1:39477/-8iyWTFS0b8=/
+06-28 12:49:54.859 23968 23968 I flutter : [DEBUG] Total tasks: 0
+06-28 12:49:54.861 23968 23968 I flutter : [DEBUG] Selected date: 2025-06-28 12:49:54.559930
+06-28 12:49:55.066 23968 23968 I flutter : [DEBUG] Total habits: 0
+06-28 12:49:55.066 23968 23968 I flutter : [DEBUG] Habits for day: 0
+06-28 12:49:55.066 23968 23968 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 17:27:37.831 25330 25330 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 17:27:37.959 25330 25408 I flutter : The Dart VM service is listening on http://127.0.0.1:41293/AUbImgoSH0A=/
+06-28 17:27:47.147 25330 25330 I flutter : [DEBUG] Total tasks: 0
+06-28 17:27:47.150 25330 25330 I flutter : [DEBUG] Selected date: 2025-06-28 17:27:46.691028
+06-28 17:27:47.359 25330 25330 I flutter : [DEBUG] Total habits: 0
+06-28 17:27:47.359 25330 25330 I flutter : [DEBUG] Habits for day: 0
+06-28 17:27:47.360 25330 25330 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 17:39:05.293 25330 25330 I flutter : [DEBUG] Total tasks: 0
+06-28 17:39:05.302 25330 25330 I flutter : [DEBUG] Selected date: 2025-06-28 17:39:04.989423
+06-28 17:39:05.494 25330 25330 I flutter : [DEBUG] Total habits: 0
+06-28 17:39:05.498 25330 25330 I flutter : [DEBUG] Habits for day: 0
+06-28 17:39:05.499 25330 25330 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 18:21:20.535 25330 25330 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 18:21:26.622 25330 25330 I flutter : [DEBUG] Total tasks: 0
+06-28 18:21:26.646 25330 25330 I flutter : [DEBUG] Selected date: 2025-06-28 18:21:26.374528
+06-28 18:21:26.925 25330 25330 I flutter : [DEBUG] Total habits: 0
+06-28 18:21:26.927 25330 25330 I flutter : [DEBUG] Habits for day: 0
+06-28 18:21:26.927 25330 25330 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 18:24:56.704 25330 25330 I flutter : [DEBUG] Total tasks: 0
+06-28 18:24:56.707 25330 25330 I flutter : [DEBUG] Selected date: 2025-06-28 18:24:56.410669
+06-28 18:24:56.994 25330 25330 I flutter : [DEBUG] Total habits: 0
+06-28 18:24:56.994 25330 25330 I flutter : [DEBUG] Habits for day: 0
+06-28 18:24:56.995 25330 25330 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 18:25:17.377 25330 25330 I flutter : [DEBUG] Total tasks: 0
+06-28 18:25:17.380 25330 25330 I flutter : [DEBUG] Selected date: 2025-06-28 18:25:17.128627
+06-28 18:25:17.552 25330 25330 I flutter : [DEBUG] Total habits: 0
+06-28 18:25:17.553 25330 25330 I flutter : [DEBUG] Habits for day: 0
+06-28 18:25:17.553 25330 25330 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)
+06-28 18:28:37.222 26481 26481 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(94)] Using the Impeller rendering backend (OpenGLES).
+06-28 18:28:37.533 26481 26555 I flutter : The Dart VM service is listening on http://127.0.0.1:39307/NKBv8o7MOOo=/
+06-28 18:28:47.918 26481 26481 I flutter : [DEBUG] Total tasks: 0
+06-28 18:28:47.921 26481 26481 I flutter : [DEBUG] Selected date: 2025-06-28 18:28:47.501021
+06-28 18:28:48.195 26481 26481 I flutter : [DEBUG] Total habits: 0
+06-28 18:28:48.196 26481 26481 I flutter : [DEBUG] Habits for day: 0
+06-28 18:28:48.196 26481 26481 I flutter : [DEBUG] Total items for display: 0 (0 tasks, 0 habits)

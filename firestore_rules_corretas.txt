@@ -1,0 +1,71 @@
+// Regras corretas do Firestore para o HabitAI
+// Copie e cole estas regras no console do Firebase
+// Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permitir que usuários autenticados acessem apenas seus próprios dados
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regra específica para hábitos (mais granular)
+    match /users/{userId}/habits/{habitId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.userId == userId
+        && request.resource.data.title is string
+        && request.resource.data.category is string;
+      allow update: if request.auth != null && request.auth.uid == userId
+        && resource.data.userId == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId
+        && resource.data.userId == userId;
+    }
+    
+    // Regra para tarefas
+    match /users/{userId}/tasks/{taskId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regra para conquistas
+    match /users/{userId}/achievements/{achievementId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regra para categorias personalizadas
+    match /users/{userId}/categories/{categoryId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regra para configurações do usuário
+    match /users/{userId}/settings/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+
+/* 
+INSTRUÇÕES PARA APLICAR AS REGRAS:
+
+1. Acesse o Console do Firebase:
+   https://console.firebase.google.com
+
+2. Selecione seu projeto HabitAI
+
+3. No menu lateral, vá para:
+   Firestore Database > Rules
+
+4. Delete todo o conteúdo atual
+
+5. Cole as regras acima
+
+6. Clique em "Publish" ou "Publicar"
+
+7. Aguarde a confirmação
+
+IMPORTANTE:
+- Estas regras garantem que cada usuário só pode acessar seus próprios dados
+- São necessárias validações básicas para criação de hábitos
+- Se você tiver problemas, verifique se o userId no documento corresponde ao usuário autenticado
+*/

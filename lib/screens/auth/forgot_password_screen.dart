@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/screens/loading_screen.dart';

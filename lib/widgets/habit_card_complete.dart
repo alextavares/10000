@@ -139,7 +139,7 @@ class _HabitCardCompleteState extends State<HabitCardComplete> {
                     const SizedBox(height: 12),
                     
                     // Calendário semanal inline
-                    Container(
+                    SizedBox(
                       height: 65,
                       child: Row(
                         children: _buildWeekCalendar(context),
@@ -226,7 +226,6 @@ class _HabitCardCompleteState extends State<HabitCardComplete> {
                             MaterialPageRoute(
                               builder: (context) => HabitDetailsScreen(
                                 habitId: widget.habit.id,
-                                focusOnStats: true,
                               ),
                             ),
                           );
@@ -501,7 +500,6 @@ class _HabitCardCompleteState extends State<HabitCardComplete> {
                       MaterialPageRoute(
                         builder: (context) => HabitDetailsScreen(
                           habitId: widget.habit.id,
-                          focusOnStats: true,
                         ),
                       ),
                     );

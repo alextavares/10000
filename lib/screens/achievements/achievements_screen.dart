@@ -7,6 +7,8 @@ import 'package:myapp/data/achievements/user_achievement_profile.dart';
 import 'package:myapp/widgets/achievement_card.dart';
 
 class AchievementsScreen extends StatefulWidget {
+  static const routeName = '/achievements';
+
   const AchievementsScreen({super.key});
   
   @override
@@ -74,7 +76,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
           SliverPersistentHeader(
             pinned: true,
             delegate: _SliverTabBarDelegate(
-              TabBar(
+              tabBar: TabBar(
                 controller: _tabController,
                 isScrollable: true,
                 indicatorColor: Theme.of(context).primaryColor,

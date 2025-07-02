@@ -13,6 +13,5 @@ call flutter pub get
 
 echo.
 echo Executando o app...
-call flutter run
+call flutter run -d windows
 
-pause

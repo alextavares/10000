@@ -58,17 +58,23 @@ class _AddHabitSimpleScreenState extends State<AddHabitSimpleScreen> {
     try {
       final habitService = Provider.of<HabitService>(context, listen: false);
       
-      await habitService.addHabit(
+      final newHabit = Habit(
+        id: '',
         title: _nameController.text.trim(),
-        categoryName: _selectedCategory,
-        categoryIcon: _selectedIcon,
-        categoryColor: _selectedColor,
+        category: _selectedCategory,
+        icon: _selectedIcon,
+        color: _selectedColor,
         frequency: _selectedFrequency == 'daily' ? HabitFrequency.daily : HabitFrequency.weekly,
-        trackingType: HabitTrackingType.simOuNao, // Sempre sim/não por enquanto
+        trackingType: HabitTrackingType.simOuNao,
         startDate: DateTime.now(),
         daysOfWeek: _selectedFrequency == 'weekly' ? _selectedDaysOfWeek : null,
-        description: '', // Simplificado - sem descrição
+        description: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        completionHistory: {},
+        dailyProgress: {},
       );
+      await habitService.addHabit(newHabit);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

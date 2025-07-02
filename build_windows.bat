@@ -1,0 +1,6 @@
+@echo off
+echo Setting up Visual Studio environment...
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+echo.
+echo Building and running the Windows application...
+flutter build windows

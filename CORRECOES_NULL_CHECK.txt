@@ -1,0 +1,149 @@
+// ARQUIVO DE CORREÇÃO COMPLETA PARA O ERRO NULL CHECK
+// Este arquivo contém todas as correções necessárias
+
+// 1. Correção em lib/screens/habit/upsert_habit_screen.dart
+// Adicionar estas linhas no início do método build():
+
+@override
+Widget build(BuildContext context) {
+  // ADICIONAR ESTAS VERIFICAÇÕES NO INÍCIO
+  if (_categoriesLoading) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        title: Text(_isEditing ? 'Editar Hábito' : 'Novo Hábito'),
+        backgroundColor: AppTheme.backgroundColor,
+      ),
+      body: const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryColor),
+      ),
+    );
+  }
+  
+  // Garantir que sempre há uma categoria selecionada
+  if (_selectedCategory == null && _availableCategories.isNotEmpty) {
+    _selectedCategory = _availableCategories.first;
+  }
+  
+  // Se não há categorias disponíveis, mostrar erro
+  if (_availableCategories.isEmpty) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        title: Text(_isEditing ? 'Editar Hábito' : 'Novo Hábito'),
+        backgroundColor: AppTheme.backgroundColor,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 64),
+            const SizedBox(height: 16),
+            const Text(
+              'Erro ao carregar categorias',
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Voltar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// 2. Correção no método _buildCategorySelector()
+// Substituir todo o método por:
+
+Widget _buildCategorySelector() {
+  if (_categoriesLoading) {
+    return const Center(
+      child: CircularProgressIndicator(color: AppTheme.primaryColor, strokeWidth: 2),
+    );
+  }
+  
+  if (_availableCategories.isEmpty) {
+    return const Center(
+      child: Text(
+        'Nenhuma categoria disponível',
+        style: TextStyle(color: Colors.red),
+      ),
+    );
+  }
+  
+  // Garantir que _selectedCategory não é null
+  if (_selectedCategory == null) {
+    _selectedCategory = _availableCategories.first;
+  }
+  
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      DropdownButtonFormField<app_category.Category>(
+        value: _selectedCategory,
+        items: _availableCategories.map((category) {
+          return DropdownMenuItem<app_category.Category>(
+            value: category,
+            child: Row(
+              children: [
+                Icon(category.icon, color: category.color, size: 20),
+                const SizedBox(width: 10),
+                Text(category.name, style: const TextStyle(color: Colors.white)),
+              ],
+            ),
+          );
+        }).toList(),
+        onChanged: (app_category.Category? newValue) {
+          if (newValue != null) {
+            setState(() {
+              _selectedCategory = newValue;
+            });
+          }
+        },
+        validator: (value) {
+          if (value == null) {
+            return 'Por favor, selecione uma categoria';
+          }
+          return null;
+        },
+        decoration: AppTheme.inputDecoration(
+          labelText: 'Categoria',
+          prefixIcon: _selectedCategory?.icon ?? Icons.category_outlined,
+          prefixIconColor: _selectedCategory?.color ?? Colors.grey,
+        ),
+      ),
+    ],
+  );
+}
+
+// 3. Correção no método _saveHabit()
+// Adicionar verificação antes de usar _selectedCategory:
+
+if (_selectedCategory == null) {
+  if (!mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Por favor, selecione uma categoria.')),
+  );
+  setState(() => _isLoading = false);
+  return;
+}
+
+// 4. Atualizar o método initState() para garantir inicialização correta
+@override
+void initState() {
+  super.initState();
+  _isEditing = widget.habitToEdit != null;
+
+  // Inicializar controladores...
+  
+  // IMPORTANTE: Inicializar com categorias padrão imediatamente
+  _availableCategories = app_category.Category.defaultCategories;
+  if (_availableCategories.isNotEmpty) {
+    _selectedCategory = _availableCategories.first;
+  }
+  
+  // Carregar categorias do servidor (pode sobrescrever as padrões)
+  _loadCategories();
+}

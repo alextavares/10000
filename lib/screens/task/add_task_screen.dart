@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:myapp/models/task.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -235,13 +234,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     });
 
     try {
-      // Busca o ServiceProvider diretamente da árvore de widgets
-      final serviceProvider = context.dependOnInheritedWidgetOfExactType<ServiceProvider>();
-      if (serviceProvider == null) {
-        throw Exception('ServiceProvider não encontrado. Verifique se o app está configurado corretamente.');
-      }
-      
-      final taskService = serviceProvider.taskService;
+      // Usar a extensão do ServiceProvider
+      final taskService = context.taskService;
       final now = DateTime.now();
 
       if (_isEditing) {

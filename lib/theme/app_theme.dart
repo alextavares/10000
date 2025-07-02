@@ -216,14 +216,22 @@ class AppTheme {
     ),
   );
 
-  // Method to determine text color based on background color
-  static Color adaptiveTextColor(Color backgroundColor) {
-    // Calculate luminance
-    double luminance = (0.299 * backgroundColor.red +
-            0.587 * backgroundColor.green +
-            0.114 * backgroundColor.blue) /
-        255;
-    // Return black for light backgrounds, white for dark backgrounds
-    return luminance > 0.5 ? Colors.black : Colors.white;
-  }
+  static TextTheme get textTheme => darkTheme.textTheme;
+  static InputDecoration inputDecoration({required String labelText, String? hintText, IconData? prefixIcon, Color? prefixIconColor}) => 
+    InputDecoration(
+      labelText: labelText,
+      hintText: hintText,
+      prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: prefixIconColor) : null,
+    ).copyWith(
+      fillColor: darkTheme.inputDecorationTheme.fillColor,
+      filled: darkTheme.inputDecorationTheme.filled,
+      border: darkTheme.inputDecorationTheme.border,
+      enabledBorder: darkTheme.inputDecorationTheme.enabledBorder,
+      focusedBorder: darkTheme.inputDecorationTheme.focusedBorder,
+      errorBorder: darkTheme.inputDecorationTheme.errorBorder,
+      contentPadding: darkTheme.inputDecorationTheme.contentPadding,
+    );
+  static ButtonStyle get primaryButton => darkTheme.elevatedButtonTheme.style!;
+  static ThemeData datePickerTheme(BuildContext context) => darkTheme;
+  static ThemeData timePickerTheme(BuildContext context) => darkTheme;
 }

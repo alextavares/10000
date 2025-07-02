@@ -236,7 +236,7 @@ class HabitCard extends StatelessWidget {
                           desktop: 1.2,
                         ),
                         child: Checkbox(
-                          value: habit.isCompletedToday(DateTime.now()), // Passar a data selecionada se disponível, senão DateTime.now()
+                          value: habit.isCompletedToday(), // Passar a data selecionada se disponível, senão DateTime.now()
                           onChanged: (bool? value) {
                             if (value != null) {
                               onToggleCompletion!(value);

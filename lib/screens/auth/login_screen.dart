@@ -1,10 +1,10 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/services/service_provider.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/screens/auth/register_screen.dart';
 import 'package:myapp/screens/auth/forgot_password_screen.dart';
+import 'package:myapp/utils/logger.dart';
 
 /// Login screen for user authentication.
 class LoginScreen extends StatefulWidget {
@@ -22,6 +22,46 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   String? _errorMessage;
+  bool _autoLoginAttempted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fazer login anônimo automaticamente após um pequeno delay
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _attemptAutoLogin();
+    });
+  }
+
+  /// Tenta fazer login anônimo automaticamente
+  Future<void> _attemptAutoLogin() async {
+    if (_autoLoginAttempted) return;
+    
+    setState(() {
+      _autoLoginAttempted = true;
+      _isLoading = true;
+    });
+
+    try {
+      Logger.info('Tentando login anônimo automático...');
+      final serviceProvider = ServiceProvider.of(context);
+      await serviceProvider.authService.signInAnonymously();
+      Logger.info('Login anônimo automático realizado com sucesso!');
+      // O AuthWrapper vai detectar a mudança de estado e navegar automaticamente
+    } catch (e) {
+      Logger.error('Falha no login anônimo automático: $e');
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Fazendo login automático como visitante...';
+      });
+      // Dar uma segunda chance após 2 segundos
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted && !_isLoading) {
+          _attemptAutoLogin();
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -85,6 +125,25 @@ class _LoginScreenState extends State<LoginScreen> {
       return 'Network error. Please check your internet connection.';
     } else {
       return 'An error occurred. Please try again.';
+    }
+  }
+
+  /// Signs in anonymously for testing purposes.
+  Future<void> _signInAnonymously() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final serviceProvider = ServiceProvider.of(context);
+      await serviceProvider.authService.signInAnonymously();
+      // Navigation is handled by AuthWrapper
+    } catch (e) {
+      setState(() {
+        _errorMessage = _getErrorMessage(e);
+        _isLoading = false;
+      });
     }
   }
 

@@ -22,7 +22,7 @@ void main() async {
   print('Hábito mensal criado');
   
   // Buscar todos os hábitos
-  final habits = await habitService.getHabits();
+  final habits = habitService.getHabits();
   print('Total de hábitos: ${habits.length}');
   
   for (var habit in habits) {

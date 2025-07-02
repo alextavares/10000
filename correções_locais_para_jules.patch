@@ -1,0 +1,1779 @@
+From 9fa19531872d327c2998a85e359c806989724bd4 Mon Sep 17 00:00:00 2001
+From: alextavares <alexandretmoraes110@gmail.com>
+Date: Wed, 25 Jun 2025 09:01:00 -0300
+Subject: [PATCH] =?utf-8?q?fix:=20Corre=C3=A7=C3=B5es=20locais=20para=20co?=
+ =?utf-8?q?mpatibilidade=20Flutter=20e=20resolu=C3=A7=C3=A3o=20de=20confli?=
+ =?utf-8?q?tos?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+- Atualizado intl de ^0.18.1 para ^0.20.2 (compatibilidade com flutter_localizations)
+- Corrigido android/build.gradle.kts para namespace issues
+- Removido referências a assets inexistentes no pubspec.yaml
+- Arquivos gerados pelo Flutter atualizados automaticamente
+---
+ SYNC_WITH_JULES.md                            |  67 ++
+ ios/Flutter/flutter_export_environment.sh     |   2 +-
+ ios/Runner/GeneratedPluginRegistrant.m        |  64 +-
+ linux/flutter/generated_plugin_registrant.cc  |  12 +
+ pubspec.lock                                  | 756 ++++++++++++------
+ pubspec.yaml                                  | 123 ++-
+ pubspec.yaml.backup                           |  86 ++
+ pubspec_clean.yaml                            |  86 ++
+ .../flutter/generated_plugin_registrant.cc    |  12 +-
+ 9 files changed, 892 insertions(+), 316 deletions(-)
+ create mode 100644 SYNC_WITH_JULES.md
+ create mode 100644 pubspec.yaml.backup
+ create mode 100644 pubspec_clean.yaml
+
+diff --git a/SYNC_WITH_JULES.md b/SYNC_WITH_JULES.md
+new file mode 100644
+index 0000000..5979642
+--- /dev/null
++++ b/SYNC_WITH_JULES.md
+@@ -0,0 +1,67 @@
++# Sincronização com Jules - Estado do Projeto
++
++## Branch Base
++- **Branch**: `feature/core-improvements`
++- **Último commit**: `26cf7b4 Feat: Aprimora sistema de notificações e adiciona snooze`
++
++## Alterações Locais Necessárias
++
++### 1. pubspec.yaml
++- **Problema**: Conflitos de merge e versão do intl incompatível
++- **Solução**: 
++  - Remover marcadores de conflito (<<<<<<, ======, >>>>>>)
++  - Atualizar `intl: ^0.18.1` para `intl: ^0.20.2`
++  - Remover referências a assets inexistentes
++
++### 2. Arquivos com Conflitos de Merge
++- `lib/services/category_service.dart`
++- `lib/services/achievement_service.dart`
++- `lib/widgets/habit_card.dart`
++- `lib/widgets/task_card.dart`
++
++**Ação**: Restaurar do git ou resolver conflitos manualmente
++
++### 3. Erro do Android Gradle
++- **Problema**: `flutter_native_timezone` precisa de namespace
++- **Contexto**: Android Gradle Plugin atualizado requer namespace
++
++## Como Rodar o Projeto
++
++### Opção 1: Web (Recomendado para testes rápidos)
++```bash
++flutter clean
++flutter pub get
++flutter run -d web-server --web-port=5004
++```
++
++### Opção 2: Android
++```bash
++flutter clean
++cd android && ./gradlew clean && cd ..
++flutter pub get
++flutter run
++```
++
++## Para Jules Enviar Atualizações
++
++1. Fazer commit das alterações no branch dele
++2. Push para o GitHub
++3. Nos avisar o commit hash
++4. Nós fazemos:
++   ```bash
++   git fetch origin
++   git cherry-pick <commit-hash>
++   # ou
++   git pull origin feature/core-improvements
++   ```
++
++## Para Enviar Nossas Correções para Jules
++
++1. Criamos um patch:
++   ```bash
++   git diff > fixes.patch
++   ```
++2. Jules aplica:
++   ```bash
++   git apply fixes.patch
++   ```
+\ No newline at end of file
+diff --git a/ios/Flutter/flutter_export_environment.sh b/ios/Flutter/flutter_export_environment.sh
+index 583cc9d..4ed898d 100755
+--- a/ios/Flutter/flutter_export_environment.sh
++++ b/ios/Flutter/flutter_export_environment.sh
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+ # This is a generated file; do not edit or check into version control.
+ export "FLUTTER_ROOT=C:\flutter"
+-export "FLUTTER_APPLICATION_PATH=C:\codigos\HabitAiclaudedesktop\HabitAI"
++export "FLUTTER_APPLICATION_PATH=C:\codigos\habitai2406\10000"
+ export "COCOAPODS_PARALLEL_CODE_SIGN=true"
+ export "FLUTTER_TARGET=lib\main.dart"
+ export "FLUTTER_BUILD_DIR=build"
+diff --git a/ios/Runner/GeneratedPluginRegistrant.m b/ios/Runner/GeneratedPluginRegistrant.m
+index 224ce4c..e08558e 100644
+--- a/ios/Runner/GeneratedPluginRegistrant.m
++++ b/ios/Runner/GeneratedPluginRegistrant.m
+@@ -12,10 +12,10 @@
+ @import cloud_firestore;
+ #endif
+ 
+-#if __has_include(<firebase_analytics/FLTFirebaseAnalyticsPlugin.h>)
+-#import <firebase_analytics/FLTFirebaseAnalyticsPlugin.h>
++#if __has_include(<device_info_plus/FPPDeviceInfoPlusPlugin.h>)
++#import <device_info_plus/FPPDeviceInfoPlusPlugin.h>
+ #else
+-@import firebase_analytics;
++@import device_info_plus;
+ #endif
+ 
+ #if __has_include(<firebase_auth/FLTFirebaseAuthPlugin.h>)
+@@ -30,18 +30,48 @@
+ @import firebase_core;
+ #endif
+ 
++#if __has_include(<firebase_storage/FLTFirebaseStoragePlugin.h>)
++#import <firebase_storage/FLTFirebaseStoragePlugin.h>
++#else
++@import firebase_storage;
++#endif
++
++#if __has_include(<flutter_facebook_auth/FlutterFacebookAuthPlugin.h>)
++#import <flutter_facebook_auth/FlutterFacebookAuthPlugin.h>
++#else
++@import flutter_facebook_auth;
++#endif
++
+ #if __has_include(<flutter_local_notifications/FlutterLocalNotificationsPlugin.h>)
+ #import <flutter_local_notifications/FlutterLocalNotificationsPlugin.h>
+ #else
+ @import flutter_local_notifications;
+ #endif
+ 
++#if __has_include(<flutter_native_timezone/FlutterNativeTimezonePlugin.h>)
++#import <flutter_native_timezone/FlutterNativeTimezonePlugin.h>
++#else
++@import flutter_native_timezone;
++#endif
++
++#if __has_include(<flutter_secure_storage/FlutterSecureStoragePlugin.h>)
++#import <flutter_secure_storage/FlutterSecureStoragePlugin.h>
++#else
++@import flutter_secure_storage;
++#endif
++
+ #if __has_include(<google_sign_in_ios/FLTGoogleSignInPlugin.h>)
+ #import <google_sign_in_ios/FLTGoogleSignInPlugin.h>
+ #else
+ @import google_sign_in_ios;
+ #endif
+ 
++#if __has_include(<image_picker_ios/FLTImagePickerPlugin.h>)
++#import <image_picker_ios/FLTImagePickerPlugin.h>
++#else
++@import image_picker_ios;
++#endif
++
+ #if __has_include(<integration_test/IntegrationTestPlugin.h>)
+ #import <integration_test/IntegrationTestPlugin.h>
+ #else
+@@ -66,19 +96,45 @@
+ @import shared_preferences_foundation;
+ #endif
+ 
++#if __has_include(<sign_in_with_apple/SignInWithApplePlugin.h>)
++#import <sign_in_with_apple/SignInWithApplePlugin.h>
++#else
++@import sign_in_with_apple;
++#endif
++
++#if __has_include(<sqflite_darwin/SqflitePlugin.h>)
++#import <sqflite_darwin/SqflitePlugin.h>
++#else
++@import sqflite_darwin;
++#endif
++
++#if __has_include(<url_launcher_ios/URLLauncherPlugin.h>)
++#import <url_launcher_ios/URLLauncherPlugin.h>
++#else
++@import url_launcher_ios;
++#endif
++
+ @implementation GeneratedPluginRegistrant
+ 
+ + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
+   [FLTFirebaseFirestorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseFirestorePlugin"]];
+-  [FLTFirebaseAnalyticsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseAnalyticsPlugin"]];
++  [FPPDeviceInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPDeviceInfoPlusPlugin"]];
+   [FLTFirebaseAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseAuthPlugin"]];
+   [FLTFirebaseCorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseCorePlugin"]];
++  [FLTFirebaseStoragePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseStoragePlugin"]];
++  [FlutterFacebookAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterFacebookAuthPlugin"]];
+   [FlutterLocalNotificationsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterLocalNotificationsPlugin"]];
++  [FlutterNativeTimezonePlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterNativeTimezonePlugin"]];
++  [FlutterSecureStoragePlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterSecureStoragePlugin"]];
+   [FLTGoogleSignInPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleSignInPlugin"]];
++  [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
+   [IntegrationTestPlugin registerWithRegistrar:[registry registrarForPlugin:@"IntegrationTestPlugin"]];
+   [PathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"PathProviderPlugin"]];
+   [PermissionHandlerPlugin registerWithRegistrar:[registry registrarForPlugin:@"PermissionHandlerPlugin"]];
+   [SharedPreferencesPlugin registerWithRegistrar:[registry registrarForPlugin:@"SharedPreferencesPlugin"]];
++  [SignInWithApplePlugin registerWithRegistrar:[registry registrarForPlugin:@"SignInWithApplePlugin"]];
++  [SqflitePlugin registerWithRegistrar:[registry registrarForPlugin:@"SqflitePlugin"]];
++  [URLLauncherPlugin registerWithRegistrar:[registry registrarForPlugin:@"URLLauncherPlugin"]];
+ }
+ 
+ @end
+diff --git a/linux/flutter/generated_plugin_registrant.cc b/linux/flutter/generated_plugin_registrant.cc
+index e71a16d..3ccd551 100644
+--- a/linux/flutter/generated_plugin_registrant.cc
++++ b/linux/flutter/generated_plugin_registrant.cc
+@@ -6,6 +6,18 @@
+ 
+ #include "generated_plugin_registrant.h"
+ 
++#include <file_selector_linux/file_selector_plugin.h>
++#include <flutter_secure_storage_linux/flutter_secure_storage_linux_plugin.h>
++#include <url_launcher_linux/url_launcher_plugin.h>
+ 
+ void fl_register_plugins(FlPluginRegistry* registry) {
++  g_autoptr(FlPluginRegistrar) file_selector_linux_registrar =
++      fl_plugin_registry_get_registrar_for_plugin(registry, "FileSelectorPlugin");
++  file_selector_plugin_register_with_registrar(file_selector_linux_registrar);
++  g_autoptr(FlPluginRegistrar) flutter_secure_storage_linux_registrar =
++      fl_plugin_registry_get_registrar_for_plugin(registry, "FlutterSecureStorageLinuxPlugin");
++  flutter_secure_storage_linux_plugin_register_with_registrar(flutter_secure_storage_linux_registrar);
++  g_autoptr(FlPluginRegistrar) url_launcher_linux_registrar =
++      fl_plugin_registry_get_registrar_for_plugin(registry, "UrlLauncherPlugin");
++  url_launcher_plugin_register_with_registrar(url_launcher_linux_registrar);
+ }
+diff --git a/pubspec.lock b/pubspec.lock
+index a4bc879..b08106d 100644
+--- a/pubspec.lock
++++ b/pubspec.lock
+@@ -1,6 +1,14 @@
+ # Generated by pub
+ # See https://dart.dev/tools/pub/glossary#lockfile
+ packages:
++  _discoveryapis_commons:
++    dependency: transitive
++    description:
++      name: _discoveryapis_commons
++      sha256: "113c4100b90a5b70a983541782431b82168b3cae166ab130649c36eb3559d498"
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.0.7"
+   _fe_analyzer_shared:
+     dependency: transitive
+     description:
+@@ -13,18 +21,10 @@ packages:
+     dependency: transitive
+     description:
+       name: _flutterfire_internals
+-      sha256: "214e6f07e2a44f45972e0365c7b537eaeaddb4598db0778dd4ac64b4acd3f5b1"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "1.3.55"
+-  adaptive_number:
+-    dependency: transitive
+-    description:
+-      name: adaptive_number
+-      sha256: "3a567544e9b5c9c803006f51140ad544aedc79604fd4f3f2c1380003f97c1d77"
++      sha256: d84d98f1992976775f83083523a34c5d22fea191eec3abb2bd09537fb623c2e0
+       url: "https://pub.dev"
+     source: hosted
+-    version: "1.0.0"
++    version: "1.3.7"
+   analyzer:
+     dependency: transitive
+     description:
+@@ -33,14 +33,14 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "7.4.5"
+-  antlr4:
++  archive:
+     dependency: transitive
+     description:
+-      name: antlr4
+-      sha256: "752b4a6e4ad97953652a2b2bbf5377f46c94b579d3372b50080c7e5858234a05"
++      name: archive
++      sha256: "2fde1607386ab523f7a36bb3e7edb43bd58e6edaf2ffb29d8a6d578b297fdbbd"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "4.13.2"
++    version: "4.0.7"
+   args:
+     dependency: transitive
+     description:
+@@ -129,14 +129,6 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "8.10.1"
+-  cel:
+-    dependency: transitive
+-    description:
+-      name: cel
+-      sha256: "2b5adb2c4866311817f6444996a67fd14f016cfcfb57a8d9c7fb0defeea2eb62"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "0.5.3"
+   characters:
+     dependency: transitive
+     description:
+@@ -153,6 +145,14 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "2.0.3"
++  cli_util:
++    dependency: transitive
++    description:
++      name: cli_util
++      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.4.2"
+   clock:
+     dependency: transitive
+     description:
+@@ -165,26 +165,26 @@ packages:
+     dependency: "direct main"
+     description:
+       name: cloud_firestore
+-      sha256: d25c956be5261c14bc9a69c9662de8addb308376b4b53a64469aade52e7b02f8
++      sha256: "1179ae4c69e2ea18179d844d70fc6ed2f082a2bbeb7fa62d35a2a24e2992bd4d"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "5.6.8"
++    version: "4.9.3"
+   cloud_firestore_platform_interface:
+-    dependency: "direct dev"
++    dependency: transitive
+     description:
+       name: cloud_firestore_platform_interface
+-      sha256: ee2b8f8c602ede36073afd3741e99cfea9dd982b4a44833daf665134d151c32a
++      sha256: acdcf0743bbdd0e6b342f3d2033e15d260a2c6f9434dd34b008b8f1c35e62b23
+       url: "https://pub.dev"
+     source: hosted
+-    version: "6.6.8"
++    version: "5.16.2"
+   cloud_firestore_web:
+     dependency: transitive
+     description:
+       name: cloud_firestore_web
+-      sha256: b99bc4f1f70787f694b73bc6fce238d4d6cc822c9b31ba8ef1578b180b6f77bc
++      sha256: "321bb0732c8d782a49aede96805e59609e05cf98b6c34370faa04103f46a4a3a"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "4.4.8"
++    version: "3.7.2"
+   code_builder:
+     dependency: transitive
+     description:
+@@ -209,30 +209,22 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "3.1.2"
+-  crypto:
++  cross_file:
+     dependency: transitive
+     description:
+-      name: crypto
+-      sha256: "1e445881f28f22d6140f181e07737b22f1e099a5e1ff94b0af2f9e4a463f4855"
++      name: cross_file
++      sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "3.0.6"
+-  cupertino_icons:
+-    dependency: "direct main"
+-    description:
+-      name: cupertino_icons
+-      sha256: ba631d1c7f7bef6b729a622b7b752645a2d076dba9976925b8f25725a30e1ee6
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "1.0.8"
+-  dart_jsonwebtoken:
++    version: "0.3.4+2"
++  crypto:
+     dependency: transitive
+     description:
+-      name: dart_jsonwebtoken
+-      sha256: "00a0812d2aeaeb0d30bcbc4dd3cee57971dbc0ab2216adf4f0247f37793f15ef"
++      name: crypto
++      sha256: "1e445881f28f22d6140f181e07737b22f1e099a5e1ff94b0af2f9e4a463f4855"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "2.17.0"
++    version: "3.0.6"
+   dart_style:
+     dependency: transitive
+     description:
+@@ -249,14 +241,22 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "0.7.11"
+-  ed25519_edwards:
++  device_info_plus:
++    dependency: "direct main"
++    description:
++      name: device_info_plus
++      sha256: "77f757b789ff68e4eaf9c56d1752309bd9f7ad557cb105b938a7f8eb89e59110"
++      url: "https://pub.dev"
++    source: hosted
++    version: "9.1.2"
++  device_info_plus_platform_interface:
+     dependency: transitive
+     description:
+-      name: ed25519_edwards
+-      sha256: "6ce0112d131327ec6d42beede1e5dfd526069b18ad45dcf654f15074ad9276cd"
++      name: device_info_plus_platform_interface
++      sha256: e1ea89119e34903dca74b883d0dd78eb762814f97fb6c76f35e9ff74d261a18f
+       url: "https://pub.dev"
+     source: hosted
+-    version: "0.3.1"
++    version: "7.0.3"
+   equatable:
+     dependency: transitive
+     description:
+@@ -265,30 +265,30 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "2.0.7"
+-  fake_async:
+-    dependency: transitive
++  extension_google_sign_in_as_googleapis_auth:
++    dependency: "direct main"
+     description:
+-      name: fake_async
+-      sha256: "5368f224a74523e8d2e7399ea1638b37aecfca824a3cc4dfdf77bf1fa905ac44"
++      name: extension_google_sign_in_as_googleapis_auth
++      sha256: "0dcb17e399f62e897ac78f0a402a3cb6ab9313ced8b2bf131f684d317e05c9ab"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "1.3.3"
+-  fake_cloud_firestore:
+-    dependency: "direct dev"
++    version: "2.0.13"
++  facebook_auth_desktop:
++    dependency: transitive
+     description:
+-      name: fake_cloud_firestore
+-      sha256: "804bfb59108fc93b93c28b61e8142c477bd6f188a12d06875310f0b2f01b3974"
++      name: facebook_auth_desktop
++      sha256: e6cc4d6f50a1d67d99e7dac7d77a40fe27122496e224cb708ae168d7d9aac0ac
+       url: "https://pub.dev"
+     source: hosted
+-    version: "3.1.0"
+-  fake_firebase_security_rules:
++    version: "1.0.3"
++  fake_async:
+     dependency: transitive
+     description:
+-      name: fake_firebase_security_rules
+-      sha256: "7a9011d42d99848ece92784fed5a20167ad76da66de2c1102a2bc053e66b0305"
++      name: fake_async
++      sha256: "5368f224a74523e8d2e7399ea1638b37aecfca824a3cc4dfdf77bf1fa905ac44"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "0.5.3"
++    version: "1.3.3"
+   ffi:
+     dependency: transitive
+     description:
+@@ -305,86 +305,110 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "7.0.1"
+-  firebase_analytics:
+-    dependency: "direct main"
++  file_selector_linux:
++    dependency: transitive
+     description:
+-      name: firebase_analytics
+-      sha256: b5b31727ad7c7f41e139637d1d582e435fd14054abcbd162c64476f90737105c
++      name: file_selector_linux
++      sha256: "54cbbd957e1156d29548c7d9b9ec0c0ebb6de0a90452198683a7d23aed617a33"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "11.4.6"
+-  firebase_analytics_platform_interface:
++    version: "0.9.3+2"
++  file_selector_macos:
+     dependency: transitive
+     description:
+-      name: firebase_analytics_platform_interface
+-      sha256: "86817ee7db6377e09830467932c31644713d8e8915cefff64610ad735612bc7d"
++      name: file_selector_macos
++      sha256: "8c9250b2bd2d8d4268e39c82543bacbaca0fda7d29e0728c3c4bbb7c820fd711"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "4.3.6"
+-  firebase_analytics_web:
++    version: "0.9.4+3"
++  file_selector_platform_interface:
+     dependency: transitive
+     description:
+-      name: firebase_analytics_web
+-      sha256: "4914e184a6aa37811d976db59f95fa8fda1d58db49ab7f73d4d8aac9dd9b19b7"
++      name: file_selector_platform_interface
++      sha256: a3994c26f10378a039faa11de174d7b78eb8f79e4dd0af2a451410c1a5c3f66b
+       url: "https://pub.dev"
+     source: hosted
+-    version: "0.5.10+12"
+-  firebase_auth:
+-    dependency: "direct main"
++    version: "2.6.2"
++  file_selector_windows:
++    dependency: transitive
+     description:
+-      name: firebase_auth
+-      sha256: "10cd3f00a247f33b0a5c77574011a87379432bf3fec77a500b55f2bcc30ddd8b"
++      name: file_selector_windows
++      sha256: "320fcfb6f33caa90f0b58380489fc5ac05d99ee94b61aa96ec2bff0ba81d3c2b"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "5.5.4"
+-  firebase_auth_mocks:
+-    dependency: "direct dev"
++    version: "0.9.3+4"
++  firebase_auth:
++    dependency: "direct main"
+     description:
+-      name: firebase_auth_mocks
+-      sha256: "3d4442f2856c03917777e5ddf6bb7ff5fb53e9b04426d1e1146b339bd3f19892"
++      name: firebase_auth
++      sha256: "95c74884ff25eafcbbbcd5506b738e68ee98ff54d09522a6092a2fb95d02ee7a"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "0.14.1"
++    version: "4.10.1"
+   firebase_auth_platform_interface:
+-    dependency: "direct dev"
++    dependency: transitive
+     description:
+       name: firebase_auth_platform_interface
+-      sha256: "2d15872a8899b0459fab6b4c148fd142e135acfc8a303d383d80b455e4dba7bd"
++      sha256: "05d2636673e145d2b5eccc452c009808af4c15e8b402f34bb8fec63f2c76e86b"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "7.6.3"
++    version: "6.19.1"
+   firebase_auth_web:
+     dependency: transitive
+     description:
+       name: firebase_auth_web
+-      sha256: efba45393050ca03d992eae1d305d5fc8c0c9f5980624053512e935c23767c4f
++      sha256: "4b8374da5d8969f99453ebd65074c1d379fe781bb3680fa7f65a4d3ac4ec87b3"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "5.14.3"
++    version: "5.8.2"
+   firebase_core:
+     dependency: "direct main"
+     description:
+       name: firebase_core
+-      sha256: "8cfe3c900512399ce8d50fcc817e5758ff8615eeb6fa5c846a4cc47bbf6353b6"
++      sha256: "95580fa07c8ca3072a2bb1fecd792616a33f8683477d25b7d29d3a6a399e6ece"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "3.13.1"
++    version: "2.17.0"
+   firebase_core_platform_interface:
+-    dependency: transitive
++    dependency: "direct dev"
+     description:
+       name: firebase_core_platform_interface
+-      sha256: d7253d255ff10f85cfd2adaba9ac17bae878fa3ba577462451163bd9f1d1f0bf
++      sha256: b63e3be6c96ef5c33bdec1aab23c91eb00696f6452f0519401d640938c94cba2
+       url: "https://pub.dev"
+     source: hosted
+-    version: "5.4.0"
++    version: "4.8.0"
+   firebase_core_web:
+     dependency: transitive
+     description:
+       name: firebase_core_web
+-      sha256: ddd72baa6f727e5b23f32d9af23d7d453d67946f380bd9c21daf474ee0f7326e
++      sha256: e8c408923cd3a25bd342c576a114f2126769cd1a57106a4edeaa67ea4a84e962
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.8.0"
++  firebase_storage:
++    dependency: "direct main"
++    description:
++      name: firebase_storage
++      sha256: "4ceb092cd14c3bce0dc8cd4046754cd1e5e5c1977155e286b512b3f84fe1c03e"
++      url: "https://pub.dev"
++    source: hosted
++    version: "11.2.8"
++  firebase_storage_platform_interface:
++    dependency: transitive
++    description:
++      name: firebase_storage_platform_interface
++      sha256: "88f8b8bb7181eef125536297f11b28171f59d2f53a59610e3966c2e38be3de4c"
++      url: "https://pub.dev"
++    source: hosted
++    version: "4.4.7"
++  firebase_storage_web:
++    dependency: transitive
++    description:
++      name: firebase_storage_web
++      sha256: bd05589cf17a8d5e2a90bdffcdab434c97e27bc37ca0056bfa90accf0366a7b0
+       url: "https://pub.dev"
+     source: hosted
+-    version: "2.23.0"
++    version: "3.6.8"
+   fixnum:
+     dependency: transitive
+     description:
+@@ -393,19 +417,19 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "1.1.1"
++  fl_chart:
++    dependency: "direct main"
++    description:
++      name: fl_chart
++      sha256: c1e26c7e48496be85104c16c040950b0436674cdf0737f3f6e95511b2529b592
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.63.0"
+   flutter:
+     dependency: "direct main"
+     description: flutter
+     source: sdk
+     version: "0.0.0"
+-  flutter_colorpicker:
+-    dependency: "direct main"
+-    description:
+-      name: flutter_colorpicker
+-      sha256: "969de5f6f9e2a570ac660fb7b501551451ea2a1ab9e2097e89475f60e07816ea"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "1.1.0"
+   flutter_dotenv:
+     dependency: "direct main"
+     description:
+@@ -419,59 +443,155 @@ packages:
+     description: flutter
+     source: sdk
+     version: "0.0.0"
++  flutter_facebook_auth:
++    dependency: "direct main"
++    description:
++      name: flutter_facebook_auth
++      sha256: bc455122d3ea14fd0887b1a0f74d0ead845c04bfc2e68c64d9a701367d665724
++      url: "https://pub.dev"
++    source: hosted
++    version: "6.2.0"
++  flutter_facebook_auth_platform_interface:
++    dependency: transitive
++    description:
++      name: flutter_facebook_auth_platform_interface
++      sha256: "86630c4dbba1c20fba26ea9e59ad0d48f5ff59e7373cacd36f916160186f9ce9"
++      url: "https://pub.dev"
++    source: hosted
++    version: "5.0.0"
++  flutter_facebook_auth_web:
++    dependency: transitive
++    description:
++      name: flutter_facebook_auth_web
++      sha256: "22dca8091409309ad85b9f430fbd8f57b686276979da5195e7e97587352567ce"
++      url: "https://pub.dev"
++    source: hosted
++    version: "5.0.0"
++  flutter_launcher_icons:
++    dependency: "direct dev"
++    description:
++      name: flutter_launcher_icons
++      sha256: "526faf84284b86a4cb36d20a5e45147747b7563d921373d4ee0559c54fcdbcea"
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.13.1"
+   flutter_lints:
+     dependency: "direct dev"
+     description:
+       name: flutter_lints
+-      sha256: "5398f14efa795ffb7a33e9b6a08798b26a180edac4ad7db3f231e40f82ce11e1"
++      sha256: a25a15ebbdfc33ab1cd26c63a6ee519df92338a9c10f122adda92938253bef04
+       url: "https://pub.dev"
+     source: hosted
+-    version: "5.0.0"
++    version: "2.0.3"
+   flutter_local_notifications:
+     dependency: "direct main"
+     description:
+       name: flutter_local_notifications
+-      sha256: b94a50aabbe56ef254f95f3be75640f99120429f0a153b2dc30143cffc9bfdf3
++      sha256: "401643a6ea9d8451365f2ec11145335bf130560cfde367bdf8f0be6d60f89479"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "19.2.1"
++    version: "15.1.3"
+   flutter_local_notifications_linux:
+     dependency: transitive
+     description:
+       name: flutter_local_notifications_linux
+-      sha256: e3c277b2daab8e36ac5a6820536668d07e83851aeeb79c446e525a70710770a5
++      sha256: c49bd06165cad9beeb79090b18cd1eb0296f4bf4b23b84426e37dd7c027fc3af
+       url: "https://pub.dev"
+     source: hosted
+-    version: "6.0.0"
++    version: "4.0.1"
+   flutter_local_notifications_platform_interface:
+     dependency: transitive
+     description:
+       name: flutter_local_notifications_platform_interface
+-      sha256: "2569b973fc9d1f63a37410a9f7c1c552081226c597190cb359ef5d5762d1631c"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "9.0.0"
+-  flutter_local_notifications_windows:
+-    dependency: transitive
+-    description:
+-      name: flutter_local_notifications_windows
+-      sha256: f8fc0652a601f83419d623c85723a3e82ad81f92b33eaa9bcc21ea1b94773e6e
++      sha256: "85f8d07fe708c1bdcf45037f2c0109753b26ae077e9d9e899d55971711a4ea66"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "1.0.0"
++    version: "7.2.0"
+   flutter_localizations:
+     dependency: "direct main"
+     description: flutter
+     source: sdk
+     version: "0.0.0"
++  flutter_markdown:
++    dependency: "direct main"
++    description:
++      name: flutter_markdown
++      sha256: "04c4722cc36ec5af38acc38ece70d22d3c2123c61305d555750a091517bbe504"
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.6.23"
++  flutter_native_timezone:
++    dependency: "direct main"
++    description:
++      name: flutter_native_timezone
++      sha256: ed7bfb982f036243de1c068e269182a877100c994f05143c8b26a325e28c1b02
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.0.0"
++  flutter_plugin_android_lifecycle:
++    dependency: transitive
++    description:
++      name: flutter_plugin_android_lifecycle
++      sha256: f948e346c12f8d5480d2825e03de228d0eb8c3a737e4cdaa122267b89c022b5e
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.0.28"
++  flutter_secure_storage:
++    dependency: transitive
++    description:
++      name: flutter_secure_storage
++      sha256: "9cad52d75ebc511adfae3d447d5d13da15a55a92c9410e50f67335b6d21d16ea"
++      url: "https://pub.dev"
++    source: hosted
++    version: "9.2.4"
++  flutter_secure_storage_linux:
++    dependency: transitive
++    description:
++      name: flutter_secure_storage_linux
++      sha256: be76c1d24a97d0b98f8b54bce6b481a380a6590df992d0098f868ad54dc8f688
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.2.3"
++  flutter_secure_storage_macos:
++    dependency: transitive
++    description:
++      name: flutter_secure_storage_macos
++      sha256: "6c0a2795a2d1de26ae202a0d78527d163f4acbb11cde4c75c670f3a0fc064247"
++      url: "https://pub.dev"
++    source: hosted
++    version: "3.1.3"
++  flutter_secure_storage_platform_interface:
++    dependency: transitive
++    description:
++      name: flutter_secure_storage_platform_interface
++      sha256: cf91ad32ce5adef6fba4d736a542baca9daf3beac4db2d04be350b87f69ac4a8
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.1.2"
++  flutter_secure_storage_web:
++    dependency: transitive
++    description:
++      name: flutter_secure_storage_web
++      sha256: f4ebff989b4f07b2656fb16b47852c0aab9fed9b4ec1c70103368337bc1886a9
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.2.1"
++  flutter_secure_storage_windows:
++    dependency: transitive
++    description:
++      name: flutter_secure_storage_windows
++      sha256: b20b07cb5ed4ed74fc567b78a72936203f587eba460af1df11281c9326cd3709
++      url: "https://pub.dev"
++    source: hosted
++    version: "3.1.2"
+   flutter_slidable:
+     dependency: "direct main"
+     description:
+       name: flutter_slidable
+-      sha256: ab7dbb16f783307c9d7762ede2593ce32c220ba2ba0fd540a3db8e9a3acba71a
++      sha256: a857de7ea701f276fd6a6c4c67ae885b60729a3449e42766bb0e655171042801
+       url: "https://pub.dev"
+     source: hosted
+-    version: "4.0.0"
++    version: "3.1.2"
+   flutter_svg:
+     dependency: "direct main"
+     description:
+@@ -511,22 +631,6 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "2.1.3"
+-  google_fonts:
+-    dependency: "direct main"
+-    description:
+-      name: google_fonts
+-      sha256: b1ac0fe2832c9cc95e5e88b57d627c5e68c223b9657f4b96e1487aa9098c7b82
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "6.2.1"
+-  google_generative_ai:
+-    dependency: "direct main"
+-    description:
+-      name: google_generative_ai
+-      sha256: "71f613d0247968992ad87a0eb21650a566869757442ba55a31a81be6746e0d1f"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "0.4.7"
+   google_identity_services_web:
+     dependency: transitive
+     description:
+@@ -560,7 +664,7 @@ packages:
+     source: hosted
+     version: "5.9.0"
+   google_sign_in_platform_interface:
+-    dependency: "direct dev"
++    dependency: transitive
+     description:
+       name: google_sign_in_platform_interface
+       sha256: "5f6f79cf139c197261adb6ac024577518ae48fdff8e53205c5373b5f6430a8aa"
+@@ -575,6 +679,22 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "0.12.4+4"
++  googleapis:
++    dependency: "direct main"
++    description:
++      name: googleapis
++      sha256: c2f311bcd1b3e4052234162edc6b626a9013a7e1385d6aad37e9e6a6c5f89908
++      url: "https://pub.dev"
++    source: hosted
++    version: "11.4.0"
++  googleapis_auth:
++    dependency: "direct main"
++    description:
++      name: googleapis_auth
++      sha256: befd71383a955535060acde8792e7efc11d2fccd03dd1d3ec434e85b68775938
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.6.0"
+   graphs:
+     dependency: transitive
+     description:
+@@ -584,7 +704,7 @@ packages:
+     source: hosted
+     version: "2.3.2"
+   http:
+-    dependency: "direct main"
++    dependency: transitive
+     description:
+       name: http
+       sha256: "2c11f3f94c687ee9bad77c171151672986360b2b001d109814ee7140b2cf261b"
+@@ -607,6 +727,78 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "4.1.2"
++  image:
++    dependency: transitive
++    description:
++      name: image
++      sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
++      url: "https://pub.dev"
++    source: hosted
++    version: "4.5.4"
++  image_picker:
++    dependency: "direct main"
++    description:
++      name: image_picker
++      sha256: "021834d9c0c3de46bf0fe40341fa07168407f694d9b2bb18d532dc1261867f7a"
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.1.2"
++  image_picker_android:
++    dependency: transitive
++    description:
++      name: image_picker_android
++      sha256: "317a5d961cec5b34e777b9252393f2afbd23084aa6e60fcf601dcf6341b9ebeb"
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.8.12+23"
++  image_picker_for_web:
++    dependency: transitive
++    description:
++      name: image_picker_for_web
++      sha256: "717eb042ab08c40767684327be06a5d8dbb341fe791d514e4b92c7bbe1b7bb83"
++      url: "https://pub.dev"
++    source: hosted
++    version: "3.0.6"
++  image_picker_ios:
++    dependency: transitive
++    description:
++      name: image_picker_ios
++      sha256: "05da758e67bc7839e886b3959848aa6b44ff123ab4b28f67891008afe8ef9100"
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.8.12+2"
++  image_picker_linux:
++    dependency: transitive
++    description:
++      name: image_picker_linux
++      sha256: "34a65f6740df08bbbeb0a1abd8e6d32107941fd4868f67a507b25601651022c9"
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.2.1+2"
++  image_picker_macos:
++    dependency: transitive
++    description:
++      name: image_picker_macos
++      sha256: "1b90ebbd9dcf98fb6c1d01427e49a55bd96b5d67b8c67cf955d60a5de74207c1"
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.2.1+2"
++  image_picker_platform_interface:
++    dependency: transitive
++    description:
++      name: image_picker_platform_interface
++      sha256: "886d57f0be73c4b140004e78b9f28a8914a09e50c2d816bdd0520051a71236a0"
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.10.1"
++  image_picker_windows:
++    dependency: transitive
++    description:
++      name: image_picker_windows
++      sha256: "6ad07afc4eb1bc25f3a01084d28520496c4a3bb0cb13685435838167c9dcedeb"
++      url: "https://pub.dev"
++    source: hosted
++    version: "0.2.1+1"
+   integration_test:
+     dependency: "direct dev"
+     description: flutter
+@@ -632,10 +824,10 @@ packages:
+     dependency: transitive
+     description:
+       name: js
+-      sha256: "53385261521cc4a0c4658fd0ad07a7d14591cf8fc33abbceae306ddb974888dc"
++      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
+       url: "https://pub.dev"
+     source: hosted
+-    version: "0.7.2"
++    version: "0.6.7"
+   json_annotation:
+     dependency: transitive
+     description:
+@@ -672,18 +864,10 @@ packages:
+     dependency: transitive
+     description:
+       name: lints
+-      sha256: c35bb79562d980e9a453fc715854e1ed39e24e7d0297a880ef54e17f9874a9d7
++      sha256: "0a217c6c989d21039f1498c3ed9f3ed71b354e69873f13a8dfc3c9fe76f1b452"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "5.1.1"
+-  logger:
+-    dependency: transitive
+-    description:
+-      name: logger
+-      sha256: be4b23575aac7ebf01f225a241eb7f6b5641eeaf43c6a8613510fc2f8cf187d1
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "2.5.0"
++    version: "2.1.1"
+   logging:
+     dependency: transitive
+     description:
+@@ -692,6 +876,14 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "1.3.0"
++  markdown:
++    dependency: transitive
++    description:
++      name: markdown
++      sha256: "935e23e1ff3bc02d390bad4d4be001208ee92cc217cb5b5a6c19bc14aaa318c1"
++      url: "https://pub.dev"
++    source: hosted
++    version: "7.3.0"
+   matcher:
+     dependency: transitive
+     description:
+@@ -724,14 +916,6 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "2.0.0"
+-  mock_exceptions:
+-    dependency: transitive
+-    description:
+-      name: mock_exceptions
+-      sha256: "6e3e623712d2c6106ffe9e14732912522b565ddaa82a8dcee6cd4441b5984056"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "0.8.2"
+   mockito:
+     dependency: "direct dev"
+     description:
+@@ -740,14 +924,6 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "5.4.6"
+-  more:
+-    dependency: transitive
+-    description:
+-      name: more
+-      sha256: d3908d710f78ee5470d2ae9d7599a11aeb00a17909cc36cbd0f23a0b659ca375
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "4.5.0"
+   nested:
+     dependency: transitive
+     description:
+@@ -781,7 +957,7 @@ packages:
+     source: hosted
+     version: "1.1.0"
+   path_provider:
+-    dependency: transitive
++    dependency: "direct main"
+     description:
+       name: path_provider
+       sha256: "50c5dd5b6e1aaf6fb3a78b33f6aa3afca52bf903a8a5298f53101fdaee55bbcd"
+@@ -832,50 +1008,42 @@ packages:
+     dependency: "direct main"
+     description:
+       name: permission_handler
+-      sha256: "59adad729136f01ea9e35a48f5d1395e25cba6cea552249ddbe9cf950f5d7849"
++      sha256: bc56bfe9d3f44c3c612d8d393bd9b174eb796d706759f9b495ac254e4294baa5
+       url: "https://pub.dev"
+     source: hosted
+-    version: "11.4.0"
++    version: "10.4.5"
+   permission_handler_android:
+     dependency: transitive
+     description:
+       name: permission_handler_android
+-      sha256: d3971dcdd76182a0c198c096b5db2f0884b0d4196723d21a866fc4cdea057ebc
++      sha256: "59c6322171c29df93a22d150ad95f3aa19ed86542eaec409ab2691b8f35f9a47"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "12.1.0"
++    version: "10.3.6"
+   permission_handler_apple:
+     dependency: transitive
+     description:
+       name: permission_handler_apple
+-      sha256: f000131e755c54cf4d84a5d8bd6e4149e262cc31c5a8b1d698de1ac85fa41023
++      sha256: "99e220bce3f8877c78e4ace901082fb29fa1b4ebde529ad0932d8d664b34f3f5"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "9.4.7"
+-  permission_handler_html:
+-    dependency: transitive
+-    description:
+-      name: permission_handler_html
+-      sha256: "38f000e83355abb3392140f6bc3030660cfaef189e1f87824facb76300b4ff24"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "0.1.3+5"
++    version: "9.1.4"
+   permission_handler_platform_interface:
+     dependency: transitive
+     description:
+       name: permission_handler_platform_interface
+-      sha256: eb99b295153abce5d683cac8c02e22faab63e50679b937fa1bf67d58bb282878
++      sha256: "6760eb5ef34589224771010805bea6054ad28453906936f843a8cc4d3a55c4a4"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "4.3.0"
++    version: "3.12.0"
+   permission_handler_windows:
+     dependency: transitive
+     description:
+       name: permission_handler_windows
+-      sha256: "1a790728016f79a41216d88672dbc5df30e686e811ad4e698bfc51f76ad91f1e"
++      sha256: cc074aace208760f1eee6aa4fae766b45d947df85bc831cde77009cdb4720098
+       url: "https://pub.dev"
+     source: hosted
+-    version: "0.2.1"
++    version: "0.1.3"
+   petitparser:
+     dependency: transitive
+     description:
+@@ -900,14 +1068,6 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "2.1.8"
+-  pointycastle:
+-    dependency: transitive
+-    description:
+-      name: pointycastle
+-      sha256: "4be0097fcf3fd3e8449e53730c631200ebc7b88016acecab2b0da2f0149222fe"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "3.9.1"
+   pool:
+     dependency: transitive
+     description:
+@@ -916,6 +1076,14 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "1.5.1"
++  posix:
++    dependency: transitive
++    description:
++      name: posix
++      sha256: f0d7856b6ca1887cfa6d1d394056a296ae33489db914e365e2044fdada449e62
++      url: "https://pub.dev"
++    source: hosted
++    version: "6.0.2"
+   process:
+     dependency: transitive
+     description:
+@@ -948,30 +1116,6 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "1.5.0"
+-  quiver:
+-    dependency: transitive
+-    description:
+-      name: quiver
+-      sha256: ea0b925899e64ecdfbf9c7becb60d5b50e706ade44a85b2363be2a22d88117d2
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "3.2.2"
+-  rx:
+-    dependency: transitive
+-    description:
+-      name: rx
+-      sha256: "7f54bd39cc63a01c770c1de4b6ce8e135eb13119614cba2216bd9a93ccd29e56"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "0.4.0"
+-  rxdart:
+-    dependency: transitive
+-    description:
+-      name: rxdart
+-      sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "0.28.0"
+   shared_preferences:
+     dependency: "direct main"
+     description:
+@@ -1044,6 +1188,30 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "3.0.0"
++  sign_in_with_apple:
++    dependency: "direct main"
++    description:
++      name: sign_in_with_apple
++      sha256: "0975c23b9f8b30a80e27d5659a75993a093d4cb5f4eb7d23a9ccc586fea634e0"
++      url: "https://pub.dev"
++    source: hosted
++    version: "5.0.0"
++  sign_in_with_apple_platform_interface:
++    dependency: transitive
++    description:
++      name: sign_in_with_apple_platform_interface
++      sha256: c2ef2ce6273fce0c61acd7e9ff5be7181e33d7aa2b66508b39418b786cca2119
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.1.0"
++  sign_in_with_apple_web:
++    dependency: transitive
++    description:
++      name: sign_in_with_apple_web
++      sha256: "44b66528f576e77847c14999d5e881e17e7223b7b0625a185417829e5306f47a"
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.0.1"
+   simple_gesture_detector:
+     dependency: transitive
+     description:
+@@ -1081,6 +1249,46 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "7.0.0"
++  sqflite:
++    dependency: "direct main"
++    description:
++      name: sqflite
++      sha256: e2297b1da52f127bc7a3da11439985d9b536f75070f3325e62ada69a5c585d03
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.4.2"
++  sqflite_android:
++    dependency: transitive
++    description:
++      name: sqflite_android
++      sha256: "2b3070c5fa881839f8b402ee4a39c1b4d561704d4ebbbcfb808a119bc2a1701b"
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.4.1"
++  sqflite_common:
++    dependency: transitive
++    description:
++      name: sqflite_common
++      sha256: "84731e8bfd8303a3389903e01fb2141b6e59b5973cacbb0929021df08dddbe8b"
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.5.5"
++  sqflite_darwin:
++    dependency: transitive
++    description:
++      name: sqflite_darwin
++      sha256: "279832e5cde3fe99e8571879498c9211f3ca6391b0d818df4e17d9fff5c6ccb3"
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.4.2"
++  sqflite_platform_interface:
++    dependency: transitive
++    description:
++      name: sqflite_platform_interface
++      sha256: "8dd4515c7bdcae0a785b0062859336de775e8c65db81ae33dd5445f35be61920"
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.4.0"
+   stack_trace:
+     dependency: transitive
+     description:
+@@ -1121,6 +1329,14 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "0.3.1"
++  synchronized:
++    dependency: transitive
++    description:
++      name: synchronized
++      sha256: "0669c70faae6270521ee4f05bffd2919892d42d1276e6c495be80174b6bc0ef6"
++      url: "https://pub.dev"
++    source: hosted
++    version: "3.3.1"
+   table_calendar:
+     dependency: "direct main"
+     description:
+@@ -1149,10 +1365,10 @@ packages:
+     dependency: "direct main"
+     description:
+       name: timezone
+-      sha256: dd14a3b83cfd7cb19e7888f1cbc20f258b8d71b54c06f79ac585f14093a287d1
++      sha256: "2236ec079a174ce07434e89fcd3fcda430025eb7692244139a9cf54fdcf1fc7d"
+       url: "https://pub.dev"
+     source: hosted
+-    version: "0.10.1"
++    version: "0.9.4"
+   timing:
+     dependency: transitive
+     description:
+@@ -1161,14 +1377,6 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "1.0.2"
+-  tuple:
+-    dependency: transitive
+-    description:
+-      name: tuple
+-      sha256: a97ce2013f240b2f3807bcbaf218765b6f301c3eff91092bcfa23a039e7dd151
+-      url: "https://pub.dev"
+-    source: hosted
+-    version: "2.0.2"
+   typed_data:
+     dependency: transitive
+     description:
+@@ -1177,6 +1385,70 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "1.4.0"
++  url_launcher:
++    dependency: "direct main"
++    description:
++      name: url_launcher
++      sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"
++      url: "https://pub.dev"
++    source: hosted
++    version: "6.3.1"
++  url_launcher_android:
++    dependency: transitive
++    description:
++      name: url_launcher_android
++      sha256: "8582d7f6fe14d2652b4c45c9b6c14c0b678c2af2d083a11b604caeba51930d79"
++      url: "https://pub.dev"
++    source: hosted
++    version: "6.3.16"
++  url_launcher_ios:
++    dependency: transitive
++    description:
++      name: url_launcher_ios
++      sha256: "7f2022359d4c099eea7df3fdf739f7d3d3b9faf3166fb1dd390775176e0b76cb"
++      url: "https://pub.dev"
++    source: hosted
++    version: "6.3.3"
++  url_launcher_linux:
++    dependency: transitive
++    description:
++      name: url_launcher_linux
++      sha256: "4e9ba368772369e3e08f231d2301b4ef72b9ff87c31192ef471b380ef29a4935"
++      url: "https://pub.dev"
++    source: hosted
++    version: "3.2.1"
++  url_launcher_macos:
++    dependency: transitive
++    description:
++      name: url_launcher_macos
++      sha256: "17ba2000b847f334f16626a574c702b196723af2a289e7a93ffcb79acff855c2"
++      url: "https://pub.dev"
++    source: hosted
++    version: "3.2.2"
++  url_launcher_platform_interface:
++    dependency: transitive
++    description:
++      name: url_launcher_platform_interface
++      sha256: "552f8a1e663569be95a8190206a38187b531910283c3e982193e4f2733f01029"
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.3.2"
++  url_launcher_web:
++    dependency: transitive
++    description:
++      name: url_launcher_web
++      sha256: "4bd2b7b4dc4d4d0b94e5babfffbca8eac1a126c7f3d6ecbc1a11013faa3abba2"
++      url: "https://pub.dev"
++    source: hosted
++    version: "2.4.1"
++  url_launcher_windows:
++    dependency: transitive
++    description:
++      name: url_launcher_windows
++      sha256: "3284b6d2ac454cf34f114e1d3319866fdd1e19cdc329999057e44ffe936cfa77"
++      url: "https://pub.dev"
++    source: hosted
++    version: "3.1.4"
+   uuid:
+     dependency: "direct main"
+     description:
+@@ -1265,6 +1537,22 @@ packages:
+       url: "https://pub.dev"
+     source: hosted
+     version: "3.1.0"
++  win32:
++    dependency: transitive
++    description:
++      name: win32
++      sha256: "66814138c3562338d05613a6e368ed8cfb237ad6d64a9e9334be3f309acfca03"
++      url: "https://pub.dev"
++    source: hosted
++    version: "5.14.0"
++  win32_registry:
++    dependency: transitive
++    description:
++      name: win32_registry
++      sha256: "21ec76dfc731550fd3e2ce7a33a9ea90b828fdf19a5c3bcf556fa992cfa99852"
++      url: "https://pub.dev"
++    source: hosted
++    version: "1.1.5"
+   xdg_directories:
+     dependency: transitive
+     description:
+@@ -1282,7 +1570,7 @@ packages:
+     source: hosted
+     version: "6.5.0"
+   yaml:
+-    dependency: "direct dev"
++    dependency: transitive
+     description:
+       name: yaml
+       sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
+@@ -1290,5 +1578,5 @@ packages:
+     source: hosted
+     version: "3.1.3"
+ sdks:
+-  dart: ">=3.8.0-278.1.beta <4.0.0"
+-  flutter: ">=3.27.0"
++  dart: ">=3.8.0 <4.0.0"
++  flutter: ">=3.29.0"
+diff --git a/pubspec.yaml b/pubspec.yaml
+index 7dff33a..5c892ae 100644
+--- a/pubspec.yaml
++++ b/pubspec.yaml
+@@ -1,77 +1,47 @@
+-<<<<<<< SEARCH
+-  flutter_localizations:
+-    sdk: flutter
+-  intl: ^0.18.1 # Atualizado para uma versão mais recente se necessário
+-  path_provider: ^2.0.15 # Adicionado para gerenciamento de arquivos
+-  sqflite: ^2.2.8+4 # Adicionado para banco de dados local
+-  firebase_core: ^2.15.1 # Adicionado para Firebase
+-  firebase_auth: ^4.9.0 # Adicionado para Firebase Auth
+-  cloud_firestore: ^4.9.1 # Adicionado para Firestore
+-  google_sign_in: ^6.1.4 # Adicionado para Google Sign-In
+-  flutter_facebook_auth: ^6.0.0 # Adicionado para Facebook Login
+-  sign_in_with_apple: ^5.0.0 # Adicionado para Sign in with Apple
+-  shared_preferences: ^2.2.0 # Adicionado para persistência simples
+-  provider: ^6.0.5 # Adicionado para gerenciamento de estado
+-  flutter_dotenv: ^5.1.0 # Adicionado para variáveis de ambiente
+-  table_calendar: ^3.0.9 # Adicionado para o calendário
+-  fl_chart: ^0.63.0 # Adicionado para gráficos
+-  flutter_local_notifications: ^15.1.0+1 # Adicionado para notificações locais
+-  timezone: ^0.9.2 # Adicionado para lidar com fusos horários
+-  image_picker: ^1.0.2 # Adicionado para seleção de imagens
+-  firebase_storage: ^11.2.6 # Adicionado para armazenamento de arquivos no Firebase
+-  uuid: ^4.0.0 # Adicionado para gerar IDs únicos
+-  googleapis_auth: ^1.4.1 # Adicionado para autenticação com APIs do Google
+-  extension_google_sign_in_as_googleapis_auth: ^2.0.10 # Helper para Google Sign-In
+-  googleapis: ^11.4.0 # Adicionado para APIs do Google (ex: Calendar API)
+-  permission_handler: ^10.4.3 # Adicionado para gerenciar permissões
+-  device_info_plus: ^9.0.3 # Adicionado para informações do dispositivo
+-  flutter_native_timezone: ^2.0.0 # Adicionado para obter o fuso horário nativo
+-  flutter_svg: ^2.0.7 # Para usar SVGs, se necessário
+-  flutter_markdown: ^0.6.18 # Para renderizar markdown, se necessário
+-  url_launcher: ^6.1.14 # Para abrir URLs
++name: myapp
++description: A Flutter app for building positive habits
+ 
+-dev_dependencies:
+-  flutter_test:
+-    sdk: flutter
+-  flutter_lints: ^2.0.0
+-  integration_test:
++publish_to: 'none'
++
++version: 1.0.0+1
++
++environment:
++  sdk: '>=3.0.0 <4.0.0'
++
++dependencies:
++  flutter:
+     sdk: flutter
+-  build_runner: ^2.4.6
+-  flutter_launcher_icons: "^0.13.1" # Adicionado para gerar ícones do app
+-  mockito: ^5.4.2 # Para mocks em testes unitários
+-  firebase_core_platform_interface: 4.8.0 # Fix para compatibilidade
+-=======
+   flutter_localizations:
+     sdk: flutter
+-  intl: ^0.18.1 # Atualizado para uma versão mais recente se necessário
+-  path_provider: ^2.0.15 # Adicionado para gerenciamento de arquivos
+-  sqflite: ^2.2.8+4 # Adicionado para banco de dados local
+-  firebase_core: ^2.15.1 # Adicionado para Firebase
+-  firebase_auth: ^4.9.0 # Adicionado para Firebase Auth
+-  cloud_firestore: ^4.9.1 # Adicionado para Firestore
+-  google_sign_in: ^6.1.4 # Adicionado para Google Sign-In
+-  flutter_facebook_auth: ^6.0.0 # Adicionado para Facebook Login
+-  sign_in_with_apple: ^5.0.0 # Adicionado para Sign in with Apple
+-  shared_preferences: ^2.2.0 # Adicionado para persistência simples
+-  provider: ^6.0.5 # Adicionado para gerenciamento de estado
+-  flutter_dotenv: ^5.1.0 # Adicionado para variáveis de ambiente
+-  table_calendar: ^3.0.9 # Adicionado para o calendário
+-  fl_chart: ^0.63.0 # Adicionado para gráficos
+-  flutter_local_notifications: ^15.1.0+1 # Adicionado para notificações locais
+-  timezone: ^0.9.2 # Adicionado para lidar com fusos horários
+-  image_picker: ^1.0.2 # Adicionado para seleção de imagens
+-  firebase_storage: ^11.2.6 # Adicionado para armazenamento de arquivos no Firebase
+-  uuid: ^4.0.0 # Adicionado para gerar IDs únicos
+-  googleapis_auth: ^1.4.1 # Adicionado para autenticação com APIs do Google
+-  extension_google_sign_in_as_googleapis_auth: ^2.0.10 # Helper para Google Sign-In
+-  googleapis: ^11.4.0 # Adicionado para APIs do Google (ex: Calendar API)
+-  permission_handler: ^10.4.3 # Adicionado para gerenciar permissões
+-  device_info_plus: ^9.0.3 # Adicionado para informações do dispositivo
+-  flutter_native_timezone: ^2.0.0 # Adicionado para obter o fuso horário nativo
+-  flutter_svg: ^2.0.7 # Para usar SVGs, se necessário
+-  flutter_markdown: ^0.6.18 # Para renderizar markdown, se necessário
+-  url_launcher: ^6.1.14 # Para abrir URLs
+-  flutter_slidable: ^3.0.0 # Adicionado para swipe actions
++  intl: ^0.20.2
++  path_provider: ^2.0.15
++  sqflite: ^2.2.8+4
++  firebase_core: ^2.15.1
++  firebase_auth: ^4.9.0
++  cloud_firestore: ^4.9.1
++  google_sign_in: ^6.1.4
++  flutter_facebook_auth: ^6.0.0
++  sign_in_with_apple: ^5.0.0
++  shared_preferences: ^2.2.0
++  provider: ^6.0.5
++  flutter_dotenv: ^5.1.0
++  table_calendar: ^3.0.9
++  fl_chart: ^0.63.0
++  flutter_local_notifications: ^15.1.0+1
++  timezone: ^0.9.2
++  image_picker: ^1.0.2
++  firebase_storage: ^11.2.6
++  uuid: ^4.0.0
++  googleapis_auth: ^1.4.1
++  extension_google_sign_in_as_googleapis_auth: ^2.0.10
++  googleapis: ^11.4.0
++  permission_handler: ^10.4.3
++  device_info_plus: ^9.0.3
++  flutter_native_timezone: ^2.0.0
++  flutter_svg: ^2.0.7
++  flutter_markdown: ^0.6.18
++  url_launcher: ^6.1.14
++  flutter_slidable: ^3.0.0
+ 
+ dev_dependencies:
+   flutter_test:
+@@ -80,7 +50,12 @@ dev_dependencies:
+   integration_test:
+     sdk: flutter
+   build_runner: ^2.4.6
+-  flutter_launcher_icons: "^0.13.1" # Adicionado para gerar ícones do app
+-  mockito: ^5.4.2 # Para mocks em testes unitários
+-  firebase_core_platform_interface: 4.8.0 # Fix para compatibilidade
+->>>>>>> REPLACE
++  flutter_launcher_icons: "^0.13.1"
++  mockito: ^5.4.2
++  firebase_core_platform_interface: 4.8.0
++
++flutter:
++  uses-material-design: true
++
++  assets:
++    - assets/images/
+\ No newline at end of file
+diff --git a/pubspec.yaml.backup b/pubspec.yaml.backup
+new file mode 100644
+index 0000000..7dff33a
+--- /dev/null
++++ b/pubspec.yaml.backup
+@@ -0,0 +1,86 @@
++<<<<<<< SEARCH
++  flutter_localizations:
++    sdk: flutter
++  intl: ^0.18.1 # Atualizado para uma versão mais recente se necessário
++  path_provider: ^2.0.15 # Adicionado para gerenciamento de arquivos
++  sqflite: ^2.2.8+4 # Adicionado para banco de dados local
++  firebase_core: ^2.15.1 # Adicionado para Firebase
++  firebase_auth: ^4.9.0 # Adicionado para Firebase Auth
++  cloud_firestore: ^4.9.1 # Adicionado para Firestore
++  google_sign_in: ^6.1.4 # Adicionado para Google Sign-In
++  flutter_facebook_auth: ^6.0.0 # Adicionado para Facebook Login
++  sign_in_with_apple: ^5.0.0 # Adicionado para Sign in with Apple
++  shared_preferences: ^2.2.0 # Adicionado para persistência simples
++  provider: ^6.0.5 # Adicionado para gerenciamento de estado
++  flutter_dotenv: ^5.1.0 # Adicionado para variáveis de ambiente
++  table_calendar: ^3.0.9 # Adicionado para o calendário
++  fl_chart: ^0.63.0 # Adicionado para gráficos
++  flutter_local_notifications: ^15.1.0+1 # Adicionado para notificações locais
++  timezone: ^0.9.2 # Adicionado para lidar com fusos horários
++  image_picker: ^1.0.2 # Adicionado para seleção de imagens
++  firebase_storage: ^11.2.6 # Adicionado para armazenamento de arquivos no Firebase
++  uuid: ^4.0.0 # Adicionado para gerar IDs únicos
++  googleapis_auth: ^1.4.1 # Adicionado para autenticação com APIs do Google
++  extension_google_sign_in_as_googleapis_auth: ^2.0.10 # Helper para Google Sign-In
++  googleapis: ^11.4.0 # Adicionado para APIs do Google (ex: Calendar API)
++  permission_handler: ^10.4.3 # Adicionado para gerenciar permissões
++  device_info_plus: ^9.0.3 # Adicionado para informações do dispositivo
++  flutter_native_timezone: ^2.0.0 # Adicionado para obter o fuso horário nativo
++  flutter_svg: ^2.0.7 # Para usar SVGs, se necessário
++  flutter_markdown: ^0.6.18 # Para renderizar markdown, se necessário
++  url_launcher: ^6.1.14 # Para abrir URLs
++
++dev_dependencies:
++  flutter_test:
++    sdk: flutter
++  flutter_lints: ^2.0.0
++  integration_test:
++    sdk: flutter
++  build_runner: ^2.4.6
++  flutter_launcher_icons: "^0.13.1" # Adicionado para gerar ícones do app
++  mockito: ^5.4.2 # Para mocks em testes unitários
++  firebase_core_platform_interface: 4.8.0 # Fix para compatibilidade
++=======
++  flutter_localizations:
++    sdk: flutter
++  intl: ^0.18.1 # Atualizado para uma versão mais recente se necessário
++  path_provider: ^2.0.15 # Adicionado para gerenciamento de arquivos
++  sqflite: ^2.2.8+4 # Adicionado para banco de dados local
++  firebase_core: ^2.15.1 # Adicionado para Firebase
++  firebase_auth: ^4.9.0 # Adicionado para Firebase Auth
++  cloud_firestore: ^4.9.1 # Adicionado para Firestore
++  google_sign_in: ^6.1.4 # Adicionado para Google Sign-In
++  flutter_facebook_auth: ^6.0.0 # Adicionado para Facebook Login
++  sign_in_with_apple: ^5.0.0 # Adicionado para Sign in with Apple
++  shared_preferences: ^2.2.0 # Adicionado para persistência simples
++  provider: ^6.0.5 # Adicionado para gerenciamento de estado
++  flutter_dotenv: ^5.1.0 # Adicionado para variáveis de ambiente
++  table_calendar: ^3.0.9 # Adicionado para o calendário
++  fl_chart: ^0.63.0 # Adicionado para gráficos
++  flutter_local_notifications: ^15.1.0+1 # Adicionado para notificações locais
++  timezone: ^0.9.2 # Adicionado para lidar com fusos horários
++  image_picker: ^1.0.2 # Adicionado para seleção de imagens
++  firebase_storage: ^11.2.6 # Adicionado para armazenamento de arquivos no Firebase
++  uuid: ^4.0.0 # Adicionado para gerar IDs únicos
++  googleapis_auth: ^1.4.1 # Adicionado para autenticação com APIs do Google
++  extension_google_sign_in_as_googleapis_auth: ^2.0.10 # Helper para Google Sign-In
++  googleapis: ^11.4.0 # Adicionado para APIs do Google (ex: Calendar API)
++  permission_handler: ^10.4.3 # Adicionado para gerenciar permissões
++  device_info_plus: ^9.0.3 # Adicionado para informações do dispositivo
++  flutter_native_timezone: ^2.0.0 # Adicionado para obter o fuso horário nativo
++  flutter_svg: ^2.0.7 # Para usar SVGs, se necessário
++  flutter_markdown: ^0.6.18 # Para renderizar markdown, se necessário
++  url_launcher: ^6.1.14 # Para abrir URLs
++  flutter_slidable: ^3.0.0 # Adicionado para swipe actions
++
++dev_dependencies:
++  flutter_test:
++    sdk: flutter
++  flutter_lints: ^2.0.0
++  integration_test:
++    sdk: flutter
++  build_runner: ^2.4.6
++  flutter_launcher_icons: "^0.13.1" # Adicionado para gerar ícones do app
++  mockito: ^5.4.2 # Para mocks em testes unitários
++  firebase_core_platform_interface: 4.8.0 # Fix para compatibilidade
++>>>>>>> REPLACE
+diff --git a/pubspec_clean.yaml b/pubspec_clean.yaml
+new file mode 100644
+index 0000000..7dff33a
+--- /dev/null
++++ b/pubspec_clean.yaml
+@@ -0,0 +1,86 @@
++<<<<<<< SEARCH
++  flutter_localizations:
++    sdk: flutter
++  intl: ^0.18.1 # Atualizado para uma versão mais recente se necessário
++  path_provider: ^2.0.15 # Adicionado para gerenciamento de arquivos
++  sqflite: ^2.2.8+4 # Adicionado para banco de dados local
++  firebase_core: ^2.15.1 # Adicionado para Firebase
++  firebase_auth: ^4.9.0 # Adicionado para Firebase Auth
++  cloud_firestore: ^4.9.1 # Adicionado para Firestore
++  google_sign_in: ^6.1.4 # Adicionado para Google Sign-In
++  flutter_facebook_auth: ^6.0.0 # Adicionado para Facebook Login
++  sign_in_with_apple: ^5.0.0 # Adicionado para Sign in with Apple
++  shared_preferences: ^2.2.0 # Adicionado para persistência simples
++  provider: ^6.0.5 # Adicionado para gerenciamento de estado
++  flutter_dotenv: ^5.1.0 # Adicionado para variáveis de ambiente
++  table_calendar: ^3.0.9 # Adicionado para o calendário
++  fl_chart: ^0.63.0 # Adicionado para gráficos
++  flutter_local_notifications: ^15.1.0+1 # Adicionado para notificações locais
++  timezone: ^0.9.2 # Adicionado para lidar com fusos horários
++  image_picker: ^1.0.2 # Adicionado para seleção de imagens
++  firebase_storage: ^11.2.6 # Adicionado para armazenamento de arquivos no Firebase
++  uuid: ^4.0.0 # Adicionado para gerar IDs únicos
++  googleapis_auth: ^1.4.1 # Adicionado para autenticação com APIs do Google
++  extension_google_sign_in_as_googleapis_auth: ^2.0.10 # Helper para Google Sign-In
++  googleapis: ^11.4.0 # Adicionado para APIs do Google (ex: Calendar API)
++  permission_handler: ^10.4.3 # Adicionado para gerenciar permissões
++  device_info_plus: ^9.0.3 # Adicionado para informações do dispositivo
++  flutter_native_timezone: ^2.0.0 # Adicionado para obter o fuso horário nativo
++  flutter_svg: ^2.0.7 # Para usar SVGs, se necessário
++  flutter_markdown: ^0.6.18 # Para renderizar markdown, se necessário
++  url_launcher: ^6.1.14 # Para abrir URLs
++
++dev_dependencies:
++  flutter_test:
++    sdk: flutter
++  flutter_lints: ^2.0.0
++  integration_test:
++    sdk: flutter
++  build_runner: ^2.4.6
++  flutter_launcher_icons: "^0.13.1" # Adicionado para gerar ícones do app
++  mockito: ^5.4.2 # Para mocks em testes unitários
++  firebase_core_platform_interface: 4.8.0 # Fix para compatibilidade
++=======
++  flutter_localizations:
++    sdk: flutter
++  intl: ^0.18.1 # Atualizado para uma versão mais recente se necessário
++  path_provider: ^2.0.15 # Adicionado para gerenciamento de arquivos
++  sqflite: ^2.2.8+4 # Adicionado para banco de dados local
++  firebase_core: ^2.15.1 # Adicionado para Firebase
++  firebase_auth: ^4.9.0 # Adicionado para Firebase Auth
++  cloud_firestore: ^4.9.1 # Adicionado para Firestore
++  google_sign_in: ^6.1.4 # Adicionado para Google Sign-In
++  flutter_facebook_auth: ^6.0.0 # Adicionado para Facebook Login
++  sign_in_with_apple: ^5.0.0 # Adicionado para Sign in with Apple
++  shared_preferences: ^2.2.0 # Adicionado para persistência simples
++  provider: ^6.0.5 # Adicionado para gerenciamento de estado
++  flutter_dotenv: ^5.1.0 # Adicionado para variáveis de ambiente
++  table_calendar: ^3.0.9 # Adicionado para o calendário
++  fl_chart: ^0.63.0 # Adicionado para gráficos
++  flutter_local_notifications: ^15.1.0+1 # Adicionado para notificações locais
++  timezone: ^0.9.2 # Adicionado para lidar com fusos horários
++  image_picker: ^1.0.2 # Adicionado para seleção de imagens
++  firebase_storage: ^11.2.6 # Adicionado para armazenamento de arquivos no Firebase
++  uuid: ^4.0.0 # Adicionado para gerar IDs únicos
++  googleapis_auth: ^1.4.1 # Adicionado para autenticação com APIs do Google
++  extension_google_sign_in_as_googleapis_auth: ^2.0.10 # Helper para Google Sign-In
++  googleapis: ^11.4.0 # Adicionado para APIs do Google (ex: Calendar API)
++  permission_handler: ^10.4.3 # Adicionado para gerenciar permissões
++  device_info_plus: ^9.0.3 # Adicionado para informações do dispositivo
++  flutter_native_timezone: ^2.0.0 # Adicionado para obter o fuso horário nativo
++  flutter_svg: ^2.0.7 # Para usar SVGs, se necessário
++  flutter_markdown: ^0.6.18 # Para renderizar markdown, se necessário
++  url_launcher: ^6.1.14 # Para abrir URLs
++  flutter_slidable: ^3.0.0 # Adicionado para swipe actions
++
++dev_dependencies:
++  flutter_test:
++    sdk: flutter
++  flutter_lints: ^2.0.0
++  integration_test:
++    sdk: flutter
++  build_runner: ^2.4.6
++  flutter_launcher_icons: "^0.13.1" # Adicionado para gerar ícones do app
++  mockito: ^5.4.2 # Para mocks em testes unitários
++  firebase_core_platform_interface: 4.8.0 # Fix para compatibilidade
++>>>>>>> REPLACE
+diff --git a/windows/flutter/generated_plugin_registrant.cc b/windows/flutter/generated_plugin_registrant.cc
+index 8fc95da..83af640 100644
+--- a/windows/flutter/generated_plugin_registrant.cc
++++ b/windows/flutter/generated_plugin_registrant.cc
+@@ -6,18 +6,24 @@
+ 
+ #include "generated_plugin_registrant.h"
+ 
+-#include <cloud_firestore/cloud_firestore_plugin_c_api.h>
++#include <file_selector_windows/file_selector_windows.h>
+ #include <firebase_auth/firebase_auth_plugin_c_api.h>
+ #include <firebase_core/firebase_core_plugin_c_api.h>
++#include <flutter_secure_storage_windows/flutter_secure_storage_windows_plugin.h>
+ #include <permission_handler_windows/permission_handler_windows_plugin.h>
++#include <url_launcher_windows/url_launcher_windows.h>
+ 
+ void RegisterPlugins(flutter::PluginRegistry* registry) {
+-  CloudFirestorePluginCApiRegisterWithRegistrar(
+-      registry->GetRegistrarForPlugin("CloudFirestorePluginCApi"));
++  FileSelectorWindowsRegisterWithRegistrar(
++      registry->GetRegistrarForPlugin("FileSelectorWindows"));
+   FirebaseAuthPluginCApiRegisterWithRegistrar(
+       registry->GetRegistrarForPlugin("FirebaseAuthPluginCApi"));
+   FirebaseCorePluginCApiRegisterWithRegistrar(
+       registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
++  FlutterSecureStorageWindowsPluginRegisterWithRegistrar(
++      registry->GetRegistrarForPlugin("FlutterSecureStorageWindowsPlugin"));
+   PermissionHandlerWindowsPluginRegisterWithRegistrar(
+       registry->GetRegistrarForPlugin("PermissionHandlerWindowsPlugin"));
++  UrlLauncherWindowsRegisterWithRegistrar(
++      registry->GetRegistrarForPlugin("UrlLauncherWindows"));
+ }
+-- 
+2.43.0
+

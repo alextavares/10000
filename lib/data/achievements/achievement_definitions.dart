@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Categoria de conquista
 enum AchievementCategory {
   streak,      // Relacionadas a sequências
   completion,  // Total de conclusões
@@ -229,7 +228,7 @@ class AchievementDefinitions {
       title: 'Resolução de Ano Novo',
       description: 'Mantenha um hábito do dia 1º de janeiro até fevereiro',
       icon: Icons.celebration,
-      color: Colors.gold,
+      color: GoldColor.gold,
       category: AchievementCategory.special,
       requirement: 31,
       points: 300,

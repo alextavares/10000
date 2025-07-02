@@ -4,7 +4,7 @@ echo   INICIANDO HABITAI - SERVIDOR FLUTTER
 echo ================================================
 echo.
 echo Navegando para o diretorio do projeto...
-cd /d C:\codigos\HabitAiclaudedesktop\HabitAI
+cd /d "%~dp0"
 echo.
 echo Iniciando servidor Flutter na porta 5004...
 echo.

@@ -129,7 +129,7 @@ class HomeScreenState extends State<HomeScreen> {
     
     final habitService = ServiceProvider.of(context).habitService;
     try {
-      final habits = await habitService.getHabits();
+      final habits = await habitService.getAllHabits();
       
       Map<DateTime, int> completions = {};
       
@@ -191,7 +191,7 @@ class HomeScreenState extends State<HomeScreen> {
       }
 
       // Buscar hábitos
-      final allHabits = await habitService.getHabits();
+      final allHabits = await habitService.getAllHabits();
       print('[DEBUG] Total habits: ${allHabits.length}');
       
       final habitsForDay = allHabits.where((habit) {
@@ -358,7 +358,7 @@ class HomeScreenState extends State<HomeScreen> {
     // Navegar diretamente para UpsertHabitScreen para edição
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => UpsertHabitScreen(habitToEdit: habit),
+        builder: (context) => HabitDetailsScreen(habitId: habit.id),
       ),
     );
     if (result == true) { // UpsertHabitScreen retorna true se houve salvamento
@@ -690,7 +690,7 @@ class HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Carregando...',
+                              'Carregando...', 
                               style: TextStyle(color: Colors.grey[400], fontSize: 14),
                             ),
                           ],

@@ -49,19 +49,19 @@ class _StatsScreenState extends State<StatsScreen> {
   ];
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _statsFuture = _loadStats();
   }
 
   Future<StatsData> _loadStats() async {
     try {
-      final taskService = ServiceProvider.of(context).taskService;
-      final habitService = ServiceProvider.of(context).habitService;
-      final recurringTaskService = ServiceProvider.of(context).recurringTaskService;
+      final taskService = context.taskService;
+      final habitService = context.habitService;
+      final recurringTaskService = context.recurringTaskService;
 
       final tasks = await taskService.getTasks();
-      final habits = await habitService.getHabits();
+      final habits = await habitService.getAllHabits();
       final recurringTasks = await recurringTaskService.getRecurringTasks();
 
       // Calculate date range based on selected period
@@ -114,7 +114,7 @@ class _StatsScreenState extends State<StatsScreen> {
 
       // Calculate completion rate
       final totalItems = filteredTasks.length + habits.length + recurringTasks.length;
-      final completedItems = completedTasks + 
+      final completedItems = completedTasks +
                            habits.where((h) => h.isCompletedToday()).length +
                            completedRecurringTasks;
       final completionRate = totalItems > 0 ? (completedItems / totalItems) * 100 : 0.0;

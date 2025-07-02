@@ -4,36 +4,59 @@ import 'package:myapp/utils/logger.dart';
 /// Classe de configuração do aplicativo
 /// Gerencia todas as variáveis de ambiente e configurações
 class AppConfig {
+  static bool _isInitialized = false;
+  
   // Firebase Configuration
   static String get firebaseApiKey => 
-      dotenv.env['FIREBASE_API_KEY'] ?? '';
+      _ensureInitialized()['FIREBASE_API_KEY'] ?? '';
   
   static String get firebaseProjectId => 
-      dotenv.env['FIREBASE_PROJECT_ID'] ?? 'android-habitai';
+      _ensureInitialized()['FIREBASE_PROJECT_ID'] ?? 'android-habitai';
   
   static String get firebaseMessagingSenderId => 
-      dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '258006613617';
+      _ensureInitialized()['FIREBASE_MESSAGING_SENDER_ID'] ?? '258006613617';
   
   static String get firebaseAppId => 
-      dotenv.env['FIREBASE_APP_ID'] ?? '';
+      _ensureInitialized()['FIREBASE_APP_ID'] ?? '';
   
   static String get firebaseAuthDomain => 
-      dotenv.env['FIREBASE_AUTH_DOMAIN'] ?? 'android-habitai.firebaseapp.com';
+      _ensureInitialized()['FIREBASE_AUTH_DOMAIN'] ?? 'android-habitai.firebaseapp.com';
   
   static String get firebaseStorageBucket => 
-      dotenv.env['FIREBASE_STORAGE_BUCKET'] ?? 'android-habitai.firebasestorage.app';
+      _ensureInitialized()['FIREBASE_STORAGE_BUCKET'] ?? 'android-habitai.firebasestorage.app';
   
   // AI Configuration
   static String get googleApiKey => 
-      dotenv.env['GOOGLE_API_KEY'] ?? '';
+      _ensureInitialized()['GOOGLE_API_KEY'] ?? '';
   
   // App Configuration
   static bool get isDebugMode => 
-      dotenv.env['DEBUG_MODE'] == 'true';
+      _ensureInitialized()['DEBUG_MODE'] == 'true';
+  
+  /// Garante que o dotenv foi inicializado antes de acessar
+  static Map<String, String> _ensureInitialized() {
+    if (!_isInitialized) {
+      // Se ainda não foi inicializado, tenta carregar sincronamente
+      try {
+        dotenv.load(fileName: '.env');
+        _isInitialized = true;
+      } catch (e) {
+        Logger.error('Erro ao carregar arquivo .env: $e');
+      }
+    }
+    return dotenv.env;
+  }
   
   /// Inicializa as configurações carregando o arquivo .env
   static Future<void> initialize() async {
-    await dotenv.load(fileName: '.env');
+    if (_isInitialized) return;
+    
+    try {
+      await dotenv.load(fileName: '.env');
+      _isInitialized = true;
+    } catch (e) {
+      Logger.error('Erro ao carregar arquivo .env: $e');
+    }
   }
   
   /// Valida se as configurações essenciais estão presentes

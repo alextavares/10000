@@ -1,27 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:myapp/models/habit.dart';
 import 'package:uuid/uuid.dart';
 import 'package:myapp/services/notification_service.dart';
-import 'package:myapp/services/achievement_service.dart'; // Importar AchievementService
+import 'package:myapp/services/achievement_service.dart';
+import 'package:myapp/services/auth_strategy.dart';
 import 'package:myapp/utils/logger.dart';
 
 class HabitService extends ChangeNotifier {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
   final NotificationService notificationService;
-  final AchievementService achievementService; // Injetar AchievementService
+  final AchievementService achievementService;
   final Uuid _uuid = const Uuid();
 
   HabitService({
     required this.firestore,
     required this.auth,
     required this.notificationService,
-    required this.achievementService, // Adicionar ao construtor
+    required this.achievementService,
   });
 
   String? get _userId => auth.currentUser?.uid;
@@ -41,34 +39,108 @@ class HabitService extends ChangeNotifier {
     });
   }
 
-  Future<List<Habit>> getAllHabits() async { // Usado por CategoryService e outros
+  Future<List<Habit>> getAllHabits() async {
     if (_userId == null) return [];
     final snapshot = await _habitsCollection.orderBy('createdAt', descending: true).get();
     return snapshot.docs.map((doc) => Habit.fromMap(doc.data())).toList();
   }
 
-
   Future<String> addHabit(Habit habit) async {
-    if (_userId == null) throw Exception("User not authenticated.");
+    Logger.debug('=== HabitService.addHabit INICIADO ===');
     
-    final habitWithUser = habit.copyWith(userId: _userId, id: habit.id.isEmpty ? _uuid.v4() : habit.id);
+    if (_userId == null) {
+      Logger.error("User not authenticated when trying to add habit");
+      throw Exception("User not authenticated.");
+    }
+    
+    Logger.debug('User ID confirmado: $_userId');
+    
+    // Verificar limites do trial para usuários anônimos
+    final currentUser = auth.currentUser;
+    if (currentUser != null && currentUser.isAnonymous) {
+      final canCreate = await AuthStrategy.canCreateHabitInTrial();
+      if (!canCreate) {
+        final trialStatus = await AuthStrategy.getTrialStatus();
+        if (trialStatus.isExpired) {
+          throw TrialExpiredException('Período de teste expirou. Faça upgrade para continuar criando hábitos.');
+        } else {
+          throw HabitLimitException('Limite de ${trialStatus.maxHabits} hábitos atingido no período de teste.');
+        }
+      }
+    }
+    
+    // Garantir que o hábito tenha um ID válido
+    final habitId = habit.id.isEmpty ? _uuid.v4() : habit.id;
+    Logger.debug('Habit ID: $habitId');
+    
+    // Criar hábito com todos os campos obrigatórios
+    final now = DateTime.now();
+    final habitWithUser = habit.copyWith(
+      id: habitId,
+      userId: _userId,
+      createdAt: habit.createdAt ?? now,
+      updatedAt: now,
+      // Garantir valores padrão para campos obrigatórios
+      completionHistory: habit.completionHistory ?? {},
+      dailyProgress: habit.dailyProgress ?? {},
+      streak: habit.streak ?? 0,
+      longestStreak: habit.longestStreak ?? 0,
+      totalCompletions: habit.totalCompletions ?? 0,
+    );
+    
+    Logger.debug('Hábito preparado para salvar:');
+    Logger.debug('- Title: ${habitWithUser.title}');
+    Logger.debug('- Category: ${habitWithUser.category}');
+    Logger.debug('- UserId: ${habitWithUser.userId}');
     
     try {
-      await _habitsCollection.doc(habitWithUser.id).set(habitWithUser.toMap());
-      Logger.info('Habit added: ${habitWithUser.title}', tag: 'HabitService');
+      Logger.info('Salvando hábito no Firestore...');
+      Logger.debug('Collection path: users/$_userId/habits');
+      Logger.debug('Document ID: $habitId');
+      
+      // Usar set ao invés de add para garantir que temos controle sobre o ID
+      await _habitsCollection.doc(habitId).set(habitWithUser.toMap());
+      
+      Logger.info('✅ Hábito salvo no Firestore com sucesso!');
+      Logger.info('Habit added successfully: ${habitWithUser.title}');
+      
+      // Agendar notificação se habilitada
       if (habitWithUser.notificationsEnabled && habitWithUser.reminderTime != null) {
-        await notificationService.scheduleHabitReminder(habitWithUser);
+        try {
+          Logger.debug('Agendando notificação...');
+          await notificationService.scheduleHabitReminder(habitWithUser);
+          Logger.info('Reminder scheduled for habit: ${habitWithUser.title}');
+        } catch (e) {
+          Logger.error('Error scheduling reminder: $e');
+          // Não falhar a criação do hábito por causa de erro na notificação
+        }
       }
-      // Verificar conquistas após adicionar hábito
-      // Precisamos da lista atual de hábitos para algumas conquistas (como Mestre das Categorias ou Pioneiro)
-      final allHabits = await getAllHabits();
-      await achievementService.checkAchievements(_userId!, habit: habitWithUser, eventType: 'habit_created', allUserHabits: allHabits);
+      
+      // Verificar conquistas
+      try {
+        Logger.debug('Verificando conquistas...');
+        final allHabits = await getAllHabits();
+        await achievementService.checkAchievements(allHabits);
+      } catch (e) {
+        Logger.error('Error checking achievements: $e');
+        // Não falhar a criação do hábito por causa de erro nas conquistas
+      }
+
+      // Incrementar contador de hábitos do trial para usuários anônimos
+      final currentUser = auth.currentUser;
+      if (currentUser != null && currentUser.isAnonymous) {
+        await AuthStrategy.incrementTrialHabitsCount();
+        Logger.debug('Trial habits count incremented');
+      }
 
       notifyListeners();
-      return habitWithUser.id;
+      Logger.debug('=== HabitService.addHabit CONCLUÍDO COM SUCESSO ===');
+      return habitId;
     } catch (e, s) {
-      Logger.error('Error adding habit: $e', e, s, tag: 'HabitService');
-      rethrow;
+      Logger.error('=== ERRO NO FIRESTORE ===');
+      Logger.error('Error adding habit to Firestore: $e', e, s);
+      Logger.error('Tipo do erro: ${e.runtimeType}');
+      throw Exception('Failed to add habit: ${e.toString()}');
     }
   }
 
@@ -81,7 +153,7 @@ class HabitService extends ChangeNotifier {
       }
       return null;
     } catch (e, s) {
-      Logger.error('Error fetching habit by ID $id: $e', e, s, tag: 'HabitService');
+      Logger.error('Error fetching habit by ID $id: $e', e, s);
       return null;
     }
   }
@@ -94,61 +166,101 @@ class HabitService extends ChangeNotifier {
           .get();
       return snapshot.docs.map((doc) => Habit.fromMap(doc.data())).toList();
     } catch (e, s) {
-      Logger.error('Error fetching habits by category $categoryName: $e', e, s, tag: 'HabitService');
+      Logger.error('Error fetching habits by category $categoryName: $e', e, s);
       return [];
     }
   }
 
-
   Future<void> updateHabit(Habit habit) async {
-    if (_userId == null) throw Exception("User not authenticated.");
-    if (habit.userId != _userId && habit.userId != null) { // Permitir atualizar hábitos antigos sem userId
+    if (_userId == null) {
+      Logger.error("User not authenticated when trying to update habit");
+      throw Exception("User not authenticated.");
+    }
+    
+    if (habit.userId != _userId && habit.userId != null) {
+      Logger.error("User not authorized to update habit: ${habit.id}");
       throw Exception("User not authorized to update this habit.");
     }
 
     final habitToUpdate = habit.copyWith(updatedAt: DateTime.now());
+    
     try {
+      Logger.info('Updating habit: ${habitToUpdate.id}');
+      
       await _habitsCollection.doc(habitToUpdate.id).update(habitToUpdate.toMap());
-      Logger.info('Habit updated: ${habitToUpdate.title}', tag: 'HabitService');
+      
+      Logger.info('Habit updated successfully: ${habitToUpdate.title}');
 
       // Cancelar notificações antigas e reagendar se necessário
-      await notificationService.cancelHabitReminder(habit); // Usa o ID do hábito original
-      if (habitToUpdate.notificationsEnabled && habitToUpdate.reminderTime != null) {
-        await notificationService.scheduleHabitReminder(habitToUpdate);
+      try {
+        await notificationService.cancelHabitReminder(habit);
+        if (habitToUpdate.notificationsEnabled && habitToUpdate.reminderTime != null) {
+          await notificationService.scheduleHabitReminder(habitToUpdate);
+          Logger.info('Reminder rescheduled for habit: ${habitToUpdate.title}');
+        }
+      } catch (e) {
+        Logger.error('Error managing reminders: $e');
+        // Não falhar a atualização por causa de erro nas notificações
       }
+      
       notifyListeners();
     } catch (e, s) {
-      Logger.error('Error updating habit ${habit.id}: $e', e, s, tag: 'HabitService');
-      rethrow;
+      Logger.error('Error updating habit ${habit.id}: $e', e, s);
+      throw Exception('Failed to update habit: ${e.toString()}');
     }
   }
 
   Future<void> deleteHabit(String id) async {
-    if (_userId == null) throw Exception("User not authenticated.");
+    if (_userId == null) {
+      Logger.error("User not authenticated when trying to delete habit");
+      throw Exception("User not authenticated.");
+    }
+    
     try {
-      final habit = await getHabitById(id);
+      Logger.info('Deleting habit: $id');
+      
       final habitToDelete = await getHabitById(id);
       if (habitToDelete != null) {
-        await notificationService.cancelHabitReminder(habitToDelete);
+        // Cancelar notificações
+        try {
+          await notificationService.cancelHabitReminder(habitToDelete);
+        } catch (e) {
+          Logger.error('Error canceling reminder: $e');
+          // Continuar com a exclusão mesmo se falhar ao cancelar notificação
+        }
       }
+      
       await _habitsCollection.doc(id).delete();
-      Logger.info('Habit deleted: $id', tag: 'HabitService');
+      Logger.info('Habit deleted successfully: $id');
 
-      // Verificar conquistas após deletar hábito (pode afetar contagens)
-      final allHabits = await getAllHabits();
-      await achievementService.checkAchievements(_userId!, eventType: 'habit_deleted', allUserHabits: allHabits);
+      // Verificar conquistas
+      try {
+        final allHabits = await getAllHabits();
+        await achievementService.checkAchievements(allHabits);
+      } catch (e) {
+        Logger.error('Error checking achievements after delete: $e');
+      }
 
       notifyListeners();
     } catch (e, s) {
-      Logger.error('Error deleting habit $id: $e', e, s, tag: 'HabitService');
-      rethrow;
+      Logger.error('Error deleting habit $id: $e', e, s);
+      throw Exception('Failed to delete habit: ${e.toString()}');
     }
   }
 
   Future<void> markHabitCompletion(String habitId, DateTime date, bool completed) async {
-    if (_userId == null) throw Exception("User not authenticated.");
+    if (_userId == null) {
+      Logger.error("User not authenticated when trying to mark completion");
+      throw Exception("User not authenticated.");
+    }
+    
     final habit = await getHabitById(habitId);
-    if (habit != null) {
+    if (habit == null) {
+      Logger.warning('Habit $habitId not found for marking completion.');
+      return;
+    }
+    
+    try {
       final dateOnly = DateTime(date.year, date.month, date.day);
       Habit updatedHabit;
 
@@ -157,74 +269,90 @@ class HabitService extends ChangeNotifier {
         final newCompletionHistory = Map<DateTime, bool>.from(habit.completionHistory);
         newCompletionHistory[dateOnly] = true;
 
-        // Atualizar dailyProgress (simplificado, assumindo Sim/Não por enquanto para este exemplo)
+        // Atualizar dailyProgress
         final newDailyProgress = Map<DateTime, HabitDailyProgress>.from(habit.dailyProgress);
         newDailyProgress[dateOnly] = (newDailyProgress[dateOnly] ?? HabitDailyProgress(date: dateOnly))
             .copyWith(isCompleted: true);
 
         updatedHabit = habit.copyWith(
-            completionHistory: newCompletionHistory,
-            dailyProgress: newDailyProgress,
-            updatedAt: DateTime.now()
+          completionHistory: newCompletionHistory,
+          dailyProgress: newDailyProgress,
+          updatedAt: DateTime.now()
         );
-        updatedHabit.totalCompletions = newCompletionHistory.values.where((c) => c).length; // Recalcula
-        updatedHabit.updateStreak(); // Recalcula streak
+        updatedHabit.totalCompletions = newCompletionHistory.values.where((c) => c).length;
+        updatedHabit.updateStreak();
 
       } else {
         // Marcar como não concluído
         final newCompletionHistory = Map<DateTime, bool>.from(habit.completionHistory);
-        newCompletionHistory[dateOnly] = false;
-
+        newCompletionHistory.remove(dateOnly); // Remover ao invés de marcar como false
+        
         final newDailyProgress = Map<DateTime, HabitDailyProgress>.from(habit.dailyProgress);
-        newDailyProgress[dateOnly] = (newDailyProgress[dateOnly] ?? HabitDailyProgress(date: dateOnly))
-            .copyWith(isCompleted: false);
+        if (newDailyProgress.containsKey(dateOnly)) {
+          newDailyProgress[dateOnly] = newDailyProgress[dateOnly]!.copyWith(isCompleted: false);
+        }
         
         updatedHabit = habit.copyWith(
-            completionHistory: newCompletionHistory,
-            dailyProgress: newDailyProgress,
-            updatedAt: DateTime.now()
+          completionHistory: newCompletionHistory,
+          dailyProgress: newDailyProgress,
+          updatedAt: DateTime.now()
         );
-        updatedHabit.totalCompletions = newCompletionHistory.values.where((c) => c).length; // Recalcula
-        updatedHabit.updateStreak(); // Recalcula streak
+        updatedHabit.totalCompletions = newCompletionHistory.values.where((c) => c).length;
+        updatedHabit.updateStreak();
       }
       
-      await updateHabit(updatedHabit); // Salva o hábito atualizado (que também reagendará notificações)
-      Logger.info('Habit $habitId completion for $date marked as $completed', tag: 'HabitService');
+      await updateHabit(updatedHabit);
+      Logger.info('Habit $habitId completion for $date marked as $completed');
 
-      // Verificar conquistas após marcar conclusão e atualizar streak
-      final finalUpdatedHabit = await getHabitById(habitId); // Pega a versão mais recente com streak atualizado
-      if (finalUpdatedHabit != null) {
+      // Verificar conquistas
+      try {
         final allHabits = await getAllHabits();
-        await achievementService.checkAchievements(_userId!, habit: finalUpdatedHabit, eventType: 'habit_completed', allUserHabits: allHabits);
-        await achievementService.checkAchievements(_userId!, habit: finalUpdatedHabit, eventType: 'streak_updated', allUserHabits: allHabits);
+        await achievementService.checkAchievements(allHabits);
+      } catch (e) {
+        Logger.error('Error checking achievements after completion: $e');
       }
-
-    } else {
-       Logger.warning('Habit $habitId not found for marking completion.', tag: 'HabitService');
+      
+    } catch (e, s) {
+      Logger.error('Error marking habit completion: $e', e, s);
+      throw Exception('Failed to mark habit completion: ${e.toString()}');
     }
   }
   
   Future<void> resetHabitProgress(String habitId) async {
-    if (_userId == null) throw Exception("User not authenticated.");
+    if (_userId == null) {
+      Logger.error("User not authenticated when trying to reset progress");
+      throw Exception("User not authenticated.");
+    }
+    
     final habit = await getHabitById(habitId);
-    if (habit != null) {
+    if (habit == null) {
+      Logger.warning('Habit $habitId not found for progress reset.');
+      return;
+    }
+    
+    try {
       final resetHabit = habit.copyWith(
         completionHistory: {},
         dailyProgress: {},
         streak: 0,
-        // longestStreak: 0, // Decidido manter o longestStreak
         totalCompletions: 0,
         updatedAt: DateTime.now(),
       );
-      await updateHabit(resetHabit); // Salva e reagenda notificações
-      Logger.info('Habit progress reset for: ${habit.title}', tag: 'HabitService');
+      
+      await updateHabit(resetHabit);
+      Logger.info('Habit progress reset for: ${habit.title}');
 
-      // Verificar conquistas após resetar (pode afetar streaks, etc.)
-      final allHabits = await getAllHabits();
-      await achievementService.checkAchievements(_userId!, habit: resetHabit, eventType: 'progress_reset', allUserHabits: allHabits);
-
-    } else {
-      Logger.warning('Habit $habitId not found for progress reset.', tag: 'HabitService');
+      // Verificar conquistas
+      try {
+        final allHabits = await getAllHabits();
+        await achievementService.checkAchievements(allHabits);
+      } catch (e) {
+        Logger.error('Error checking achievements after reset: $e');
+      }
+      
+    } catch (e, s) {
+      Logger.error('Error resetting habit progress: $e', e, s);
+      throw Exception('Failed to reset habit progress: ${e.toString()}');
     }
   }
 }

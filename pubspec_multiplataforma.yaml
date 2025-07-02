@@ -1,0 +1,267 @@
+# Dependências para iOS e Android
+# Este arquivo mostra todas as dependências necessárias para implementar
+# a estratégia "Try First, Register Later" em ambas as plataformas
+
+name: habitai
+description: App de hábitos multiplataforma com trial e assinatura
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ===== CORE DEPENDENCIES =====
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+  cloud_firestore: ^4.13.6
+  firebase_analytics: ^10.7.4
+  firebase_crashlytics: ^3.4.9
+
+  # ===== UI/UX =====
+  cupertino_icons: ^1.0.6
+  material_design_icons_flutter: ^7.0.7296
+  flutter_svg: ^2.0.9
+  lottie: ^2.7.0
+  shimmer: ^3.0.0
+
+  # ===== AUTHENTICATION (MULTIPLATAFORMA) =====
+  # iOS: Sign in with Apple (OBRIGATÓRIO)
+  sign_in_with_apple: ^5.0.0
+  
+  # Android/iOS: Google Sign-In
+  google_sign_in: ^6.1.6
+  
+  # Web: Firebase Auth Web
+  firebase_auth_web: ^5.8.12
+
+  # ===== PAYMENTS (MULTIPLATAFORMA) =====
+  # iOS App Store + Google Play Store
+  in_app_purchase: ^3.1.11
+  in_app_purchase_storekit: ^0.3.6+1
+  in_app_purchase_android: ^0.3.0+18
+  
+  # Alternativa mais robusta (recomendada para produção)
+  purchases_flutter: ^6.9.2
+  
+  # Web: Stripe
+  stripe_payment: ^1.1.5
+  flutter_stripe: ^9.5.0
+
+  # ===== STATE MANAGEMENT =====
+  provider: ^6.1.1
+  riverpod: ^2.4.9 # ou provider - escolher um
+  
+  # ===== LOCAL STORAGE =====
+  shared_preferences: ^2.2.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.1
+
+  # ===== NOTIFICATIONS =====
+  flutter_local_notifications: ^16.3.0
+  timezone: ^0.9.2
+  
+  # Push notifications
+  firebase_messaging: ^14.7.9
+
+  # ===== NETWORKING =====
+  http: ^1.1.0
+  dio: ^5.3.4
+  connectivity_plus: ^5.0.2
+
+  # ===== UTILITIES =====
+  uuid: ^4.2.2
+  intl: ^0.19.0
+  url_launcher: ^6.2.1
+  package_info_plus: ^4.2.0
+  device_info_plus: ^9.1.1
+
+  # ===== ANALYTICS & CRASH REPORTING =====
+  firebase_performance: ^0.9.3+8
+  
+  # ===== DEVELOPMENT =====
+  logger: ^2.0.2+1
+  flutter_dotenv: ^5.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # ===== LINTING & CODE QUALITY =====
+  flutter_lints: ^3.0.1
+  very_good_analysis: ^5.1.0
+  
+  # ===== TESTING =====
+  mockito: ^5.4.4
+  bloc_test: ^9.1.5
+  integration_test:
+    sdk: flutter
+  
+  # ===== ASSETS GENERATION =====
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.6
+
+  # ===== BUILD TOOLS =====
+  build_runner: ^2.4.7
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/lottie/
+    - .env
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+
+# ===== CONFIGURAÇÕES ESPECÍFICAS =====
+
+# Para iOS: Configurar no ios/Runner/Info.plist
+# <key>CFBundleURLTypes</key>
+# <array>
+#   <dict>
+#     <key>CFBundleURLName</key>
+#     <string>com.example.habitai.apple-signin</string>
+#     <key>CFBundleURLSchemes</key>
+#     <array>
+#       <string>com.example.habitai</string>
+#     </array>
+#   </dict>
+# </array>
+
+# Para Android: Configurar no android/app/build.gradle
+# android {
+#     compileSdkVersion 34
+#     defaultConfig {
+#         minSdkVersion 21
+#         targetSdkVersion 34
+#     }
+# }
+
+# ===== APP STORE / PLAY STORE SETUP =====
+
+# iOS App Store Connect:
+# 1. Criar App ID com Sign in with Apple capability
+# 2. Configurar In-App Purchases:
+#    - habitai_monthly_premium: R$ 19,90/mês
+#    - habitai_yearly_premium: R$ 99,90/ano
+# 3. Adicionar App Store Review Guidelines compliance
+# 4. Configurar TestFlight para beta testing
+
+# Google Play Console:
+# 1. Configurar Google Play Billing
+# 2. Criar produtos de assinatura:
+#    - habitai_monthly_premium: R$ 19,90/mês
+#    - habitai_yearly_premium: R$ 99,90/ano
+# 3. Configurar Internal Testing
+# 4. Preparar store listing
+
+# ===== COMPLIANCE CHECKLIST =====
+
+# iOS App Store Guidelines:
+# ✅ Sign in with Apple como primeira opção
+# ✅ Trial period claramente descrito
+# ✅ Restore purchases functionality
+# ✅ Privacy Policy obrigatória
+# ✅ Terms of Service
+# ✅ In-App Purchase guidelines compliance
+
+# Google Play Policy:
+# ✅ Google Play Billing obrigatório
+# ✅ Subscription terms claros
+# ✅ Privacy Policy link
+# ✅ Permissions justificadas
+# ✅ Content guidelines compliance
+
+# LGPD/GDPR:
+# ✅ Consentimento explícito para dados
+# ✅ Política de Privacidade detalhada
+# ✅ Direito ao esquecimento implementado
+# ✅ Opt-out de analytics/marketing
+
+# ===== COMANDOS ÚTEIS =====
+
+# Instalar dependências:
+# flutter pub get
+
+# Gerar código (Hive, JSON, etc):
+# flutter packages pub run build_runner build
+
+# Testes:
+# flutter test
+# flutter drive --target=test_driver/app.dart
+
+# Build para produção:
+# iOS: flutter build ios --release
+# Android: flutter build appbundle --release
+# Web: flutter build web --release
+
+# ===== ESTRUTURA DE PASTAS RECOMENDADA =====
+
+# lib/
+# ├── main.dart
+# ├── config/
+# │   ├── app_config.dart
+# │   └── firebase_options.dart
+# ├── models/
+# │   ├── habit.dart
+# │   ├── user.dart
+# │   └── subscription.dart
+# ├── services/
+# │   ├── auth_service.dart
+# │   ├── habit_service.dart
+# │   ├── subscription_service.dart
+# │   ├── platform_services.dart
+# │   └── notification_service.dart
+# ├── screens/
+# │   ├── onboarding/
+# │   ├── auth/
+# │   ├── home/
+# │   ├── habits/
+# │   ├── subscription/
+# │   └── settings/
+# ├── widgets/
+# │   ├── common/
+# │   └── platform_specific/
+# ├── theme/
+# │   └── app_theme.dart
+# └── utils/
+#     ├── logger.dart
+#     ├── constants.dart
+#     └── helpers.dart
+
+# ===== MONETIZAÇÃO RECOMENDADA =====
+
+# Freemium Model:
+# • Trial: 7 dias, 3 hábitos, recursos básicos
+# • Premium: Hábitos ilimitados, sync, análises, IA
+# • Preços: R$ 19,90/mês ou R$ 99,90/ano (58% economia)
+
+# Estratégia de Conversão:
+# • Onboarding smooth com valor imediato
+# • Trial period generoso para demonstrar valor
+# • Gentle nudges baseados no uso
+# • Social proof e testimonials
+# • Pricing psychology (anual com desconto)
+
+# KPIs Importantes:
+# • Trial to Paid conversion rate (target: >15%)
+# • Monthly churn rate (target: <5%)
+# • Lifetime Value (LTV)
+# • Cost Per Acquisition (CPA)
+# • App Store / Play Store ratings (target: >4.5)

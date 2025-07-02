@@ -32,7 +32,5 @@ appId: com.habitai.app
 # Após o onboarding, o app deve ir para a tela de Login ou para a tela Principal se o login for automático.
 # Vamos verificar se chegamos na tela de Login ou na tela Principal.
 - assertVisible:
-    anyOf:
-      - text: ".*Log In.*"  # Para o caso de ir para o Login
-      - text: ".*Hoje.*"    # Para o caso de ir direto para a Home (menos provável sem login)
+    text: ".*Log In.*|.*Hoje.*"
     optional: true # Torna a asserção opcional para não falhar se a navegação for muito rápida.

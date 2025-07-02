@@ -1,0 +1,1343 @@
+06-25 02:47:21.103   695   757 E AconfigFlags: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package com.android.update_engine cannot be found on the device
+06-25 02:47:21.103   695   757 E AconfigFlags: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-25 02:47:22.702   695   695 E SettingsState: invalid override flag name aicore/AicCommon__forward_exception_to_main_thread_subsampling
+06-25 02:47:22.704   695   695 E SettingsState: invalid override flag name adservices/Measurement__enable_deletion_throw_unaccounted_exception
+06-25 02:47:22.704   695   695 E SettingsState: invalid override flag name aicore/AicOnDeviceIntelligence__forward_exception_to_main_thread_subsampling
+06-25 02:47:22.716   695   695 E SettingsState: invalid override flag name adservices/measurement_enable_reporting_jobs_throw_accounted_exception
+06-25 02:47:22.716   695   695 E SettingsState: invalid override flag name device_personalization_services/BoundedExecutors__exception_entries_limit
+06-25 02:47:22.716   695   695 E SettingsState: invalid override flag name adservices/measurement_throw_unknown_exception_sampling_rate
+06-25 02:47:22.721   695   695 E SettingsState: invalid override flag name adservices/measurement_enable_delete_reports_on_unrecoverable_exception
+06-25 02:47:22.721   695   695 E SettingsState: invalid override flag name aicore/AicCommon__serving_group_mismatch_exception_enabled
+06-25 02:47:23.735   695   695 E SoundTriggerMiddlewareImpl: java.util.NoSuchElementException
+06-25 02:47:23.759   695   798 E UsbDeviceManager: java.util.NoSuchElementException
+06-25 02:47:24.082   695   695 E DisplayPowerController[0]: failed to set up display white-balance: java.lang.IllegalStateException: cannot find sensor com.google.sensor.color
+06-25 02:47:25.480   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 02:47:25.480   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 02:47:26.338   695  1158 W Telecom : BluetoothDeviceManager: getBluetoothHeadset: Acquire BluetoothHeadset service failed due to: java.util.concurrent.TimeoutException
+06-25 02:47:34.028   695   728 E PackageManager: java.util.concurrent.TimeoutException: [Optimistic Bind] Didn't bind to resolver in time!
+06-25 03:40:59.693   695  1242 W ActivityManager: Exception when unbinding service com.google.android.adservices.api/com.android.adservices.measurement.MeasurementService
+06-25 03:40:59.693   695  1242 W ActivityManager: android.os.DeadObjectException
+06-25 03:41:03.009  1498  2747 W FileUtils: Failed to chmod(/data/user/0/com.google.android.gsf/files): android.system.ErrnoException: chmod failed: ENOENT (No such file or directory)
+06-25 03:45:21.060   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 03:45:21.060   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 03:47:31.380  4954  5207 W FileUtils: Failed to chmod(/data/user/0/com.google.android.gsf/files): android.system.ErrnoException: chmod failed: ENOENT (No such file or directory)
+06-25 03:47:39.876   695  1086 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-25 03:47:39.993   695  1086 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-25 03:47:44.731   695  1937 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-25 03:47:44.808   695  1937 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-25 03:50:41.087   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 03:50:41.087   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 06:24:55.704   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 06:24:55.704   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 06:24:55.952   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 06:24:55.952   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 06:31:37.620   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 06:31:37.620   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 10:24:18.869   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 10:24:18.869   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 10:32:01.581   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 10:32:01.581   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 10:46:31.240   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 10:46:31.240   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 11:00:00.107   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 11:00:00.107   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 11:00:00.269   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 11:00:00.269   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 11:00:00.277   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 11:00:00.277   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 11:10:46.173   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 11:10:46.173   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 11:20:02.854   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 11:20:02.854   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 11:32:01.671   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 11:32:01.671   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 12:00:00.101   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 12:00:00.101   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 12:00:00.186   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 12:00:00.186   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 12:08:22.929   695   695 W InputMethodManagerService: Session failed to close due to remote exception
+06-25 12:08:22.929   695   695 W InputMethodManagerService: android.os.DeadObjectException
+06-25 12:08:53.214   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 12:08:53.214   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 12:27:46.069   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 12:27:46.069   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 12:36:03.117   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 12:36:03.117   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 13:00:00.077   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 13:00:00.077   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 13:00:00.140   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 13:00:00.140   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 13:25:39.516   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 13:25:39.516   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 13:32:01.596   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 13:32:01.596   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 13:52:03.222   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 13:52:03.222   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 14:00:00.160   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 14:00:00.160   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 14:00:00.322   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 14:00:00.322   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 14:00:00.344   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 14:00:00.344   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 14:17:42.222   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 14:17:42.222   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 14:26:45.605   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 14:26:45.605   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 14:32:01.681   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 14:32:01.681   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 14:44:18.464   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 14:44:18.464   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 15:00:00.125   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 15:00:00.125   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 15:00:00.312   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 15:00:00.312   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 15:08:03.306   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 15:08:03.306   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 15:27:27.382   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 15:27:27.382   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 15:52:01.862   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 15:52:01.862   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 16:00:00.091   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 16:00:00.091   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 16:00:00.193   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 16:00:00.193   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 16:11:58.278   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 16:11:58.278   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 16:24:03.348   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 16:24:03.348   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 16:31:49.438   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 16:31:49.438   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 16:51:56.617   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 16:51:56.617   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 17:00:00.078   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 17:00:00.078   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 17:00:00.233   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 17:00:00.233   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 17:00:00.237   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 17:00:00.237   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 17:32:01.731   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 17:32:01.731   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 17:40:03.539   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 17:40:03.539   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 17:46:49.361   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 17:46:49.361   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 18:00:00.145   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 18:00:00.145   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 18:00:00.267   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 18:00:00.267   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 18:00:00.269   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 18:00:00.269   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 18:18:45.228   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 18:18:45.228   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 18:32:01.715   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 18:32:01.715   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 18:54:10.301   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 18:54:10.301   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 19:00:00.076   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 19:00:00.076   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 19:00:00.161   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 19:00:00.161   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 19:11:43.349  4954  7376 W FileUtils: Failed to chmod(/data/user/0/com.google.android.gsf/files): android.system.ErrnoException: chmod failed: ENOENT (No such file or directory)
+06-25 19:12:39.698   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 19:12:39.698   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 19:32:01.759   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 19:32:01.759   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 19:49:01.148   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 19:49:01.148   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 19:55:27.045   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 19:55:27.045   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 20:00:00.114   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 20:00:00.114   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 20:00:00.259   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 20:00:00.259   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 20:02:01.779   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 20:02:01.779   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 20:09:13.584   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 20:09:13.584   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 20:32:01.861   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 20:32:01.861   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 20:55:48.859   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 20:55:48.859   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 21:00:00.192   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 21:00:00.192   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 21:00:00.394   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 21:00:00.394   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 21:02:01.805   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 21:02:01.805   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 21:24:04.528   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 21:24:04.528   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 21:32:01.775   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 21:32:01.775   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 21:48:55.600   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 21:48:55.600   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:00:00.333   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:00:00.333   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:00:00.617   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:00:00.617   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:00:00.648   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:00:00.648   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:04:10.670   695  1242 W ActivityManager: Exception when unbinding service com.android.chrome/org.chromium.content.app.SandboxedProcessService0:3
+06-25 22:04:10.670   695  1242 W ActivityManager: android.os.DeadObjectException
+06-25 22:05:02.303   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:05:02.303   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:16:27.249   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:16:27.249   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:24:03.378   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:24:03.378   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:24:24.245   695  1799 W ActivityManager: Exception when unbinding service com.android.chrome/org.chromium.content.app.SandboxedProcessService0:5
+06-25 22:24:24.245   695  1799 W ActivityManager: android.os.DeadObjectException
+06-25 22:25:04.064   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:25:04.064   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:32:01.899   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:32:01.899   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 22:44:03.888   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 22:44:03.888   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 23:00:00.235   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 23:00:00.235   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 23:00:00.346   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 23:00:00.346   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 23:10:08.212   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 23:10:08.212   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 23:32:01.830   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-25 23:32:01.830   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-25 23:59:35.496   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-26 11:04:26.915   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 11:04:26.915   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 11:04:29.031   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 11:04:29.031   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 11:09:58.397   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 11:09:58.397   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 11:18:30.884   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 11:18:30.884   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 11:35:10.772   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 11:35:10.772   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 11:44:23.714   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 11:44:23.714   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 12:00:00.165   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 12:00:00.165   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 12:00:00.296   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 12:00:00.296   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 12:06:44.707   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 12:06:44.707   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 12:16:35.692   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-26 12:20:43.166   695  1563 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-26 12:20:43.215   695  1245 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-26 12:21:40.163   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 12:21:40.163   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 12:24:24.560   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-26 12:38:47.982   958  1059 W ShellStartingWindow: java.lang.IllegalArgumentException: View=android.widget.FrameLayout{83ab51e V.E...... ......I. 0,0-0,0} not attached to window manager
+06-26 12:41:11.264   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 12:41:11.264   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 12:49:41.245   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-26 14:13:39.023   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 14:13:39.023   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 14:13:39.845   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 14:13:39.845   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 14:47:59.497   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 14:47:59.497   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 15:00:00.037   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 15:00:00.037   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 15:00:00.097   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 15:00:00.097   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 15:00:00.099   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 15:00:00.099   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 15:14:29.950   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 15:14:29.950   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 15:17:59.534   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 15:17:59.534   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 15:47:59.505   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 15:47:59.505   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 16:00:00.047   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 16:00:00.047   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 16:00:00.096   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 16:00:00.096   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 16:08:30.307   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 16:08:30.307   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 16:17:59.529   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 16:17:59.529   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 16:34:01.905   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 16:34:01.905   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 16:47:59.607   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 16:47:59.607   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 16:54:46.623   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-26 16:59:26.285   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 16:59:26.285   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 17:00:00.250   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 17:00:00.250   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 17:00:00.499   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 17:00:00.499   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 17:07:10.112   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 17:07:10.112   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 17:09:24.459   695  1737 W WindowManager: Exception thrown during dispatchAppVisibility Window{11559f9 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-26 17:09:24.459   695  1737 W WindowManager: android.os.DeadObjectException
+06-26 17:11:05.770   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-26 17:13:32.875   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-26 17:13:32.923   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 17:13:32.923   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 17:21:53.438   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 17:21:53.438   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 17:51:53.386   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 17:51:53.386   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 18:00:00.054   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 18:00:00.054   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 18:00:00.108   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 18:00:00.108   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 18:00:00.109   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 18:00:00.109   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 18:20:44.133   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 18:20:44.133   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 18:51:53.401   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 18:51:53.401   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 19:00:00.014   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 19:00:00.014   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 19:00:00.060   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 19:00:00.060   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 19:07:36.084   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 19:07:36.084   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 19:21:53.417   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 19:21:53.417   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 19:24:07.429   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 19:24:07.429   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 19:51:53.401   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 19:51:53.401   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:00:00.021   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:00:00.021   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:00:00.078   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:00:00.078   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:13:13.690   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:13:13.690   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:21:53.429   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:21:53.429   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:30:35.208   695   928 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-26 20:30:35.232   695   715 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-26 20:31:34.462   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:31:34.462   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:40:27.491   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:40:27.491   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:45:53.719   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:45:53.719   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 20:51:53.436   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 20:51:53.436   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:00:00.072   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:00:00.072   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:00:00.115   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:00:00.115   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:00:00.116   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:00:00.116   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:07:16.359   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:07:16.359   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:14:23.394   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:14:23.394   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:21:53.480   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:21:53.480   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:35:44.431   695  1937 W WindowManager: Exception thrown during dispatchAppVisibility Window{87e0011 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-26 21:35:44.431   695  1937 W WindowManager: android.os.DeadObjectException
+06-26 21:35:53.576   695   945 W FileUtils: Failed to chmod(AtomicFile[/data/system_de/0/system/game-manager-service.xml]): android.system.ErrnoException: chmod failed: ENOENT (No such file or directory)
+06-26 21:36:41.917   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:36:41.917   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 21:51:53.435   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 21:51:53.435   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 22:00:00.098   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 22:00:00.098   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 22:00:00.130   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 22:00:00.130   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 22:00:00.132   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 22:00:00.132   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 22:21:53.439   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 22:21:53.439   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 22:39:43.623   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 22:39:43.623   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 22:51:53.428   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 22:51:53.428   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 22:57:15.016   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 22:57:15.016   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:00:00.059   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:00:00.059   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:00:00.172   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:00:00.172   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:09:15.859  1253 13531 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-26 23:09:16.324  1253  1701 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-26 23:09:16.324  1253  1701 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-26 23:09:16.324  1253  1701 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-26 23:10:14.964   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:10:14.964   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:13:30.467  2440  2729 E PlayCommon: [84] Error reading the content of the response body: java.io.EOFException
+06-26 23:16:43.867   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:16:43.867   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:21:53.425   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:21:53.425   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:35:03.469   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:35:03.469   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:42:28.877   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:42:28.877   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-26 23:51:53.427   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-26 23:51:53.427   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 00:00:00.075   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 00:00:00.075   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 00:00:00.141   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 00:00:00.141   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 00:09:59.345  1253 13822 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 00:09:59.813  1253  1701 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 00:09:59.813  1253  1701 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 00:09:59.813  1253  1701 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 00:09:59.845 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 00:10:58.719   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 00:10:58.719   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 00:21:53.473   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 00:21:53.473   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 00:46:28.312   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 00:46:28.312   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 00:51:53.433   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 00:51:53.433   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 01:00:00.028   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 01:00:00.028   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 01:00:00.091   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 01:00:00.091   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 01:07:55.540   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-27 01:37:14.308  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:14.947  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:14.947  1100  1100 W Telephony: registerImsRegistrationCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:15.051  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:15.293  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:15.293  1100  1100 W Telephony: registerImsRegistrationCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:15.374  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:15.374  1100  1100 W Telephony: registerImsRegistrationCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:37:15.377  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-27 01:38:13.199   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 01:38:13.199   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 01:38:29.661   695  1928 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-27 01:39:17.382  1253 14362 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 01:39:36.114  1253  1701 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 01:39:36.114  1253  1701 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 01:39:36.114  1253  1701 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 01:39:36.152 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 01:49:37.415   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 01:49:37.415   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 01:59:04.934   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 01:59:04.934   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 02:00:00.046   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 02:00:00.046   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 02:00:00.143   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 02:00:00.143   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 02:08:55.030   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 02:08:55.031   695   851 E WifiStaIfaceAidlImpl: setRoamingState failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 02:08:55.178   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 02:08:55.181   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 02:08:55.189  1253  7482 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 02:08:55.189  1253  7482 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 02:08:55.189  1253  7482 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 02:08:55.189  1253  7482 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 02:08:55.189  1253  7482 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 02:08:55.189  1253  7482 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 02:08:55.189  1253  7482 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 02:08:59.061   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 02:08:59.099   695   851 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 02:08:59.102   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 02:08:59.127  1253  3085 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 02:08:59.131   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 02:08:59.132  1253  1351 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 02:08:59.132  1253  1351 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 02:08:59.132  1253  1351 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 02:08:59.132  1253  1351 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 02:08:59.132  1253  1351 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 02:08:59.132  1253  1351 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 02:08:59.132  1253  1351 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 02:08:59.302  1058 14540 D NetworkMonitor/106: PROBE_HTTP http://connectivitycheck.gstatic.com/generate_204 Probe failed with exception java.io.IOException: unexpected end of stream on com.android.okhttp.Address@ea5fc935
+06-27 02:08:59.493  1253  1701 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 02:08:59.824   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 02:09:02.024  1253  2754 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 02:09:55.629   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 02:09:55.629   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 02:17:31.272   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 02:17:31.272   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 02:26:11.071   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 02:26:11.071   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 02:48:15.808  1253 14608 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 02:48:16.327  1253  1666 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 02:48:16.327  1253  1666 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 02:48:16.327  1253  1666 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 02:48:16.364 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 02:51:10.935   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 02:51:10.935   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:00:00.035   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 03:00:00.035   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:00:00.087   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 03:00:00.087   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:00:00.089   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 03:00:00.089   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:12:22.941   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 03:12:22.941   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:21:10.947   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 03:21:10.947   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:31:36.213   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 03:31:36.247   695   851 E WifiStaIfaceAidlImpl: setRoamingState failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:31:36.759   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:31:37.751   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:31:38.039  1253  7482 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 03:31:38.039  1253  7482 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 03:31:38.039  1253  7482 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 03:31:38.039  1253  7482 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 03:31:38.039  1253  7482 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 03:31:38.039  1253  7482 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 03:31:38.039  1253  7482 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 03:31:42.961   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:31:43.057   695   851 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:31:43.060   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 03:31:43.096   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:31:43.097  1253  1347 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 03:31:43.097  1253  1347 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 03:31:43.097  1253  1347 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 03:31:43.097  1253  1347 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 03:31:43.097  1253  1347 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 03:31:43.097  1253  1347 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 03:31:43.097  1253  1347 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 03:31:43.104  1253  1630 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 03:31:43.145  1058 14718 D NetworkMonitor/107: PROBE_HTTP http://connectivitycheck.gstatic.com/generate_204 Probe failed with exception java.io.IOException: unexpected end of stream on com.android.okhttp.Address@edea92f5
+06-27 03:31:43.408  1253  2608 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 03:31:45.876   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:31:46.891  1253  1630 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 03:32:42.689   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 03:32:42.689   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:40:09.502   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 03:40:09.519   695   851 E WifiStaIfaceAidlImpl: setRoamingState failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:40:10.040   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:40:10.659   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:40:11.147  1253 14764 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 03:40:11.147  1253 14764 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 03:40:11.147  1253 14764 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 03:40:11.147  1253 14764 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 03:40:11.147  1253 14764 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 03:40:11.147  1253 14764 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 03:40:11.147  1253 14764 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 03:40:20.163   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:40:20.847   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:40:22.478   695   851 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:40:22.667   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 03:40:23.590   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 03:40:23.655  1253 14764 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 03:40:23.655  1253 14764 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 03:40:23.655  1253 14764 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 03:40:23.655  1253 14764 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 03:40:23.655  1253 14764 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 03:40:23.655  1253 14764 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 03:40:23.655  1253 14764 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 03:40:23.886  1253  1701 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 03:40:24.554  1058 14791 D NetworkMonitor/108: PROBE_HTTP http://connectivitycheck.gstatic.com/generate_204 Probe failed with exception java.io.IOException: unexpected end of stream on com.android.okhttp.Address@5d68426c
+06-27 03:40:24.555  1253  1630 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 03:40:26.077  1253  2909 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 03:41:15.663   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 03:41:15.663   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 03:42:01.510  6236  6236 E InputConnectionWrapper: java.util.concurrent.TimeoutException: Waited 100 milliseconds (plus 1 milliseconds, 822100 nanoseconds delay) for sha@c570243[status=PENDING, info=[task=[running=[RUNNING ON ICWrapper-1], fdq@68e90c0]]]
+06-27 04:26:00.211   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 04:26:00.211   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 04:26:01.212   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 04:26:01.212   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 12:21:08.263  1434  1530 E CombinedComponentSuspen: java.util.concurrent.ExecutionException: gao: Service rejected request (status=5)
+06-27 12:27:17.688   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 12:27:17.688   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 12:27:44.654  1253 14835 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 12:27:45.111  1253  1629 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 12:27:45.111  1253  1629 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 12:27:45.111  1253  1629 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 12:27:45.141 13692 13720 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 12:31:22.618  2439 14945 I BugleCms: LinkedAccountManager: No valid stored accountId, throwing NoLinkedAccountException.
+06-27 12:31:23.644 13692 14957 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 12:31:23.899  1253  2754 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 12:31:23.899  1253  2754 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 12:31:23.899  1253  2754 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 12:31:24.009 13692 13720 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+06-27 12:31:24.092 13692 13720 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+06-27 12:31:24.362 13692 14957 E constellation: Exception: 
+06-27 12:31:24.379  2439 14945 W BugleRcsEngine: UPI - verifyPhoneNumber API returned an exception: 5002:  [0d010aa1-5563-4b24-a36d-ee7639c1fcd8] [CONTEXT log_prefix="(PEv2-SM-Bugle-98524030)" thread_id=421 ]
+06-27 12:44:37.619   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 12:44:37.619   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 12:59:01.870   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 12:59:01.870   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 13:09:04.977   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 13:09:04.977   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 13:29:01.872   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 13:29:01.872   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 13:43:33.427  1253 15226 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 13:43:33.798  1253  1630 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 13:43:33.798  1253  1630 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 13:43:33.798  1253  1630 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 13:45:21.031   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 13:45:21.031   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 13:59:01.890   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 13:59:01.890   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 14:03:53.763 13692 15369 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 14:03:54.073  1253  1666 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 14:03:54.073  1253  1666 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 14:03:54.073  1253  1666 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 14:11:32.846   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 14:11:32.846   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 14:16:34.101   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 14:16:34.101   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 14:25:05.064   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 14:25:05.064   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 14:47:34.242  1253 15509 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 14:47:34.664  1253  1629 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 14:47:34.664  1253  1629 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 14:47:34.664  1253  1629 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 14:59:01.918   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 14:59:01.918   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 15:11:34.012   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 15:11:34.012   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 15:20:24.793   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 15:20:24.795   695   851 E WifiStaIfaceAidlImpl: setRoamingState failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 15:20:24.900   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 15:20:25.015   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 15:20:25.043  1253 14765 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 15:20:25.043  1253 14765 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 15:20:25.043  1253 14765 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 15:20:25.043  1253 14765 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 15:20:25.043  1253 14765 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 15:20:25.043  1253 14765 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 15:20:25.043  1253 14765 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 15:20:29.221   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 15:20:29.273   695   851 E WifiStaIfaceAidlImpl: setRoamingMode failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 15:20:29.278   695   851 E WifiStaIfaceAidlImpl: stopRssiMonitoring failed with service-specific exception: android.os.ServiceSpecificException:  (code 5)
+06-27 15:20:29.317   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 15:20:29.318  1253 14764 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-27 15:20:29.318  1253 14764 I NearbyMediums: java.lang.UnsupportedOperationException
+06-27 15:20:29.318  1253 14764 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-27 15:20:29.318  1253 14764 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 15:20:29.318  1253 14764 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 15:20:29.318  1253 14764 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 15:20:29.318  1253 14764 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 15:20:29.333  1253  1666 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 15:20:29.584  1253  1666 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 15:20:30.217   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-27 15:20:32.189  1253  3085 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-27 15:21:25.572   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 15:21:25.572   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 15:29:01.891   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 15:29:01.891   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 15:41:05.124   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 15:41:05.124   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 15:49:56.414  4122 15425 W dqi     : Request failed for unknown reason, see exception: 
+06-27 15:49:56.414  4122 15425 W dqi     : dqh: mfy: Exception in CronetUrlRequest: net::ERR_QUIC_PROTOCOL_ERROR, ErrorCode=10, InternalErrorCode=-356, Retryable=false, QuicDetailedErrorCode=85, Source=2
+06-27 15:49:56.414  4122 15425 W dqi     : Caused by: mfy: Exception in CronetUrlRequest: net::ERR_QUIC_PROTOCOL_ERROR, ErrorCode=10, InternalErrorCode=-356, Retryable=false, QuicDetailedErrorCode=85, Source=2
+06-27 16:03:23.242   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 16:03:23.242   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 16:03:23.346   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 16:03:23.346   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 16:11:00.801  1253 15608 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 16:11:01.199  1253  1630 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 16:11:01.199  1253  1630 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 16:11:01.199  1253  1630 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 16:11:01.223 13692 13709 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 16:18:10.356   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 16:18:10.356   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 16:31:56.242   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 16:31:56.242   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 16:44:30.472   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 16:44:30.472   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 17:00:00.054   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 17:00:00.054   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 17:00:00.108   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 17:00:00.108   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 17:09:40.346   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 17:09:40.346   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 17:11:24.902  1253 15896 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 17:11:25.366  1253  2390 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 17:11:25.366  1253  2390 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 17:11:25.366  1253  2390 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 17:16:13.666   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 17:16:13.666   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 17:34:53.545   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 17:34:53.545   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 17:40:49.224   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 17:40:49.224   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 17:48:10.379   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 17:48:10.379   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:00:00.024   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:00:00.024   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:00:00.083   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:00:00.083   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:00:00.085   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:00:00.085   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:11:44.355 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:46.845 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:47.405 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:47.666 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:47.891 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:11:53.882 14231 14231 I flutter : Error saving task: Exception: Failed to add task: Firestore did not return an ID.
+06-27 18:12:16.085   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:12:16.085   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:18:10.368   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:18:10.368   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:19:00.557  1253 15936 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 18:19:01.005  1253  2390 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 18:19:01.005  1253  2390 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 18:19:01.005  1253  2390 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 18:19:01.034 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 18:19:01.034 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 18:32:13.734   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:32:13.734   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:41:12.442   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:41:12.442   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:48:10.359   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:48:10.359   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 18:57:39.427   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 18:57:39.427   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 19:00:00.059   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 19:00:00.059   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 19:00:00.122   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 19:00:00.122   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 19:18:10.383   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 19:18:10.383   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 19:24:19.509  1253 16223 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 19:24:20.093  1253  2390 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 19:24:20.093  1253  2390 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 19:24:20.093  1253  2390 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 19:24:21.890 13060 13096 E PlayCommon: [123] Error reading the content of the response body: java.io.EOFException
+06-27 19:25:19.020   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 19:25:19.020   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 19:48:10.403   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 19:48:10.403   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 20:00:00.023   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 20:00:00.023   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 20:00:00.074   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 20:00:00.074   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 20:00:00.075   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 20:00:00.075   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 20:18:10.402   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 20:18:10.402   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 20:27:00.642  1253 16309 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 20:27:01.080  1253  1666 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 20:27:01.080  1253  1666 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 20:27:01.080  1253  1666 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 20:27:01.100 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 20:27:01.100 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 20:42:40.164 13060 13096 E PlayCommon: [123] Error reading the content of the response body: java.io.EOFException
+06-27 20:43:39.737   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 20:43:39.737   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 20:54:52.087   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 20:54:52.087   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:00:00.025   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:00:00.025   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:00:00.087   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:00:00.087   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:10:17.154   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:10:17.154   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:18:10.392   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:18:10.392   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:33:44.174   695   928 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-27 21:33:44.389   695  1805 W WindowManager: Exception thrown during dispatchAppVisibility Window{7dd618 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-27 21:33:44.389   695  1805 W WindowManager: android.os.DeadObjectException
+06-27 21:34:12.285  1253 16743 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 21:34:12.968  1253  1666 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 21:34:12.968  1253  1666 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 21:34:12.968  1253  1666 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 21:34:13.007 13692 13722 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 21:34:42.863   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:34:42.863   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:39:27.222 16623 16787 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 21:39:27.956 16623 16623 E RecaptchaCallWrapper: Initial task failed for action RecaptchaAction(action=signInWithPassword)with exception - The supplied auth credential is incorrect, malformed or has expired.
+06-27 21:39:34.049 16623 16787 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 21:39:34.329 16623 16623 E RecaptchaCallWrapper: Initial task failed for action RecaptchaAction(action=signInWithPassword)with exception - The supplied auth credential is incorrect, malformed or has expired.
+06-27 21:40:01.709 16623 16787 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 21:40:02.332 16623 16787 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 21:40:03.044 16623 16787 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 21:40:03.340 16623 16787 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 21:40:03.742 16623 16787 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 21:40:14.841   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:40:14.841   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:40:28.404  1114 16855 E AiAiSuggestUi: java.util.concurrent.TimeoutException
+06-27 21:40:31.462  4233 16873 D SessionConfigFetcher: Fetched settings: {"settings_version":3,"cache_duration":155961,"features":{"collect_logged_exceptions":true,"collect_reports":true,"collect_analytics":false,"prompt_enabled":false,"push_enabled":false,"firebase_crashlytics_enabled":false,"collect_anrs":true,"collect_metric_kit":false,"collect_build_ids":true},"app":{"status":"activated","update_required":false,"report_upload_variant":2,"native_report_upload_variant":2},"fabric":{"org_id":"642f169468e7c47754c6042d","bundle_id":"host.exp.exponent"},"on_demand_upload_rate_per_minute":10,"on_demand_backoff_base":1.2,"on_demand_backoff_step_duration_seconds":60,"app_quality":{"sessions_enabled":true,"sampling_rate":1,"session_timeout_seconds":1800},"on_demand_thread_recording_suspension_enabled":true}
+06-27 21:40:32.363  4233 16887 W System.err: java.lang.NoSuchFieldException: No field mIsFinished in class Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl; (declaration of 'com.facebook.react.bridge.queue.MessageQueueThreadImpl' appears in /data/app/~~RS32ALLboc21t3poLcqS4A==/host.exp.exponent-nRSne8_dFzAeoLhNhQSm1g==/base.apk!classes2.dex)
+06-27 21:43:58.398   695  1937 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-27 21:43:58.594   695  1566 W WindowManager: Exception thrown during dispatchAppVisibility Window{27bd98 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-27 21:43:58.594   695  1566 W WindowManager: android.os.DeadObjectException
+06-27 21:45:56.911   695   716 W WindowManager: Exception thrown during dispatchAppVisibility Window{cfd0eeb u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-27 21:45:56.911   695   716 W WindowManager: android.os.DeadObjectException
+06-27 21:45:57.624   695  1245 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-27 21:46:05.916 15667 15680 W WellbeingSettingsProvid: java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 5 milliseconds, 270100 nanoseconds delay) for lun@c57a15f[status=PENDING, info=[inputFuture=[lum@2f4d7ac[status=PENDING, setFuture=[ltt@6fe6c75[status=PENDING, info=[inputFuture=[lun@6de040a[status=PENDING, info=[inputFuture=[lun@b7ef47b[status=PENDING, info=[inputFuture=[lvh@5adc298[status=PENDING, info=[futures=[lun@5d65af1[status=PENDING, info=[inputFuture=[lun@36056d6[status=PENDING, info=[inputFuture=[lwg@9fe5d57[status=PENDING, info=[delegate=[lxm@a087044[status=PENDING, setFuture=[lun@64b52d[status=PENDING, info=[inputFuture=[lum@7e30a62[status=PENDING, info=[inputFuture=[lwg@2a177f3[status=PENDING, info=[delegate=[lxm@a3e4cb0[status=PENDING, setFuture=[lum@8047729[status=PENDING, info=[function=[propagating=[cjk@8eb6aae]]]]]]]]]], function=[propagating=[bzs@751a04f]]]]], function=[propagating=[bzu@8b383dc]]]]]]]]]], function=[propagating=[bzf@ec45ce5]]]]], function=[propagating=[dhk@c0783ba]]]]]]]], function=[propagating=[czp@531f26b]]]]], function=[propagating=[bwu@7e301c8]]]]], exceptionType=[class java.lang.Throwable], fallback=[propagating=[bzu@ee2e261]]]]]]], function=[propagating=[bwu@f9a2186]]]]
+06-27 21:46:55.417   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:46:55.417   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 21:58:16.404   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 21:58:16.404   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 22:00:00.069   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 22:00:00.069   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 22:00:00.148   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 22:00:00.148   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 22:18:10.411   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 22:18:10.411   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 22:23:24.847   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 22:23:24.847   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 22:35:02.344 17235 17539 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 22:35:25.770   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 22:35:25.770   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 22:36:53.232   695  1080 W WindowManager: Exception thrown during dispatchAppVisibility Window{3701a1e u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-27 22:36:53.232   695  1080 W WindowManager: android.os.DeadObjectException
+06-27 22:36:53.595   695  1566 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-27 22:37:20.548  1253 17781 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 22:37:21.500  1253  1666 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 22:37:21.500  1253  1666 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 22:37:21.500  1253  1666 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 22:37:21.565 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 22:48:10.446   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 22:48:10.446   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 22:59:09.180   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 22:59:09.180   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 23:00:00.064   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 23:00:00.064   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 23:00:00.124   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 23:00:00.124   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 23:18:10.384   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 23:18:10.384   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 23:30:02.047 17648 17998 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-27 23:30:31.831  1253 18016 W NetworkScheduler: java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
+06-27 23:30:44.742   695  1080 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-27 23:30:56.548 18251 18251 I Finsky  : [2] SettingNotFoundException, fall through to G.downloadBytesOverMobileMaximum
+06-27 23:30:56.566 18251 18251 I Finsky  : [2] SettingNotFoundException, fall through to G.downloadBytesOverMobileRecommended
+06-27 23:30:56.584 18269 18336 I Finsky:background: [124] SettingNotFoundException, fall through to G.downloadBytesOverMobileMaximum
+06-27 23:30:56.585 18269 18336 I Finsky:background: [124] SettingNotFoundException, fall through to G.downloadBytesOverMobileRecommended
+06-27 23:31:04.151  1253 18585 W NetworkScheduler: java.lang.IllegalArgumentException: Only the following extra parameter types are supported: Integer, Long, Double, String, Boolean, and nested Bundles with the same restrictions.
+06-27 23:31:08.388  1253  7483 W AsyncOperation: OperationException[Status{statusCode=Storage info not created for Play Store., resolution=null}]
+06-27 23:31:11.232  1253 18027 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.googlequicksearchbox. Process: com.google.android.googlequicksearchbox:search|245176414. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-27 23:31:11.236  1253 18027 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.gms. Process: com.google.android.gms|255969837. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-27 23:31:11.242  1253 18027 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.gms. Process: com.google.android.gms|214215233. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-27 23:31:11.245  1253 18027 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.gms. Process: com.google.android.gms|120869237. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-27 23:31:11.414  1253 18027 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.gms. Process: com.google.android.gms|229085281. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-27 23:31:11.415  1253 18027 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.gms. Process: com.google.android.gms|80876801. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-27 23:31:11.415  1253 18027 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.calendar. Process: com.google.android.calendar|119567021. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-27 23:31:12.306  2439  2851 E BugleRcs: RcsEngineLifecycleManagerV2: RcsServiceConnectionException was raised while waiting to connect to RcsEngineLifecycleServiceV2
+06-27 23:31:12.306  2439  2851 E BugleRcs: ctzt: RcsServiceConnectionException:com.google.android.rcs.client.lifecycle.RcsEngineLifecycleServiceV2:UNKNOWN
+06-27 23:31:12.308  2439  2850 E BugleRcs: RcsEngineLifecycleManagerV2: RcsServiceConnectionException was raised while waiting to connect to RcsEngineLifecycleServiceV2
+06-27 23:31:12.308  2439  2850 E BugleRcs: ctzt: RcsServiceConnectionException:com.google.android.rcs.client.lifecycle.RcsEngineLifecycleServiceV2:UNKNOWN
+06-27 23:31:13.216   695  1566 W BinderNative: Uncaught exception from death notification
+06-27 23:31:13.216   695  1566 W BinderNative: java.lang.SecurityException: Specified package "com.google.android.googlequicksearchbox" under uid 1000 but it is not
+06-27 23:31:13.393 13692 18656 W PeoplePU: java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
+06-27 23:31:13.393 13692 18656 W PeoplePU: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3344)
+06-27 23:31:13.393 13692 18656 W PeoplePU: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 23:31:13.393 13692 18656 W PeoplePU: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 23:31:13.393 13692 18656 W PeoplePU: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 23:31:13.393 13692 18656 W PeoplePU: Caused by: android.os.RemoteException: Remote stack trace:
+06-27 23:31:13.401 13692 18656 W PeoplePU: java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ContactsSyncAdapterService}
+06-27 23:31:13.401 13692 18656 W PeoplePU: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3344)
+06-27 23:31:13.401 13692 18656 W PeoplePU: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 23:31:13.401 13692 18656 W PeoplePU: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 23:31:13.401 13692 18656 W PeoplePU: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 23:31:13.510  1253  7483 W AsyncOperation: OperationException[Status{statusCode=Storage info not created for Play Store., resolution=null}]
+06-27 23:31:13.526 13692 18656 W PeoplePU: java.lang.IllegalArgumentException: Unknown component: ComponentInfo{com.google.android.syncadapters.contacts/com.google.android.syncadapters.contacts.ProxyGalProvider}
+06-27 23:31:13.526 13692 18656 W PeoplePU: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3344)
+06-27 23:31:13.526 13692 18656 W PeoplePU: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-27 23:31:13.526 13692 18656 W PeoplePU: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-27 23:31:13.526 13692 18656 W PeoplePU: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-27 23:31:17.190  1253 14764 W AsyncOperation: OperationException[Status{statusCode=Storage info not created for Play Store., resolution=null}]
+06-27 23:31:22.250   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 23:31:22.250   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 23:32:16.914 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.threadnetwork' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:16.970 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.vibrator' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.014 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.compos' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.017 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.google.android.widevine.nonupdatable' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.134 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.contexthub' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.134 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.authsecret' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.146 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.apex.cts.shim' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.160 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.thermal' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.361 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.uwb' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.365 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.virt' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.365 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.neuralnetworks' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.400 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.i18n' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.408 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.dumpstate' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.424 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.cas' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.446 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.google.android.runtime' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.448 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.devicelock' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.463 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.power' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.581 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.rebootescrow' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:32:17.709 18251 18251 W Finsky  : [2] STU: Failed to get storage stats for package 'com.android.hardware.gatekeeper' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-27 23:41:40.965  1253 18760 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-27 23:41:41.463  1253  1629 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-27 23:41:41.463  1253  1629 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-27 23:41:41.463  1253  1629 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-27 23:41:41.496 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-27 23:42:39.911   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 23:42:39.911   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 23:48:10.395   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 23:48:10.395   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-27 23:57:59.660 18251 18364 E PlayCommon: [143] Error reading the content of the response body: java.io.EOFException
+06-27 23:58:59.177   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-27 23:58:59.177   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 00:00:00.083   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 00:00:00.083   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 00:00:00.155   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 00:00:00.155   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 00:18:10.382   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 00:18:10.382   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 00:24:55.494   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 00:24:55.494   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 00:25:01.608 17648 19015 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 00:33:20.221 18954 18988 E cooh    : java.util.NoSuchElementException: No value present
+06-28 00:33:20.528 18954 18988 W clao    : java.text.ParseException: Unparseable number: "ve"
+06-28 00:33:20.663 18954 18998 W cnoy    : Caused by: java.lang.IllegalStateException: Used non-google account without enabling API Key fallback
+06-28 00:33:20.692 18954 18998 W clao    : java.text.ParseException: Unparseable number: "ve"
+06-28 00:33:20.707 18954 18988 I djmv    : java.util.concurrent.CancellationException: Task was cancelled.
+06-28 00:33:20.773 18954 18988 W bimr    : java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass()' on a null object reference
+06-28 00:33:21.206  1253  3066 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 00:33:21.206  1253  3066 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 00:33:21.206  1253  3066 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 00:33:22.020 18954 18998 E ffne    : java.lang.IllegalArgumentException
+06-28 00:42:19.128  1253  7483 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 00:42:19.128  1253  7483 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 00:42:19.128  1253  7483 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 00:42:19.249  1253 18322 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 00:48:10.383   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 00:48:10.383   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 01:00:00.022   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 01:00:00.022   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 01:00:00.074   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 01:00:00.074   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 01:00:00.075   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 01:00:00.075   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 01:11:15.743   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 01:11:15.743   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 01:15:49.579   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 01:15:49.579   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 01:18:10.386   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 01:18:10.386   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 01:20:01.005 17648 19273 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 01:45:16.771  1253 19304 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 01:45:17.341  1253  2608 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 01:45:17.341  1253  2608 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 01:45:17.341  1253  2608 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 01:45:17.345 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 01:45:17.345 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 01:46:15.883   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 01:46:15.883   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 02:00:00.054   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 02:00:00.054   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 02:00:00.106   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 02:00:00.106   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 02:00:00.107   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 02:00:00.107   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 02:08:14.171   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 02:08:14.171   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 02:15:00.402 17648 19532 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 02:18:10.422   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 02:18:10.422   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 02:48:10.385   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 02:48:10.385   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 02:49:40.094  1253 19653 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 02:49:40.492  1253  3085 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 02:49:40.492  1253  3085 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 02:49:40.492  1253  3085 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 02:49:40.504 13692 13721 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 02:49:40.504 13692 13721 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 03:00:00.037   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 03:00:00.037   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 03:00:00.095   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 03:00:00.095   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 03:00:00.096   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 03:00:00.096   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 03:10:00.913 17648 19739 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 03:18:10.387   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 03:18:10.387   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 03:24:14.215   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 03:24:14.215   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 03:39:37.899  1253  3066 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-28 03:48:10.392   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 03:48:10.392   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 03:49:50.617  1253 19714 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 03:49:56.178  1253  3085 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 03:49:56.178  1253  3085 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 03:49:56.178  1253  3085 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 04:00:00.030   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:00:00.030   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:00:00.085   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:00:00.085   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:00:00.086   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:00:00.086   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:05:00.327 17648 19972 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 04:13:00.061   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:13:00.061   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:18:10.391   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:18:10.391   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:25:44.257   695   715 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-28 04:25:44.315   695  1083 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-28 04:25:44.542 13692 13692 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 04:25:44.542 13692 13692 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 04:25:45.334   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-28 04:25:48.291   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-28 04:26:42.229   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:26:42.229   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:40:14.252   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:40:14.252   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:48:10.390   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 04:48:10.390   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 04:51:54.042  1253 20180 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 04:51:54.440  1253  1263 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 04:51:54.440  1253  1263 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 04:51:54.440  1253  1263 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 04:51:54.449 13692 20097 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 04:51:54.450 13692 20097 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 04:51:54.450 13692 20097 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 04:51:54.450 13692 20097 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 04:59:59.693 17648 20234 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 05:00:00.024   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:00:00.024   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:00:00.103   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:00:00.103   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:00:00.106   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:00:00.106   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:18:10.408   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:18:10.408   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:29:52.057   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:29:52.057   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:30:52.206   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:30:52.206   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:48:10.407   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:48:10.407   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:55:00.169 17648 20425 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 05:56:14.328   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 05:56:14.328   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 05:57:14.450  1253 20437 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 05:57:14.881  1253  1701 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 05:57:14.881  1253  1701 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 05:57:14.881  1253  1701 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 06:00:00.023   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 06:00:00.023   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 06:00:00.092   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 06:00:00.092   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 06:18:10.395   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 06:18:10.395   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 06:31:00.109   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 06:31:00.109   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 06:38:41.638   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 06:38:41.638   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 06:42:31.808  1253 20592 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.apps.wellbeing. Process: com.google.android.apps.wellbeing|219245769. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-28 06:42:31.903  1253 20592 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.googlequicksearchbox. Process: com.google.android.googlequicksearchbox:search|218379327. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-28 06:42:31.922  1253 20592 W FlagUpdateListenerRegis: Unable to invoke IFlagUpdateListener.onFlagUpdate. App: com.google.android.apps.safetyhub. Process: com.google.android.apps.safetyhub|144544396. Error: android.os.DeadObjectException. [CONTEXT service_id=51 ]
+06-28 06:48:10.418   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 06:48:10.418   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 06:49:59.655 17648 20708 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 07:00:00.089   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:00:00.089   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 07:00:00.162   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:00:00.162   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 07:00:00.162   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:00:00.162   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 07:08:14.658  1253 20610 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 07:08:15.544  1253  1701 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 07:08:15.544  1253  1701 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 07:08:15.544  1253  1701 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 07:08:15.605 13692 13720 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 07:08:15.605 13692 13720 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 07:12:14.404   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:12:14.404   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 07:18:10.428   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:18:10.428   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 07:26:49.586   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:26:49.586   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 07:34:08.276   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:34:08.276   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 07:44:59.143 17648 20932 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 07:48:10.400   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 07:48:10.400   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 08:00:00.034   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 08:00:00.034   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 08:00:00.085   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 08:00:00.085   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 08:00:00.086   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 08:00:00.086   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 08:08:58.021  1253 21029 W TapAndPay: java.lang.NullPointerException: NfcAdapter is null
+06-28 08:08:58.453  1253  1630 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 08:08:58.453  1253  1630 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 08:08:58.453  1253  1630 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 08:18:10.415   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 08:18:10.415   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 08:22:06.898   695  1566 W WifiService: Permission violation - getConfiguredNetworks not allowed for uid=10145, packageName=com.google.android.settings.intelligence, reason=java.lang.SecurityException: UID 10145 has no location permission
+06-28 08:22:09.046   695   728 E PackageManager: java.util.concurrent.TimeoutException: [Optimistic Bind] Didn't bind to resolver in time!
+06-28 08:22:11.136 21134 21162 I GmsActivityDetector: java.io.FileNotFoundException: /data/user/0/com.google.android.gms/files/geofencer_ad_state: open failed: ENOENT (No such file or directory)
+06-28 08:22:11.136 21134 21162 I GmsActivityDetector: Caused by: android.system.ErrnoException: open failed: ENOENT (No such file or directory)
+06-28 08:22:11.852   695   851 E WifiChipAidlImpl: getUsableChannels failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-28 08:22:11.865 21134 21179 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-28 08:22:11.865 21134 21179 I NearbyMediums: java.lang.UnsupportedOperationException
+06-28 08:22:11.865 21134 21179 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3352)
+06-28 08:22:11.865 21134 21179 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:3324)
+06-28 08:22:11.865 21134 21179 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3307)
+06-28 08:22:11.865 21134 21179 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:3249)
+06-28 08:22:11.865 21134 21179 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-28 08:28:14.494   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 08:28:14.494   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 08:39:58.652 17648 21292 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 08:42:24.654   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 08:42:24.654   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 08:48:10.414   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 08:48:10.414   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 09:00:00.047   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 09:00:00.047   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 09:00:00.098   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 09:00:00.098   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 09:00:00.099   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 09:00:00.099   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 09:18:10.422   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 09:18:10.422   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 09:18:22.991 21134 21226 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 09:18:22.991 21134 21226 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 09:18:22.991 21134 21226 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 09:18:23.017 13692 13721 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:18:23.017 13692 13721 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:18:26.723  4637  4678 E abov    : znu: android.os.DeadObjectException: Transaction failed on small parcel; remote process probably died, but this could also be caused by running out of binder buffer space
+06-28 09:18:26.723  4637  4678 E abov    : Caused by: android.os.DeadObjectException: Transaction failed on small parcel; remote process probably died, but this could also be caused by running out of binder buffer space
+06-28 09:18:27.064  6236 21480 E PhenotypeModule: java.lang.IllegalStateException: Get empty configurations.
+06-28 09:18:27.067  6236 21480 E PhenotypeModule: java.lang.IllegalStateException: Get empty configurations.
+06-28 09:18:28.090 13692 13720 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:18:30.414  1114  1114 D TaskFragmentComponent: java.lang.Exception
+06-28 09:18:30.857  1114  1114 W Resources: java.lang.RuntimeException
+06-28 09:18:30.860  1114  1114 W Resources: java.lang.RuntimeException
+06-28 09:19:38.767 21134 21163 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 09:19:38.767 21134 21163 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 09:19:38.767 21134 21163 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 09:21:41.741 21134 21163 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 09:21:41.741 21134 21163 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 09:21:41.741 21134 21163 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 09:24:51.119 21134 21163 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 09:24:51.119 21134 21163 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 09:24:51.119 21134 21163 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 09:32:09.163   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 09:32:09.163   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 09:32:09.605 21134 21163 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 09:32:09.605 21134 21163 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 09:32:09.605 21134 21163 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 09:34:58.182 17648 21604 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 09:44:14.569   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 09:44:14.569   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 09:46:16.064   695   857 E ConnectivityService: RemoteException caught trying to send a callback msg for NetworkRequest [ TRACK_DEFAULT id=361, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10219 RequestorUid: 10219 RequestorPkg: com.habitai.app UnderlyingNetworks: Null] ]
+06-28 09:46:17.644   695  1566 W WindowManager: Exception thrown during dispatchAppVisibility Window{c664843 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 09:46:17.644   695  1566 W WindowManager: android.os.DeadObjectException
+06-28 09:46:18.276   695   928 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 09:46:27.886 15667 18259 W WellbeingSettingsProvid: java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 1 milliseconds, 964400 nanoseconds delay) for lun@ec6cb4d[status=PENDING, info=[inputFuture=[lum@7243602[status=PENDING, setFuture=[ltt@a6bcb13[status=PENDING, info=[inputFuture=[lun@b777150[status=PENDING, info=[inputFuture=[lun@a41cf49[status=PENDING, info=[inputFuture=[lvh@6a3b04e[status=PENDING, info=[futures=[lun@dbe056f[status=PENDING, info=[inputFuture=[lun@26a527c[status=PENDING, info=[inputFuture=[lwg@44f1705[status=PENDING, info=[delegate=[lxm@18e835a[status=PENDING, setFuture=[lun@74f898b[status=PENDING, info=[inputFuture=[lum@5481a68[status=PENDING, info=[inputFuture=[lwg@c2f1e81[status=PENDING, info=[delegate=[lxm@4217b26[status=PENDING, setFuture=[lum@b2b3367[status=PENDING, info=[function=[propagating=[cjk@3b87514]]]]]]]]]], function=[propagating=[bzs@aae21bd]]]]], function=[propagating=[bzu@f9a23b2]]]]]]]]]], function=[propagating=[bzf@92d9f03]]]]], function=[propagating=[dhk@e31ce80]]]]]]]], function=[propagating=[czp@f201cb9]]]]], function=[propagating=[bwu@982c8fe]]]]], exceptionType=[class java.lang.Throwable], fallback=[propagating=[bzu@861285f]]]]]]], function=[propagating=[bwu@42552ac]]]]
+06-28 09:46:32.682 21134 21227 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 09:46:32.682 21134 21227 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 09:46:32.682 21134 21227 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 09:46:33.355 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:46:33.356 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:46:33.356 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:46:33.357 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:46:33.358 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:46:33.360 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:46:33.360 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 09:46:42.676   695  1928 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 10:00:00.235   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:00:00.235   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:00:00.322   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:00:00.322   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:00:00.327   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:00:00.327   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:03:49.900 21134 21225 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 10:03:49.900 21134 21225 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 10:03:49.900 21134 21225 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 10:18:10.430   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:18:10.430   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:24:28.420   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:24:28.420   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:29:58.145 21911 22222 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 10:37:34.151   695  1080 W WindowManager: Exception thrown during dispatchAppVisibility Window{aa46033 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 10:37:34.151   695  1080 W WindowManager: android.os.DeadObjectException
+06-28 10:37:34.681   695  1796 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 10:38:31.790   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:38:31.790   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:38:54.214 21134 21511 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 10:38:54.214 21134 21511 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 10:38:54.214 21134 21511 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 10:38:54.333 13692 20097 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 10:38:54.333 13692 20097 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 10:43:45.186   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:43:45.186   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:47:58.566   695  1563 W WindowManager: Exception thrown during dispatchAppVisibility Window{8efa6da u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 10:47:58.566   695  1563 W WindowManager: android.os.DeadObjectException
+06-28 10:47:58.999   695  1567 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 10:48:07.341 15667 16609 W WellbeingSettingsProvid: java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 2 milliseconds, 596600 nanoseconds delay) for lun@880ffe6[status=PENDING, info=[inputFuture=[lum@ec93927[status=PENDING, setFuture=[ltt@64167d4[status=PENDING, info=[inputFuture=[lun@973fd7d[status=PENDING, info=[inputFuture=[lun@94d3472[status=PENDING, info=[inputFuture=[lvh@e0640c3[status=PENDING, info=[futures=[lun@a372d40[status=PENDING, info=[inputFuture=[lun@8c7f479[status=PENDING, info=[inputFuture=[lwg@83625be[status=PENDING, info=[delegate=[lxm@d82261f[status=PENDING, setFuture=[lun@301dd6c[status=PENDING, info=[inputFuture=[lum@6ca5f35[status=PENDING, info=[inputFuture=[lwg@52adfca[status=PENDING, info=[delegate=[lxm@3ad053b[status=PENDING, setFuture=[lum@ee56458[status=PENDING, info=[function=[propagating=[cjk@4eb9b1]]]]]]]]]], function=[propagating=[bzs@dff2e96]]]]], function=[propagating=[bzu@3dcba17]]]]]]]]]], function=[propagating=[bzf@a786e04]]]]], function=[propagating=[dhk@1e43fed]]]]]]]], function=[propagating=[czp@7f79e22]]]]], function=[propagating=[bwu@6e8e0b3]]]]], exceptionType=[class java.lang.Throwable], fallback=[propagating=[bzu@3106670]]]]]]], function=[propagating=[bwu@7d1ede9]]]]
+06-28 10:49:13.499   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:49:13.499   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 10:53:35.521  6236  6236 E InputConnectionWrapper: java.util.concurrent.TimeoutException: Waited 100 milliseconds (plus 22 milliseconds, 989500 nanoseconds delay) but future completed as timeout expired
+06-28 10:54:35.389   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 10:54:35.389   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 11:00:00.186   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 11:00:00.186   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 11:00:00.304   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 11:00:00.304   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 11:00:00.311   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 11:00:00.311   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 11:05:59.886   695   921 W EmulatorClipboardMonitor: java.io.EOFException
+06-28 11:13:09.475  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:13:10.610  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:13:10.611  1100  1100 W Telephony: registerImsRegistrationCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:13:11.099  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:13:11.099  1100  1100 W Telephony: registerImsRegistrationCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:13:11.273  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:13:11.273  1100  1100 W Telephony: registerImsRegistrationCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:13:11.302  1100  1100 W Telephony: registerMmTelCapabilityCallback: registration failed, no ImsService available. Exception: code: 1
+06-28 11:14:08.269   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 11:14:08.269   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 11:16:32.866   695   857 E ConnectivityService: RemoteException caught trying to send a callback msg for NetworkRequest [ TRACK_DEFAULT id=425, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10219 RequestorUid: 10219 RequestorPkg: com.habitai.app UnderlyingNetworks: Null] ]
+06-28 11:16:34.367   695  1737 W WindowManager: Exception thrown during dispatchAppVisibility Window{ce9ffbb u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 11:16:34.367   695  1737 W WindowManager: android.os.DeadObjectException
+06-28 11:16:34.508   695  1086 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 11:24:58.475 22950 23104 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 11:25:18.621   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 11:25:18.621   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 11:38:41.850   695  1242 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 11:38:42.053   695  1080 W WindowManager: Exception thrown during dispatchAppVisibility Window{69982ab u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 11:38:42.053   695  1080 W WindowManager: android.os.DeadObjectException
+06-28 11:39:40.820   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 11:39:40.820   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 11:48:12.542 21134 21163 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 11:48:12.542 21134 21163 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 11:48:12.542 21134 21163 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 11:48:12.596 13692 21789 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 11:55:18.595   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 11:55:18.595   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 12:02:02.185   695   857 E ConnectivityService: RemoteException caught trying to send a callback msg for NetworkRequest [ TRACK_DEFAULT id=437, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED&NOT_BANDWIDTH_CONSTRAINED Uid: 10219 RequestorUid: 10219 RequestorPkg: com.habitai.app UnderlyingNetworks: Null] ]
+06-28 12:02:02.986   695   716 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 12:02:03.547   695  1566 W WindowManager: Exception thrown during dispatchAppVisibility Window{e203ae3 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 12:02:03.547   695  1566 W WindowManager: android.os.DeadObjectException
+06-28 12:03:02.209   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 12:03:02.209   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 12:19:58.129 23574 23741 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 12:23:23.068   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 12:23:23.068   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 12:33:20.798 15667 15698 E CombinedComponentSuspen: java.util.concurrent.ExecutionException: gao: Service rejected request (status=5)
+06-28 12:34:20.247   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 12:34:20.247   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 12:39:12.597  2439 23821 I BugleCms: LinkedAccountManager: No valid stored accountId, throwing NoLinkedAccountException.
+06-28 12:49:44.156   695  1799 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 12:49:44.608   695   716 W WindowManager: Exception thrown during dispatchAppVisibility Window{2f06967 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 12:49:44.608   695   716 W WindowManager: android.os.DeadObjectException
+06-28 12:50:11.989 21134 21474 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 12:50:11.989 21134 21474 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 12:50:11.989 21134 21474 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 12:50:12.025 13692 22992 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 12:50:43.235   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 12:50:43.235   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 12:51:23.093  1515 24099 V PickerDbFacade: android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: media.local_id, media.is_visible (code 2067 SQLITE_CONSTRAINT_UNIQUE)
+06-28 12:51:23.094  1515 24099 V PickerDbFacade: android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: media.local_id, media.is_visible (code 2067 SQLITE_CONSTRAINT_UNIQUE)
+06-28 12:58:15.623  2439  2439 E GmsClientSupervisor: java.lang.Exception
+06-28 12:58:21.781 21134 21474 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 12:58:21.781 21134 21474 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 12:58:21.781 21134 21474 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 12:58:21.834 13692 21788 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+06-28 12:58:21.913 13692 21788 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+06-28 12:58:22.200 13692 24169 E constellation: Exception: 
+06-28 12:58:22.218  2439 24162 W BugleRcsEngine: UPI - verifyPhoneNumber API returned an exception: 5002:  [null] [CONTEXT log_prefix="(PEv2-SM-Bugle-178161631)" thread_id=565 ]
+06-28 13:00:08.107   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 13:00:08.107   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 13:14:57.731 23968 24260 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 13:25:18.579   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 13:25:18.579   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 13:36:43.341 18954 18998 E cooh    : java.util.NoSuchElementException: No value present
+06-28 13:39:23.192   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 13:39:23.192   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 13:52:15.213   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 13:52:15.213   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 13:52:15.613 21134 21142 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 13:52:15.613 21134 21142 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 13:52:15.613 21134 21142 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 13:52:15.628 13692 21788 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 13:54:07.738   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 13:54:07.738   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 14:04:38.469   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 14:04:38.469   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 14:09:57.200 23968 24485 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 14:25:18.579   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 14:25:18.579   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 14:39:45.033   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 14:39:45.033   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 14:55:18.588   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 14:55:18.588   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 14:55:42.237 21134 21144 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 14:55:42.237 21134 21144 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 14:55:42.237 21134 21144 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 15:04:57.686 23968 24702 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 15:07:02.052   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 15:07:02.052   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 15:25:18.590   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 15:25:18.590   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 15:37:42.651   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 15:37:42.651   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 15:46:45.996 21134 21143 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-28 15:55:18.588   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 15:55:18.588   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 15:56:33.412 21134 21227 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 15:56:33.412 21134 21227 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 15:56:33.412 21134 21227 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 15:59:57.146 23968 24908 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 16:11:23.342   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 16:11:23.342   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 16:21:14.450   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 16:21:14.450   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 16:34:40.466   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 16:34:40.466   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 16:53:02.450 18954 18998 W cnoy    : Caused by: java.lang.IllegalStateException: Used non-google account without enabling API Key fallback
+06-28 16:54:57.510 23968 25144 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 16:55:18.590   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 16:55:18.590   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 17:02:11.609 21134 21163 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 17:02:11.609 21134 21163 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 17:02:11.609 21134 21163 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 17:02:11.617 13692 21789 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 17:02:11.618 13692 21789 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 17:02:11.618 13692 21789 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 17:25:09.625   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 17:25:09.625   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 17:27:29.186   695  1928 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 17:27:29.303   695   715 W WindowManager: Exception thrown during dispatchAppVisibility Window{5d6b685 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 17:27:29.303   695   715 W WindowManager: android.os.DeadObjectException
+06-28 17:49:57.044 25330 25584 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 17:55:18.661   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 17:55:18.661   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 18:03:06.659 21134 21474 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 18:03:06.659 21134 21474 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 18:03:06.659 21134 21474 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400
+06-28 18:03:06.713 13692 17279 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 18:17:33.648 25669 25669 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:18:05.399   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 18:18:05.399   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 18:18:09.596 25699 25699 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:18:20.718 25721 25721 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:18:29.358 25742 25742 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:18:39.835 25767 25767 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:18:58.350 25787 25787 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:19:13.459 25822 25822 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:19:22.550 25844 25844 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:19:39.424 25860 25860 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:19:57.277 25876 25876 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:20:04.804 25897 25897 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:20:12.183 25920 25920 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:20:22.006 25940 25940 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:20:30.983 25965 25965 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:20:42.469 25988 25988 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:20:59.082 26026 26026 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:21:11.271 26069 26069 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:21:12.803 25330 25544 W Firestore: (25.1.4) [WatchStream]: (dc904c2) Stream closed with status: Status{code=UNAVAILABLE, description=End of stream or IOException, cause=null}.
+06-28 18:21:16.257 26087 26087 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:21:27.013 26135 26135 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:21:35.442 26160 26160 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:21:43.639 26191 26191 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:22:02.006 26241 26241 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:22:07.517   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 18:22:07.517   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 18:22:15.009 26272 26272 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+06-28 18:28:20.353   695  1937 W WindowManager: Exception thrown during dispatchAppVisibility Window{14c7cd7 u0 com.habitai.app/com.habitai.app.MainActivity EXITING}
+06-28 18:28:20.353   695  1937 W WindowManager: android.os.DeadObjectException
+06-28 18:28:20.992   695  1797 E SystemServiceRegistry: android.os.ServiceManager$ServiceNotFoundException: No service published for: persistent_data_block
+06-28 18:28:31.511 15667 15679 W WellbeingSettingsProvid: java.util.concurrent.TimeoutException: Waited 5000 milliseconds (plus 2 milliseconds, 222600 nanoseconds delay) for lun@a033eba[status=PENDING, info=[inputFuture=[lum@e5a916b[status=PENDING, setFuture=[ltt@8a0b4c8[status=PENDING, info=[inputFuture=[lun@e321961[status=PENDING, info=[inputFuture=[lun@1168c86[status=PENDING, info=[inputFuture=[lvh@b0ed947[status=PENDING, info=[futures=[lun@f705574[status=PENDING, info=[inputFuture=[lun@895ea9d[status=PENDING, info=[inputFuture=[lwg@7beeb12[status=PENDING, info=[delegate=[lxm@9d5c2e3[status=PENDING, setFuture=[lun@ff754e0[status=PENDING, info=[inputFuture=[lum@d6b9399[status=PENDING, info=[inputFuture=[lwg@f1ca65e[status=PENDING, info=[delegate=[lxm@497aa3f[status=PENDING, setFuture=[lum@62cdf0c[status=PENDING, info=[function=[propagating=[cjk@c58d055]]]]]]]]]], function=[propagating=[bzs@808ca6a]]]]], function=[propagating=[bzu@166ab5b]]]]]]]]]], function=[propagating=[bzf@44edff8]]]]], function=[propagating=[dhk@fa31cd1]]]]]]]], function=[propagating=[czp@5e12336]]]]], function=[propagating=[bwu@b5aa237]]]]], exceptionType=[class java.lang.Throwable], fallback=[propagating=[bzu@8e03a4]]]]]]], function=[propagating=[bwu@66bb50d]]]]
+06-28 18:29:18.594   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 18:29:18.594   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 18:43:23.537   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 18:43:23.537   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 18:44:56.731 26481 26681 W LocalRequestInterceptor: Error getting App Check token; using placeholder token instead. Error: com.google.firebase.FirebaseException: No AppCheckProvider installed.
+06-28 18:55:18.617   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 18:55:18.617   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 19:00:33.240   695  1566 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-28 19:00:33.279   695   716 E AccountManagerService: Couldn't determine the packageUid for android.content.pm.PackageManager$NameNotFoundException: 
+06-28 19:00:33.996   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-28 19:00:35.124 13692 13692 E hpkp    : java.lang.RuntimeException: ManagedChannel allocation site
+06-28 19:00:36.867   695   851 E WifiStaIfaceAidlImpl: setDtimMultiplier failed with service-specific exception: android.os.ServiceSpecificException:  (code 4)
+06-28 19:01:34.131   695   739 E BluetoothPowerStatsCollector: java.util.concurrent.ExecutionException: java.lang.RuntimeException: error: 9
+06-28 19:01:34.131   695   739 E BluetoothPowerStatsCollector: Caused by: java.lang.RuntimeException: error: 9
+06-28 19:05:11.664 21134 21225 W GLSUser : [AppCertManager] Exception while requesting key: 
+06-28 19:05:11.664 21134 21225 W GLSUser : java.util.concurrent.ExecutionException: cgpx: Parse Proto Exception with response code 400
+06-28 19:05:11.664 21134 21225 W GLSUser : Caused by: cgpx: Parse Proto Exception with response code 400

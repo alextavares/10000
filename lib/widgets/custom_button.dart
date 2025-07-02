@@ -33,7 +33,7 @@ class CustomButton extends StatelessWidget {
     final fgColor = textColor ?? Colors.white;
 
     if (isOutlined) {
-      return Container(
+      return SizedBox(
         width: width,
         height: height,
         child: OutlinedButton(
@@ -76,7 +76,7 @@ class CustomButton extends StatelessWidget {
       );
     }
 
-    return Container(
+    return SizedBox(
       width: width,
       height: height,
       child: ElevatedButton(

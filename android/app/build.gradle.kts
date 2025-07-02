@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.habitai.app"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35 // Definido explicitamente conforme a documentação do flutter_local_notifications
     ndkVersion = "27.0.12077973" // Versão exigida pelos plugins
 
     compileOptions {
@@ -56,6 +56,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        multiDexEnabled = true
     }
 
     buildFeatures {

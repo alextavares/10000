@@ -118,7 +118,7 @@ class HabitCardComplete extends StatelessWidget {
                     const SizedBox(height: 12),
                     
                     // Calendário semanal inline
-                    Container(
+                    SizedBox(
                       height: 65,
                       child: Row(
                         children: _buildWeekCalendar(context),

@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/services/genkit_service.dart'; // Importar GenkitService
 import 'package:myapp/screens/onboarding/onboarding_ai_habit_suggestions_screen.dart';

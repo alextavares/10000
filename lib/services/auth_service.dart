@@ -1,285 +1,148 @@
-import 'dart:async';
-import 'package:myapp/utils/logger.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myapp/utils/logger.dart';
 
-/// Service for handling user authentication.
 class AuthService {
-  /// Firebase Auth instance.
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  /// Firestore instance.
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Stream of auth state changes.
+  // Stream para mudanças de autenticação
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  /// Gets the current user.
+  // Usuário atual
   User? get currentUser => _auth.currentUser;
 
-  /// Gets the current user ID.
-  String? get currentUserId => _auth.currentUser?.uid;
+  // Verifica se está logado
+  bool get isSignedIn => currentUser != null;
 
-  /// Checks if the user is signed in.
-  bool get isSignedIn => _auth.currentUser != null;
+  /// Signs in anonymously.
+  /// This is useful for testing or allowing users to try the app without creating an account.
+  Future<UserCredential> signInAnonymously() async {
+    try {
+      Logger.debug('Tentando fazer login anônimo...');
+      final userCredential = await _auth.signInAnonymously();
+      Logger.info('Login anônimo bem-sucedido. UID: ${userCredential.user?.uid}');
+      
+      // Criar um documento básico para o usuário anônimo
+      if (userCredential.user != null) {
+        try {
+          await _firestore.collection('users').doc(userCredential.user!.uid).set({
+            'isAnonymous': true,
+            'createdAt': FieldValue.serverTimestamp(),
+            'lastLogin': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+          Logger.debug('Documento de usuário anônimo criado');
+        } catch (e) {
+          Logger.error('Erro ao criar documento de usuário anônimo: $e');
+          // Não falhar se não conseguir criar o documento
+        }
+      }
+      
+      return userCredential;
+    } catch (e) {
+      Logger.error('Erro ao fazer login anônimo: $e');
+      rethrow;
+    }
+  }
 
-  /// Signs in with email and password.
+  /// Login com email e senha
   Future<UserCredential> signInWithEmailAndPassword(
     String email,
     String password,
   ) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      Logger.debug('Tentando fazer login com email...');
+      final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      Logger.info('Login com email bem-sucedido. UID: ${userCredential.user?.uid}');
+      return userCredential;
     } catch (e) {
-      Logger.error('Error signing in: $e');
+      Logger.error('Erro ao fazer login com email: $e');
       rethrow;
     }
   }
 
-  /// Creates a new user with email and password.
+  /// Registro com email e senha
   Future<UserCredential> createUserWithEmailAndPassword(
     String email,
     String password,
-    String name,
+    String displayName,
   ) async {
-    UserCredential? userCredential;
-    
     try {
-      Logger.debug('Tentando criar usuário com email: $email');
-      
-      // Create the user in Firebase Auth
-      userCredential = await _auth.createUserWithEmailAndPassword(
+      Logger.debug('Tentando criar conta com email...');
+      final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      
-      Logger.info('Usuário criado com sucesso no Firebase Auth. UID: ${userCredential.user?.uid}');
-
-      // Update the user's display name
-      if (userCredential.user != null) {
-        try {
-          await userCredential.user!.updateDisplayName(name);
-          Logger.debug('Nome de exibição do usuário atualizado: $name');
-        } catch (displayNameError) {
-          // Não falhe se não conseguir atualizar o nome de exibição
-          Logger.error('Erro ao atualizar nome de exibição: $displayNameError');
-        }
-
-        // Create a user document in Firestore - continuará mesmo se falhar
-        try {
-          await _createUserDocument(userCredential.user!, name);
-        } catch (firestoreError) {
-          Logger.error('Erro no Firestore não impediu a criação da conta: $firestoreError');
-        }
-      }
-
+      Logger.info('Conta criada com sucesso. UID: ${userCredential.user?.uid}');
       return userCredential;
     } catch (e) {
-      Logger.error('Erro ao criar usuário: $e');
+      Logger.error('Erro ao criar conta com email: $e');
+      rethrow;
+    }
+  }
+
+  /// Login com Google - Simplificado para web
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      Logger.debug('Iniciando login com Google...');
       
-      // Se a autenticação foi criada mas ocorreu erro posteriormente, tente limpar
-      if (userCredential?.user != null) {
-        try {
-          Logger.debug('Tentando limpar usuário criado parcialmente: ${userCredential!.user!.uid}');
-          await userCredential.user!.delete();
-          Logger.error('Usuário criado parcialmente foi excluído após erro');
-        } catch (cleanupError) {
-          Logger.error('Erro ao limpar usuário: $cleanupError');
-        }
-      }
+      // Para web, usar o provider diretamente
+      final googleProvider = GoogleAuthProvider();
       
-      rethrow;
-    }
-  }
-
-  /// Creates a user document in Firestore.
-  Future<void> _createUserDocument(User user, String name) async {
-    try {
-      Logger.debug('Tentando criar documento do usuário no Firestore. UID: ${user.uid}');
+      // Adicionar scopes se necessário
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
       
-      // Verifica se já existe um documento para este usuário
-      final docRef = _firestore.collection('users').doc(user.uid);
-      final docSnapshot = await docRef.get().timeout(
-        const Duration(seconds: 10),
-        onTimeout: () {
-          Logger.debug('Timeout ao verificar documento existente');
-          throw TimeoutException('Firestore operation timed out');
-        },
-      );
+      // Sign in with popup para web
+      final userCredential = await _auth.signInWithPopup(googleProvider);
       
-      if (docSnapshot.exists) {
-        Logger.debug('Documento já existe, atualizando');
-        await docRef.update({
-          'name': name,
-          'email': user.email,
-          'lastUpdated': FieldValue.serverTimestamp(),
-          'lastLogin': FieldValue.serverTimestamp(),
-        }).timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            Logger.debug('Timeout ao atualizar documento');
-            throw TimeoutException('Firestore update operation timed out');
-          },
-        );
-      } else {
-        Logger.debug('Criando novo documento');
-        await docRef.set({
-          'name': name,
-          'email': user.email,
-          'createdAt': FieldValue.serverTimestamp(),
-          'lastLogin': FieldValue.serverTimestamp(),
-          'isNewUser': true,
-        }).timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            Logger.debug('Timeout ao criar documento');
-            throw TimeoutException('Firestore set operation timed out');
-          },
-        );
-      }
-      
-      Logger.info('Documento do usuário criado/atualizado com sucesso no Firestore');
+      Logger.info('Login com Google bem-sucedido. UID: ${userCredential.user?.uid}');
+      return userCredential;
     } catch (e) {
-      // Não rethrow aqui para evitar falha na criação da conta se o Firestore falhar
-      Logger.error('Erro ao criar documento do usuário: $e');
-      // Logue detalhes específicos que podem ser úteis
-      Logger.debug('User UID: ${user.uid}, Name: $name, Email: ${user.email}');
-      
-      // Tentativa alternativa de criar um documento mínimo
-      if (e.toString().contains('permission-denied') || e.toString().contains('PERMISSION_DENIED')) {
-        Logger.error('Tentando método alternativo devido a erro de permissão');
-        try {
-          // Tente uma operação mais simples
-          await _firestore.collection('users').doc(user.uid).set({
-            'email': user.email,
-          }, SetOptions(merge: true));
-          Logger.info('Documento mínimo criado com sucesso');
-        } catch (fallbackError) {
-          Logger.error('Método alternativo também falhou: $fallbackError');
-        }
-      }
-    }
-  }
-
-  /// Signs out the current user.
-  Future<void> signOut() async {
-    try {
-      await _auth.signOut();
-    } catch (e) {
-      Logger.error('Error signing out: $e');
+      Logger.error('Erro ao fazer login com Google: $e');
       rethrow;
     }
   }
 
-  /// Sends a password reset email.
-  Future<void> sendPasswordResetEmail(String email) async {
-    try {
-      await _auth.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      Logger.error('Error sending password reset email: $e');
-      rethrow;
-    }
-  }
-
-  /// Updates the user's profile.
-  Future<void> updateProfile({String? displayName, String? photoURL}) async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        await user.updateDisplayName(displayName);
-        await user.updatePhotoURL(photoURL);
-
-        // Update the user document in Firestore
-        if (displayName != null) {
-          await _firestore.collection('users').doc(user.uid).update({
-            'name': displayName,
-          });
-        }
-      }
-    } catch (e) {
-      Logger.error('Error updating profile: $e');
-      rethrow;
-    }
-  }
-
-  /// Updates the user's email.
-  Future<void> updateEmail(String email) async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        await user.updateEmail(email);
-
-        // Update the user document in Firestore
-        await _firestore.collection('users').doc(user.uid).update({
-          'email': email,
-        });
-      }
-    } catch (e) {
-      Logger.error('Error updating email: $e');
-      rethrow;
-    }
-  }
-
-  /// Updates the user's password.
-  Future<void> updatePassword(String password) async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        await user.updatePassword(password);
-      }
-    } catch (e) {
-      Logger.error('Error updating password: $e');
-      rethrow;
-    }
-  }
-
-  /// Deletes the user's account.
-  Future<void> deleteAccount() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        // Delete the user document from Firestore
-        await _firestore.collection('users').doc(user.uid).delete();
-
-        // Delete the user from Firebase Auth
-        await user.delete();
-      }
-    } catch (e) {
-      Logger.error('Error deleting account: $e');
-      rethrow;
-    }
-  }
-
-  /// Gets the user's profile data.
-  Future<Map<String, dynamic>?> getUserProfile() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        final doc = await _firestore.collection('users').doc(user.uid).get();
-        return doc.data();
-      }
-      return null;
-    } catch (e) {
-      Logger.error('Error getting user profile: $e');
-      return null;
-    }
-  }
-
-  /// Updates the user's last login timestamp.
+  /// Atualizar último login
   Future<void> updateLastLogin() async {
     try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        await _firestore.collection('users').doc(user.uid).update({
+      if (currentUser != null) {
+        await _firestore.collection('users').doc(currentUser!.uid).update({
           'lastLogin': FieldValue.serverTimestamp(),
         });
+        Logger.debug('Último login atualizado');
       }
     } catch (e) {
-      Logger.error('Error updating last login: $e');
+      Logger.error('Erro ao atualizar último login: $e');
+      // Não falhar se não conseguir atualizar
+    }
+  }
+
+  /// Logout
+  Future<void> signOut() async {
+    try {
+      Logger.debug('Fazendo logout...');
+      await _auth.signOut();
+      Logger.info('Logout realizado com sucesso');
+    } catch (e) {
+      Logger.error('Erro ao fazer logout: $e');
+      rethrow;
+    }
+  }
+
+  /// Redefinir senha
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      Logger.debug('Enviando email de redefinição de senha...');
+      await _auth.sendPasswordResetEmail(email: email);
+      Logger.info('Email de redefinição de senha enviado para: $email');
+    } catch (e) {
+      Logger.error('Erro ao enviar email de redefinição: $e');
+      rethrow;
     }
   }
 }

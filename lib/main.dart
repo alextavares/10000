@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:myapp/models/habit.dart';
+import 'package:myapp/screens/achievements/achievements_screen.dart';
 import 'package:myapp/screens/loading_screen.dart';
 import 'package:myapp/screens/splash_screen.dart';
 import 'package:myapp/screens/auth/login_screen.dart';
@@ -16,8 +18,9 @@ import 'package:myapp/screens/onboarding/onboarding_screen.dart';
 import 'package:myapp/screens/home/home_screen.dart';
 import 'package:myapp/screens/notifications/notification_settings_screen.dart';
 import 'package:myapp/screens/test/notification_test_screen.dart';
-import 'package:myapp/screens/test/test_characters_screen.dart';
+import 'package:myapp/services/achievement_service.dart';
 import 'package:myapp/services/service_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -61,7 +64,7 @@ void main() async {
     await SmartNotificationService().initialize();
     Logger.info("Sistema de notificações inicializado!");
     
-    // Inicializar Analytics se estiver disponível
+    // Inicializar Analytics se estiverível
     if (kIsWeb) {
       Logger.debug("Executando na web - verificando Firebase Analytics");
       
@@ -92,7 +95,7 @@ void main() async {
       'Flutter Error',
     );
   };
-  
+
   // Inicie o app
   runApp(await _buildApp());
 }
@@ -173,7 +176,7 @@ class MyApp extends StatelessWidget {
           // Ex: '/habit-tracking-type', '/add-habit-quantity-config', etc.
           // Se UpsertHabitScreen precisar de argumentos para edição, tratar aqui.
           if (settings.name == UpsertHabitScreen.routeName) { // Supondo que UpsertHabitScreen tenha um routeName estático
-            final args = settings.arguments as Habit?; // Argumento é um Hábito opcional para edição
+            final args = settings.arguments as Habit?;
             return MaterialPageRoute(
               builder: (context) {
                 return UpsertHabitScreen(habitToEdit: args);
@@ -195,13 +198,18 @@ class AuthWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Verificar se o ServiceProvider está disponível
+    final ServiceProvider? serviceProvider = context.dependOnInheritedWidgetOfExactType<ServiceProvider>();
+    
+    if (serviceProvider == null) {
+      return const LoadingScreen();
+    }
+    
     return StreamBuilder<User?>(
-      stream: context.authService.authStateChanges,
+      stream: serviceProvider.authService.authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const LoadingScreenWithMessage(
-            message: 'Checking authentication...',
-          );
+          return const LoadingScreen();
         }
         
         final user = snapshot.data;
@@ -212,22 +220,22 @@ class AuthWrapper extends StatelessWidget {
 
           // Usar Future.microtask para evitar chamar setState durante o build do Provider.
           Future.microtask(() async {
-            final achievementService = Provider.of<AchievementService>(context, listen: false);
+            final achievementService = context.read<AchievementService>();
             if (achievementService.userProfile == null || achievementService.userProfile!.userId != user.uid) {
               try {
                 await achievementService.initialize(user.uid);
-                Logger.info("AchievementService initialized for user ${user.uid} from AuthWrapper", tag: "AuthWrapper");
+                Logger.info("AchievementService initialized for user ${user.uid} from AuthWrapper");
 
                 // Opcional: Disparar uma verificação inicial de conquistas
                 // final habitService = Provider.of<HabitService>(context, listen: false);
                 // final List<Habit> habits = await habitService.getAllHabits();
                 // if (habits.isNotEmpty) {
                 //   await achievementService.checkAchievements(habits);
-                //   Logger.info("Initial achievement check run from AuthWrapper.", tag: "AuthWrapper");
+                //   Logger.info("Initial achievement check run from AuthWrapper.");
                 // }
 
               } catch (e,s) {
-                  Logger.error("Error initializing AchievementService from AuthWrapper: $e", e, s, tag: "AuthWrapper");
+                  Logger.error("Error initializing AchievementService from AuthWrapper: $e", e, s);
               }
             }
           });

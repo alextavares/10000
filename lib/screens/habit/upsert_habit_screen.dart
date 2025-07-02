@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:myapp/models/category.dart' as app_category;
 import 'package:myapp/models/habit.dart';
 import 'package:myapp/services/category_service.dart';
@@ -47,11 +49,11 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
   // TODO: Adicionar campos para outros tipos de frequência (repeatEveryDays, etc.)
 
   HabitTrackingType _selectedTrackingType = HabitTrackingType.simOuNao;
-  TextEditingController _targetQuantityController = TextEditingController();
-  TextEditingController _quantityUnitController = TextEditingController();
+  final TextEditingController _targetQuantityController = TextEditingController();
+  final TextEditingController _quantityUnitController = TextEditingController();
   Duration? _targetTime; // Para tipo cronômetro
   List<HabitSubtask> _subtasks = []; // Para tipo lista de atividades
-  TextEditingController _subtaskController = TextEditingController();
+  final TextEditingController _subtaskController = TextEditingController();
 
 
   bool _isLoading = false;
@@ -99,47 +101,66 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
     _targetTime = widget.habitToEdit?.targetTime;
     _subtasks = widget.habitToEdit?.subtasks?.map((s) => s.copyWith()).toList() ?? [];
 
+    // Inicializar categorias disponíveis com as padrões imediatamente
+    _availableCategories = app_category.Category.defaultCategories;
+    
+    // Definir categoria selecionada inicial para evitar null
+    if (_isEditing && widget.habitToEdit != null) {
+      // Se estiver editando, tenta usar a categoria do hábito
+      _selectedCategory = _availableCategories.firstWhere(
+        (cat) => cat.name == widget.habitToEdit!.category,
+        orElse: () => _availableCategories.first,
+      );
+    } else {
+      // Se criando novo, usa "Outros" ou a primeira disponível
+      _selectedCategory = _availableCategories.firstWhere(
+        (cat) => cat.name.toLowerCase() == 'outros',
+        orElse: () => _availableCategories.first,
+      );
+    }
 
-    _loadCategories().then((_) {
-        if (_isEditing && widget.habitToEdit?.category != null) {
-            final categoryName = widget.habitToEdit!.category;
-            _selectedCategory = _availableCategories.firstWhere(
-                (cat) => cat.name == categoryName,
-                orElse: () => _availableCategories.isNotEmpty ? _availableCategories.first : null,
-            );
-        } else if (_availableCategories.isNotEmpty) {
-            // Tenta pré-selecionar "Outros" ou a primeira se não estiver editando
-             _selectedCategory = _availableCategories.firstWhere(
-                (cat) => cat.name.toLowerCase() == 'outros',
-                orElse: () => _availableCategories.first,
-            );
-        }
-        if (mounted) {
-            setState(() {});
-        }
-    });
+    // Carregar categorias
+    _loadCategories();
   }
 
   Future<void> _loadCategories() async {
-    if (!mounted) return;
-    setState(() => _categoriesLoading = true);
-    try {
-      final categoryService = Provider.of<CategoryService>(context, listen: false);
-      _availableCategories = await categoryService.getCategories();
-    } catch (e) {
-      Logger.error("Error loading categories for UpsertHabitScreen: $e");
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar categorias: $e')),
-        );
-        // Usar categorias padrão como fallback
-        _availableCategories = app_category.Category.defaultCategories;
+    // Use addPostFrameCallback para garantir que o contexto esteja pronto
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      setState(() => _categoriesLoading = true);
+      try {
+        final categoryService = Provider.of<CategoryService>(context, listen: false);
+        _availableCategories = await categoryService.getCategories();
+        
+        // Atualizar a seleção de categoria após carregar
+        if (_isEditing && widget.habitToEdit != null) {
+          final categoryName = widget.habitToEdit!.category;
+          _selectedCategory = _availableCategories.firstWhere(
+            (cat) => cat.name == categoryName,
+            orElse: () => _availableCategories.isNotEmpty ? _availableCategories.first : app_category.Category.defaultCategories.first,
+          );
+        } else {
+          // Tenta pré-selecionar "Outros" ou a primeira se não estiver editando
+          _selectedCategory = _availableCategories.firstWhere(
+            (cat) => cat.name.toLowerCase() == 'outros',
+            orElse: () => _availableCategories.isNotEmpty ? _availableCategories.first : app_category.Category.defaultCategories.first,
+          );
+        }
+      } catch (e) {
+        Logger.error("Error loading categories for UpsertHabitScreen: $e");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erro ao carregar categorias: $e')),
+          );
+          // Usar categorias padrão como fallback
+          _availableCategories = app_category.Category.defaultCategories;
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _categoriesLoading = false);
+        }
       }
-    } finally {
-      if (mounted) {
-        setState(() => _categoriesLoading = false);
-      }
-    }
+    });
   }
 
   @override
@@ -153,9 +174,21 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
   }
 
   Future<void> _saveHabit() async {
+    Logger.debug('=== INICIANDO PROCESSO DE SALVAMENTO DE HÁBITO ===');
+    
     if (!_formKey.currentState!.validate()) {
+      Logger.warning('Formulário inválido');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, corrija os erros no formulário.')),
+      );
+      return;
+    }
+    
+    // Verificar se uma categoria foi selecionada
+    if (_selectedCategory == null) {
+      Logger.warning('Nenhuma categoria selecionada');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, selecione uma categoria.')),
       );
       return;
     }
@@ -167,9 +200,11 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
     }
 
     setState(() => _isLoading = true);
+    Logger.debug('Estado de loading ativado');
 
     // Validações específicas de Tracking Type
     if (_selectedTrackingType == HabitTrackingType.quantia && _targetQuantityController.text.trim().isEmpty) {
+      Logger.warning('Meta de quantidade não definida');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, defina uma meta de quantidade.')),
       );
@@ -177,6 +212,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
       return;
     }
     if (_selectedTrackingType == HabitTrackingType.cronometro && _targetTime == null) {
+       Logger.warning('Meta de tempo não definida');
        ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, defina uma meta de tempo.')),
       );
@@ -184,6 +220,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
       return;
     }
     if (_selectedTrackingType == HabitTrackingType.listaAtividades && _subtasks.isEmpty) {
+       Logger.warning('Nenhuma subtarefa adicionada');
        ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, adicione pelo menos uma subtarefa.')),
       );
@@ -191,6 +228,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
       return;
     }
     if (_selectedFrequency == HabitFrequency.weekly && _selectedDaysOfWeek.isEmpty) {
+      Logger.warning('Dias da semana não selecionados para frequência semanal');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, selecione os dias da semana para a frequência semanal.')),
       );
@@ -198,6 +236,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
       return;
     }
     if (_selectedFrequency == HabitFrequency.monthly && _selectedDaysOfMonth.isEmpty) {
+      Logger.warning('Dias do mês não definidos para frequência mensal');
       // Poderia adicionar uma validação mais específica para o formato dos dias do mês se necessário
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, defina os dias do mês para a frequência mensal.')),
@@ -208,8 +247,10 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
 
 
     final habitService = Provider.of<HabitService>(context, listen: false);
-    final auth = Provider.of<FirebaseAuth>(context, listen: false); // Para obter o userId
+    final auth = FirebaseAuth.instance;
     final userId = auth.currentUser?.uid;
+    
+    Logger.debug('User ID: $userId');
 
     if (userId == null) {
         Logger.error("User ID is null, cannot save habit.");
@@ -222,7 +263,23 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
     }
 
     final String habitId = _isEditing ? widget.habitToEdit!.id : _uuid.v4();
+    Logger.debug('Habit ID: $habitId, isEditing: $_isEditing');
+    
+    if (_selectedCategory == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, selecione uma categoria.')),
+      );
+      return;
+    }
+
     final now = DateTime.now();
+    
+    Logger.debug('Construindo objeto Habit...');
+    Logger.debug('- Title: ${_titleController.text.trim()}');
+    Logger.debug('- Category: ${_selectedCategory!.name}');
+    Logger.debug('- TrackingType: $_selectedTrackingType');
+    Logger.debug('- Frequency: $_selectedFrequency');
 
     // Construir o hábito com base nos dados do formulário
     Habit habitData = Habit(
@@ -257,12 +314,19 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
       totalCompletions: _isEditing ? widget.habitToEdit!.totalCompletions : 0,
       // TODO: Adicionar outros campos como specificYearDates, timesPerPeriod, etc. se forem implementados na UI
     );
+    
+    Logger.debug('Objeto Habit criado com sucesso');
 
     try {
+      Logger.debug('Iniciando salvamento no HabitService...');
       if (_isEditing) {
+        Logger.debug('Atualizando hábito existente...');
         await habitService.updateHabit(habitData);
+        Logger.info('Hábito atualizado com sucesso!');
       } else {
+        Logger.debug('Criando novo hábito...');
         await habitService.addHabit(habitData);
+        Logger.info('Hábito criado com sucesso!');
       }
 
       if (mounted) {
@@ -271,14 +335,22 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
         );
         Navigator.of(context).pop(true); // Retorna true para indicar que a lista deve ser atualizada
       }
-    } catch (e) {
-      Logger.error('Error saving habit: $e', e, StackTrace.current);
+    } catch (e, stackTrace) {
+      Logger.error('=== ERRO AO SALVAR HÁBITO ===');
+      Logger.error('Erro: $e');
+      Logger.error('Tipo do erro: ${e.runtimeType}');
+      Logger.error('Stack trace:', e, stackTrace);
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao salvar hábito: ${e.toString()}')),
+          SnackBar(
+            content: Text('Erro ao salvar hábito: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
+      Logger.debug('Finalizando processo de salvamento');
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -296,7 +368,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
       if (previouslySelectedName != null) {
         _selectedCategory = _availableCategories.firstWhere(
             (cat) => cat.name == previouslySelectedName,
-            orElse: () => _availableCategories.isNotEmpty ? _availableCategories.first : null);
+            orElse: () => _availableCategories.isNotEmpty ? _availableCategories.first : app_category.Category.defaultCategories.first);
       }
       setState(() {});
     }
@@ -305,16 +377,67 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        title: Text(_isEditing ? 'Editar Hábito' : 'Novo Hábito', style: AppTheme.textTheme.titleLarge),
-        backgroundColor: AppTheme.appBarColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
+    // Verificações de segurança
+    if (_categoriesLoading) {
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Editar Hábito' : 'Novo Hábito'),
+          backgroundColor: AppTheme.backgroundColor,
         ),
+        body: const Center(
+          child: CircularProgressIndicator(color: AppTheme.primaryColor),
+        ),
+      );
+    }
+    
+    // Garantir que sempre há uma categoria selecionada
+    if (_selectedCategory == null && _availableCategories.isNotEmpty) {
+      _selectedCategory = _availableCategories.first;
+    }
+    
+    // Se não há categorias disponíveis, mostrar erro
+    if (_availableCategories.isEmpty) {
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Editar Hábito' : 'Novo Hábito'),
+          backgroundColor: AppTheme.backgroundColor,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 64),
+              const SizedBox(height: 16),
+              const Text(
+                'Erro ao carregar categorias',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Voltar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    
+    try {
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        appBar: AppBar(
+          title: Text(_isEditing ? 'Editar Hábito' : 'Novo Hábito', 
+            style: AppTheme.textTheme.titleLarge ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+          ),
+          backgroundColor: AppTheme.backgroundColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
@@ -411,7 +534,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
                     icon: const Icon(Icons.save),
                     label: Text(_isEditing ? 'Salvar Alterações' : 'Criar Hábito'),
                     style: AppTheme.primaryButton.copyWith(
-                        minimumSize: MaterialStateProperty.all(const Size(double.infinity, 50))),
+                        minimumSize: WidgetStateProperty.all(const Size(double.infinity, 50))),
                     onPressed: _isLoading ? null : _saveHabit,
                   ),
                   const SizedBox(height: 20),
@@ -419,6 +542,30 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
               ),
             ),
     );
+    } catch (e, stackTrace) {
+      Logger.error('Error in UpsertHabitScreen build: $e', e, stackTrace);
+      return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, color: Colors.red, size: 64),
+              const SizedBox(height: 16),
+              Text('Erro ao carregar tela: $e', 
+                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Voltar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildSectionTitle(String title) {
@@ -433,8 +580,25 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
 
   Widget _buildCategorySelector() {
     if (_categoriesLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor, strokeWidth: 2,));
+      return const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryColor, strokeWidth: 2),
+      );
     }
+    
+    if (_availableCategories.isEmpty) {
+      return const Center(
+        child: Text(
+          'Nenhuma categoria disponível',
+          style: TextStyle(color: Colors.red),
+        ),
+      );
+    }
+    
+    // Garantir que _selectedCategory não é null
+    if (_selectedCategory == null && _availableCategories.isNotEmpty) {
+      _selectedCategory = _availableCategories.first;
+    }
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -453,9 +617,17 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
             );
           }).toList(),
           onChanged: (app_category.Category? newValue) {
-            setState(() {
-              _selectedCategory = newValue;
-            });
+            if (newValue != null) {
+              setState(() {
+                _selectedCategory = newValue;
+              });
+            }
+          },
+          validator: (value) {
+            if (value == null) {
+              return 'Por favor, selecione uma categoria';
+            }
+            return null;
           },
           decoration: AppTheme.inputDecoration(
             labelText: 'Categoria',
@@ -464,7 +636,6 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
           ),
           dropdownColor: AppTheme.surfaceColor,
           style: const TextStyle(color: Colors.white),
-          validator: (value) => value == null ? 'Selecione uma categoria.' : null,
         ),
         TextButton.icon(
             icon: const Icon(Icons.add, size: 16, color: AppTheme.primaryColor),
@@ -638,9 +809,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
               _enableTargetDate = value;
               if (!value) {
                 _targetDate = null;
-              } else if (_targetDate == null) {
-                 _targetDate = _startDate.add(const Duration(days: 30)); // Default para 30 dias após início
-              }
+              } else _targetDate ??= _startDate.add(const Duration(days: 30));
             });
           },
           activeColor: AppTheme.primaryColor,
@@ -874,6 +1043,7 @@ class _UpsertHabitScreenState extends State<UpsertHabitScreen> {
             labelText: 'Nova Subtarefa',
             hintText: 'Ex: Ler capítulo 1',
             prefixIcon: Icons.playlist_add_outlined,
+          ).copyWith(
             suffixIcon: IconButton(
               icon: const Icon(Icons.add_circle_outline, color: AppTheme.primaryColor),
               onPressed: () {
@@ -941,8 +1111,7 @@ extension AppThemePickers on AppTheme {
         onPrimary: Colors.white,      // Cor do texto sobre a cor principal
         surface: AppTheme.surfaceColor, // Cor de fundo do diálogo
         onSurface: Colors.white,      // Cor do texto no diálogo
-      ),
-      dialogBackgroundColor: AppTheme.backgroundColor,
+      ), dialogTheme: DialogThemeData(backgroundColor: AppTheme.backgroundColor),
     );
   }
 
@@ -956,7 +1125,6 @@ extension AppThemePickers on AppTheme {
         secondary: AppTheme.primaryColor, // Cor do relógio e botões
         onSecondary: Colors.white,
       ),
-      dialogBackgroundColor: AppTheme.backgroundColor,
       timePickerTheme: TimePickerThemeData(
         backgroundColor: AppTheme.surfaceColor,
         hourMinuteTextColor: Colors.white,
@@ -966,7 +1134,7 @@ extension AppThemePickers on AppTheme {
         dialHandColor: AppTheme.primaryColor,
         dialBackgroundColor: Colors.grey[800],
         entryModeIconColor: AppTheme.primaryColor,
-      )
+      ), dialogTheme: DialogThemeData(backgroundColor: AppTheme.backgroundColor)
     );
   }
 }
