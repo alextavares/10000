@@ -4,7 +4,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/models/habit.dart' as habit_model;
 import 'package:myapp/services/habit_service.dart';
 import 'package:myapp/widgets/habit_card_complete.dart';
-import 'package:myapp/screens/habits/add_habit_simple_screen.dart';
+import 'package:myapp/screens/habits/add_habit_simple_screen.dart'; // Manter seletor de hábitos ainda usar
+import 'package:myapp/screens/habit/upsert_habit_screen.dart'; // Importar a tela avançada
 import 'package:myapp/screens/habits/habit_selection_screen.dart';
 import 'package:myapp/theme/app_theme.dart';
 import 'package:myapp/utils/logger.dart';
@@ -332,7 +333,8 @@ class _HabitsScreenState extends State<HabitsScreen> {
                 onPressed: () async {
                   await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AddHabitSimpleScreen()),
+                    // Alterado para navegar para UpsertHabitScreen
+                    MaterialPageRoute(builder: (context) => const UpsertHabitScreen(habitToEdit: null)),
                   );
                 },
                 backgroundColor: AppTheme.primaryColor,
